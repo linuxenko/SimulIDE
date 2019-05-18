@@ -1,0 +1,81 @@
+<!DOCTYPE SimulIDE>
+
+<subcircuit enodes="0">
+
+    <item itemtype="eLatchD"
+        inputHighV = "2.5"
+        inputLowV = "2.5"
+        inputImped = "100000000000000"
+        outHighV = "5"
+        outLowV = "0"
+        outImped = "40"
+        channels = "2"
+        tristate = "false"
+        inverted = "false"
+        trigger = "2"
+        connections="
+        input0-packagePin2
+        input1-packagePin3
+        inputEnable-packagePin13
+        output0-packagePin16
+        output1-packagePin15" >
+    </item>
+
+    <item itemtype="eLatchD"
+        inputHighV = "2.5"
+        inputLowV = "2.5"
+        inputImped = "100000000000000"
+        outHighV = "5"
+        outLowV = "0"
+        outImped = "40"
+        channels = "2"
+        tristate = "false"
+        inverted = "true"
+        trigger = "2"
+        connections="
+        input0-packagePin2
+        input1-packagePin3
+        inputEnable-packagePin13
+        output0-packagePin1
+        output1-packagePin14" >
+    </item>
+
+    <item itemtype="eLatchD"
+        inputHighV = "2.5"
+        inputLowV = "2.5"
+        inputImped = "100000000000000"
+        outHighV = "5"
+        outLowV = "0"
+        outImped = "40"
+        channels = "2"
+        tristate = "false"
+        inverted = "false"
+        trigger = "2"
+        connections="
+        input1-packagePin7
+        inputEnable-packagePin4
+        output0-packagePin10
+        output1-packagePin9
+        input0-packagePin6" >
+    </item>
+
+    <item itemtype="eLatchD"
+        inputHighV = "2.5"
+        inputLowV = "2.5"
+        inputImped = "100000000000000"
+        outHighV = "5"
+        outLowV = "0"
+        outImped = "40"
+        channels = "2"
+        tristate = "false"
+        inverted = "true"
+        trigger = "2"
+        connections="
+        input1-packagePin7
+        inputEnable-packagePin4
+        input0-packagePin6
+        output0-packagePin11
+        output1-packagePin8" >
+    </item>
+
+</subcircuit>
