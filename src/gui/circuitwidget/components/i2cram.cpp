@@ -70,6 +70,8 @@ I2CRam::I2CRam( QObject* parent, QString type, QString id )
     
     m_cCode = 0b01010000;
     m_size = 65536;
+    
+    resetState();
 }
 I2CRam::~I2CRam(){}
 
@@ -82,6 +84,11 @@ void I2CRam::initialize()                     // Called at Simulation Start
         eNode* enode =  m_inPin[i]->getEnode();
         if( enode ) enode->addToChangedFast( this );
     }
+}
+
+void I2CRam::resetState()
+{
+    eI2C::resetState();
     
     m_addrPtr = 0;
     m_phase = 3;

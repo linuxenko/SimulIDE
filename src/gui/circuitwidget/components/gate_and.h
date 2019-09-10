@@ -23,7 +23,7 @@
 #include "gate.h"
 #include "component.h"
 
-#include <QObject>
+//#include <QObject>
 
 class LibraryItem;
 

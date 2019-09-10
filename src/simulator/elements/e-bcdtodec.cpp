@@ -36,12 +36,17 @@ void eBcdToDec::initialize()
         eNode* enode = m_input[i]->getEpin()->getEnode();
         if( enode ) enode->addToChangedFast(this);
     }
+    eLogicDevice::initialize();
+}
+
+void eBcdToDec::resetState()
+{
+    eLogicDevice::resetState();
+    
     for( int i=0; i<10; i++ )
     {
         eLogicDevice::setOut( i, true );
     }
-
-    eLogicDevice::initialize();
 }
 
 void eBcdToDec::setVChanged()

@@ -17,7 +17,13 @@
  #                                                                         #
  ###########################################################################
  
-VERSION     = "0.3.11"
+
+win32 {
+    VERSION     = "0.3.12.11"
+}
+unix {
+    VERSION     = "0.3.12-SR1"
+}
 
 TEMPLATE = app
 
@@ -137,7 +143,13 @@ QMAKE_CFLAGS += -Wno-sign-compare
 QMAKE_CFLAGS += -O2
 QMAKE_CFLAGS += -fPIC
 
-QMAKE_LIBS += -lelf
+win32 {
+    LIBS +=  ../resources/bin/libglibc_win.a
+    RC_ICONS += ../src/icons/simulide.ico
+}
+unix {
+    QMAKE_LIBS += -lelf
+}
 
 CONFIG += qt 
 CONFIG += warn_on

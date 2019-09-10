@@ -47,13 +47,13 @@ void PropertiesWidget::createWidgets()
     widgetLayout->addWidget( splitter0 );
 
     m_properties = new  QPropertyEditorWidget( this );
-    //m_help =       new QPlainTextEdit( this );
+    m_help =       new QPlainTextEdit( this );
     
     splitter0->addWidget( m_properties );
-    //splitter0->addWidget( m_help );
+    splitter0->addWidget( m_help );
     
-    //m_help->appendPlainText( tr( "Here will be some help ..............................................\n" ));
-    //m_help->setReadOnly( true );
+    m_help->appendPlainText( tr( "Here will be some help ..............................................\n" ));
+    m_help->setReadOnly( true );
 }
 
 void PropertiesWidget::setHelpText( QString* text )

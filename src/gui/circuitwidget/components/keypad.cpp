@@ -76,6 +76,9 @@ void KeyPad::initialize()
 
 void KeyPad::setupButtons()
 {
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim ) Simulator::self()->pauseSim();
+    
     m_area = QRectF( -12, -4, 16*m_cols+8, 16*m_rows+8 );
     
     foreach( PushBase* button, m_buttons ) 
@@ -84,7 +87,12 @@ void KeyPad::setupButtons()
        Circuit::self()->removeComp( button );
     }
     
-    foreach( Pin* pin, m_pin ) delete pin;
+    foreach( Pin* pin, m_pin ) 
+    {
+        if( pin->isConnected() ) pin->connector()->remove();
+        if( pin->scene() ) Circuit::self()->removeItem( pin );
+        delete pin;
+    }
     m_pin.resize( m_rows + m_cols );
     
     int labelMax = m_keyLabels.size()-1;
@@ -121,6 +129,8 @@ void KeyPad::setupButtons()
             }
         }
     }
+    if( pauseSim ) Simulator::self()->resumeSim();
+    Circuit::self()->update();
 }
 
 double KeyPad::rows()

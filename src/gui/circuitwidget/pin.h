@@ -38,11 +38,17 @@ class MAINMODULE_EXPORT Pin : public QObject, public QGraphicsItem, public ePin
         enum { Type = UserType + 3 };
         int type() const { return Type; }
 
-        QString itemID();
+        QString pinId();
+        void setPinId( QString id );
         
+        bool unused() {return m_unused; }
         void setUnused( bool unused );
 
         void setLength( int length );
+        
+        void setColor( QColor color ) { m_color = color; }
+        void setPinAngle( int angle );
+        int pinAngle() { return m_angle; }
 
         void setBoundingRect( QRect area );
         
@@ -85,8 +91,9 @@ class MAINMODULE_EXPORT Pin : public QObject, public QGraphicsItem, public ePin
         bool m_isBus;
         bool m_unused;
 
-        QString m_id;
-
+        //QString m_id;
+        
+        QColor m_color;
         QRect      m_area;
         Connector* my_connector;
         Component* m_component;

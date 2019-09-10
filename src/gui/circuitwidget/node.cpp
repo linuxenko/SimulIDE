@@ -161,10 +161,11 @@ void Node::joinConns( int c0, int c1 )
     //qDebug() << "Node::joinConns removing con1" << con1->objectName();
     con1->remove();
 
-    con->closeCon( pin1->conPin() );
+    con->closeCon( pin1->conPin(), true );
     con->remNullLines();
     
     Circuit::self()->addItem( con );
+    if( this->isSelected() ) con->setSelected( true );
 }
 
 void Node::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )

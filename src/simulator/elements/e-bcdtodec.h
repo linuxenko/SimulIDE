@@ -30,6 +30,7 @@ class MAINMODULE_EXPORT eBcdToDec : public eLogicDevice
         ~eBcdToDec();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
         void createPins();

@@ -21,7 +21,7 @@
 #define EBJT_H
 
 #include "e-pn.h"
-
+#include "e-diode.h"
 
 class MAINMODULE_EXPORT eBJT : public eResistor
 {
@@ -31,16 +31,20 @@ class MAINMODULE_EXPORT eBJT : public eResistor
         virtual ~eBJT();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
-        virtual double gain()              {return m_gain;}
-        virtual void setGain( double gain ){m_gain = gain;}
+        virtual double gain()              { return m_gain; }
+        virtual void setGain( double gain ){ m_gain = gain; }
         
         virtual double BEthr();
         virtual void setBEthr( double thr );
         
-        virtual double pnp()              {return m_PNP;}
-        virtual void setPnp( double pnp ) {m_PNP = pnp;}
+        virtual double pnp()              { return m_PNP; }
+        virtual void setPnp( double pnp ) { m_PNP = pnp; }
+        
+        virtual bool BCd()              { return m_BCdiodeOn; }
+        virtual void setBCd( bool bcd );
         
         virtual ePin* getEpin( QString pinName );
         virtual void initEpins();
@@ -56,10 +60,10 @@ class MAINMODULE_EXPORT eBJT : public eResistor
         bool m_Efollow;
         
         bool m_PNP;
+        bool m_BCdiodeOn;
         
         ePN* m_BEdiode;
-        //eDiode* m_BCdiode;
+        eDiode* m_BCdiode;
 };
-
 
 #endif

@@ -72,6 +72,7 @@ void eSource::stamp()
 
 void eSource::stampOutput()                               // Stamp Output
 {
+    //qDebug() <<"eSource::stampOutput"<< m_out<<m_voltOut<<m_imp ;
     m_scrEnode->setVolt(m_voltOut);
 
     m_ePin[0]->stampCurrent( m_voltOut/m_imp );

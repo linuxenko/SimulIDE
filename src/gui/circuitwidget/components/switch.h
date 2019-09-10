@@ -52,6 +52,9 @@ class MAINMODULE_EXPORT Switch : public SwitchBase
 
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
         
+    public slots:
+        virtual void remove();
+        
     protected:
         virtual void setSwitch( bool on );
         void  SetupSwitches( int poles, int throws );

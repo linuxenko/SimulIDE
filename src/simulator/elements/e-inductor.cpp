@@ -42,12 +42,15 @@ void eInductor::initialize()
 {
     if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToReactiveList(this);
     if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToReactiveList(this);
-    
+    eResistor::initialize();
+}
+
+void eInductor::resetState()
+{
     m_tStep = (double)Simulator::self()->reaClock()/1e6;
     
     eResistor::setRes( m_ind/m_tStep );
-    eResistor::initialize();
-
+    
     m_curSource = 0;
 }
 

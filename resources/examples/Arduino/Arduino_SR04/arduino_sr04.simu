@@ -1,0 +1,27 @@
+<circuit noLinAcc="5" animate="0" speed="1000000" noLinStep="10" type="simulide_0.1" reactStep="50">
+ 
+Voltage Source-4: 
+<item Show_id="false" id="Voltage Source-4" itemtype="Voltage Source" Voltage="5" Unit=" V" valLabRot="0" Show_Volt="true" labely="-24" x="-476" y="-268" hflip="1" objectName="Voltage Source-4" labelrot="0" rotation="0" valLabelx="-26" valLabely="10" labelx="-16" vflip="1"/>
+ 
+Arduino Uno-3: 
+<item Mhz="16" Show_id="true" id="Arduino Uno-3" itemtype="Arduino" valLabRot="0" Ser_Monitor="true" labely="-17" x="-420" y="-348" hflip="1" Program="arduino_sr04.hex" objectName="Arduino Uno-3" labelrot="0" Ser_Port="false" rotation="0" valLabelx="0" valLabely="0" labelx="50" vflip="1"/>
+ 
+SR04-2: 
+<item y="-460" id="SR04-2" labely="-24" itemtype="SR04" valLabelx="0" hflip="1" valLabRot="0" Show_id="false" valLabely="0" rotation="0" labelx="-16" vflip="1" objectName="SR04-2" x="-348" labelrot="0"/>
+ 
+Connector-5: 
+<item pointList="-348,-412,-348,-396,-436,-396,-436,-244,-412,-244" Show_id="false" id="Connector-5" itemtype="Connector" valLabRot="0" enodeid="Circ_eNode-6" labely="-24" x="-348" y="-412" startpinid="SR04-2-trigpin" hflip="1" objectName="Connector-5" labelrot="0" rotation="0" valLabelx="0" valLabely="0" labelx="-16" endpinid="Arduino Uno-3-PB2" vflip="1"/>
+ 
+Connector-7: 
+<item pointList="-340,-412,-340,-388,-428,-388,-428,-252,-412,-252" Show_id="false" id="Connector-7" itemtype="Connector" valLabRot="0" enodeid="Circ_eNode-8" labely="-24" x="-340" y="-412" startpinid="SR04-2-outpin" hflip="1" objectName="Connector-7" labelrot="0" rotation="0" valLabelx="0" valLabely="0" labelx="-16" endpinid="Arduino Uno-3-PB1" vflip="1"/>
+ 
+Connector-9: 
+<item pointList="-460,-268,-452,-268,-452,-484,-436,-484" Show_id="false" id="Connector-9" itemtype="Connector" valLabRot="0" enodeid="Circ_eNode-10" labely="-24" x="-460" y="-268" startpinid="Voltage Source-4-outPin" hflip="1" objectName="Connector-9" labelrot="0" rotation="0" valLabelx="0" valLabely="0" labelx="-16" endpinid="SR04-2-inpin" vflip="1"/>
+ 
+PlotterWidget-11: 
+<item y="0" windowIcon="" maximized="false" MinVolt="-500" palette="" sizePolicy="" baseSize="" windowTitle="" pos="" frameGeometry="" minimumSizeHint="" minimized="false" fullScreen="false" mouseTracking="false" windowIconText="" isActiveWindow="true" layoutDirection="0" contextMenuPolicy="1" modal="false" size="" font="Sans Serif,9,-1,5,50,0,0,0,0,0" sizeIncrement="" minimumHeight="200" maximumSize="" acceptDrops="false" windowOpacity="1" toolTip="" normalGeometry="" childrenRect="" updatesEnabled="true" focus="false" height="200" sizeHint="" MaxVolt="500" frameSize="" itemtype="Plotter" objectName="PlotterWidget-11" geometry="" cursor="" childrenRegion="" whatsThis="" accessibleName="" minimumWidth="200" autoFillBackground="false" accessibleDescription="" toolTipDuration="-1" width="200" windowModality="0" rect="" windowFilePath="" inputMethodHints="0" maximumWidth="1000" enabled="true" visible="false" focusPolicy="0" styleSheet="" windowModified="false" locale="" statusTip="" x="0" minimumSize="" maximumHeight="200"/>
+ 
+SerialPortWidget-12: 
+<item y="0" windowIcon="" maximized="false" palette="" sizePolicy="" baseSize="" windowTitle="Configuracion" pos="" frameGeometry="" minimumSizeHint="" minimized="false" fullScreen="false" mouseTracking="false" windowIconText="" isActiveWindow="true" layoutDirection="0" contextMenuPolicy="1" modal="false" size="" font="Sans Serif,9,-1,5,50,0,0,0,0,0" sizeIncrement="" minimumHeight="0" maximumSize="" acceptDrops="false" windowOpacity="1" toolTip="" normalGeometry="" childrenRect="" updatesEnabled="true" focus="false" height="141" sizeHint="" frameSize="" itemtype="SerialPort" objectName="SerialPortWidget-12" geometry="" cursor="" childrenRegion="" whatsThis="" accessibleName="" minimumWidth="0" autoFillBackground="false" accessibleDescription="" toolTipDuration="-1" width="313" windowModality="0" rect="" windowFilePath="" inputMethodHints="0" maximumWidth="450" enabled="true" visible="false" focusPolicy="0" styleSheet="" windowModified="false" locale="" statusTip="" x="0" SettingsProp="ttyS0,0,3,0,0,0" minimumSize="" maximumHeight="170"/>
+ 
+</circuit>

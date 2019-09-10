@@ -14,10 +14,10 @@
         numInputs = "4"
         connections="
         output0-eNode0
-        input3-packagePin1
-        input0-packagePin2
-        input2-packagePin14
-        input1-packagePin5" >
+        input3-Package_!G1
+        input0-Package_!P1
+        input2-Package_!G2
+        input1-Package_!G3" >
     </item>
 
     <item itemtype="eOrGate"
@@ -35,7 +35,7 @@
         input2-eNode1
         input3-eNode2
         input0-eNode3
-        output0-packagePin10" >
+        output0-Package_!G" >
     </item>
 
     <item itemtype="eAndGate"
@@ -50,9 +50,9 @@
         numInputs = "3"
         connections="
         output0-eNode1
-        input2-packagePin14
-        input0-packagePin15
-        input1-packagePin5" >
+        input2-Package_!G2
+        input0-Package_!P2
+        input1-Package_!G3" >
     </item>
 
     <item itemtype="eAndGate"
@@ -67,8 +67,8 @@
         numInputs = "2"
         connections="
         output0-eNode2
-        input1-packagePin5
-        input0-packagePin4" >
+        input1-Package_!G3
+        input0-Package_!P0" >
     </item>
 
     <item itemtype="eAndGate"
@@ -83,10 +83,10 @@
         numInputs = "4"
         connections="
         output0-eNode3
-        input3-packagePin3
-        input2-packagePin1
-        input1-packagePin14
-        input0-packagePin5" >
+        input3-Package_!G0
+        input2-Package_!G1
+        input1-Package_!G2
+        input0-Package_!G3" >
     </item>
 
     <item itemtype="eAndGate"
@@ -101,8 +101,8 @@
         numInputs = "2"
         connections="
         output0-eNode4
-        input1-packagePin14
-        input0-packagePin15" >
+        input1-Package_!G2
+        input0-Package_!P2" >
     </item>
 
     <item itemtype="eOrGate"
@@ -120,7 +120,7 @@
         input2-eNode5
         input1-eNode6
         input0-eNode7
-        output0-packagePin9" >
+        output0-Package_Cn+z" >
     </item>
 
     <item itemtype="eAndGate"
@@ -135,9 +135,9 @@
         numInputs = "3"
         connections="
         output0-eNode5
-        input2-packagePin1
-        input0-packagePin2
-        input1-packagePin14" >
+        input2-Package_!G1
+        input0-Package_!P1
+        input1-Package_!G2" >
     </item>
 
     <item itemtype="eAndGate"
@@ -152,10 +152,10 @@
         numInputs = "4"
         connections="
         output0-eNode6
-        input3-packagePin3
-        input0-packagePin4
-        input2-packagePin1
-        input1-packagePin14" >
+        input3-Package_!G0
+        input0-Package_!P0
+        input2-Package_!G1
+        input1-Package_!G2" >
     </item>
 
     <item itemtype="eAndGate"
@@ -171,9 +171,9 @@
         connections="
         output0-eNode7
         input3-eNode13
-        input2-packagePin3
-        input1-packagePin1
-        input0-packagePin14" >
+        input2-Package_!G0
+        input1-Package_!G1
+        input0-Package_!G2" >
     </item>
 
     <item itemtype="eAndGate"
@@ -189,8 +189,8 @@
         connections="
         output0-eNode8
         input2-eNode13
-        input1-packagePin3
-        input0-packagePin1" >
+        input1-Package_!G0
+        input0-Package_!G1" >
     </item>
 
     <item itemtype="eOrGate"
@@ -207,7 +207,7 @@
         input0-eNode8
         input1-eNode9
         input2-eNode10
-        output0-packagePin11" >
+        output0-Package_Cn+y" >
     </item>
 
     <item itemtype="eAndGate"
@@ -222,9 +222,9 @@
         numInputs = "3"
         connections="
         output0-eNode9
-        input2-packagePin3
-        input0-packagePin4
-        input1-packagePin1" >
+        input2-Package_!G0
+        input0-Package_!P0
+        input1-Package_!G1" >
     </item>
 
     <item itemtype="eAndGate"
@@ -239,8 +239,8 @@
         numInputs = "2"
         connections="
         output0-eNode10
-        input1-packagePin1
-        input0-packagePin2" >
+        input1-Package_!G1
+        input0-Package_!P1" >
     </item>
 
     <item itemtype="eAndGate"
@@ -256,7 +256,7 @@
         connections="
         output0-eNode11
         input1-eNode13
-        input0-packagePin3" >
+        input0-Package_!G0" >
     </item>
 
     <item itemtype="eOrGate"
@@ -272,7 +272,7 @@
         connections="
         input0-eNode11
         input1-eNode12
-        output0-packagePin12" >
+        output0-Package_Cn+x" >
     </item>
 
     <item itemtype="eAndGate"
@@ -287,8 +287,8 @@
         numInputs = "2"
         connections="
         output0-eNode12
-        input1-packagePin3
-        input0-packagePin4" >
+        input1-Package_!G0
+        input0-Package_!P0" >
     </item>
 
     <item itemtype="eOrGate"
@@ -302,11 +302,11 @@
         openCollector = "false"
         numInputs = "4"
         connections="
-        output0-packagePin7
-        input3-packagePin4
-        input2-packagePin2
-        input1-packagePin15
-        input0-packagePin4" >
+        output0-Package_!P
+        input3-Package_!P0
+        input2-Package_!P1
+        input1-Package_!P2
+        input0-Package_!P0" >
     </item>
 
     <item itemtype="eBuffer"
@@ -321,7 +321,7 @@
         tristate = "false"
         connections="
         output0-eNode13
-        input0-packagePin13" >
+        input0-Package_Cn" >
     </item>
 
 </subcircuit>

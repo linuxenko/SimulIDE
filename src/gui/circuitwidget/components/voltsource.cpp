@@ -39,7 +39,8 @@ LibraryItem* VoltSource::libraryItem()
 }
 
 VoltSource::VoltSource( QObject* parent, QString type, QString id )
-    : Component( parent, type, id ), eElement( id.toStdString() )
+          : Component( parent, type, id )
+          , eElement( id.toStdString() )
 {
     m_voltHight = 5.0;
     

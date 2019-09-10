@@ -35,14 +35,12 @@ class MAINMODULE_EXPORT elCapacitor : public CapacitorBase
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem* libraryItem();
         
-        void initialize();
-        void updateStep();
+        virtual void initialize();
+        virtual void updateStep();
+        virtual void remove();
 
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
-        
-    public slots:
-        virtual void remove();
-        
+
     private:
         bool m_reversed;
         int  m_counter;

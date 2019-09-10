@@ -29,6 +29,7 @@ GcbDebugger::GcbDebugger( QObject* parent, OutPanelText* outPane, QString filePa
     
     m_compilerPath = "";
     m_compSetting = "gcbasic_Path";
+    type = 1;
     
     readSettings();
 
@@ -36,6 +37,7 @@ GcbDebugger::GcbDebugger( QObject* parent, OutPanelText* outPane, QString filePa
     m_typesList["integer"] = "int16";
     m_typesList["word"]    = "uint16";
     m_typesList["long"]    = "uint32";
+    m_typesList["string"]  = "string";
 }
 GcbDebugger::~GcbDebugger(){}
 
@@ -52,7 +54,7 @@ int GcbDebugger::compile()
     }
 
     QString file = m_fileDir+m_fileName+m_fileExt;
-    QString args = " -NP -K:L -A:GCASM  ";
+    QString args = " -NP -K:L -A:GCASM -R:text  ";
     QString command = m_compilerPath + "gcbasic";
     
     #ifndef Q_OS_UNIX
@@ -102,37 +104,134 @@ int GcbDebugger::compile()
     return error;
 }
 
+void GcbDebugger::getSubs()
+{
+    m_subs.clear();
+    
+    QStringList lines = fileToStringList( m_fileDir+m_fileName+".report.txt", "GcbDebugger::mapGcbToAsm" );
+
+    while( true )
+    {
+        if( lines.isEmpty() ) break;
+        QString line = lines.takeFirst();
+        if( line.startsWith( "Subroutines" ) ) 
+        {
+            m_subs.append( lines.takeFirst() );
+            break;
+        }
+    }
+    while( true )
+    {
+        if( lines.isEmpty() ) break;
+        QString line = lines.takeFirst();
+        if( line.isEmpty() ) 
+        {
+            if( lines.isEmpty() ) break;
+            line = lines.takeFirst();
+            if( !line.startsWith( ";" ) && !line.isEmpty() ) m_subs.append( line.toUpper() );
+        }
+    }
+    //qDebug() << "GcbDebugger::getSubs()\n" << m_subs;
+}
+
 void GcbDebugger::mapFlashToSource()
 {
     getProcType(); // Determine Pic or Avr
+    getSubs();
     mapLstToAsm();
     mapGcbToAsm();
+    //qDebug() << "GcbDebugger::mapFlashToSource() Done";
 }
 
 void GcbDebugger::mapGcbToAsm()  // Map asm_source_line <=> gcb_source_line
 {
     m_varList.clear();
-    QStringList gcbLines = fileToStringList( m_fileDir+m_fileName+".gcb", "GcbDebugger::mapGcbToAsm" );
+    m_varNames.clear();
+    m_subLines.clear();
 
+    QStringList gcbLines = fileToStringList( m_fileDir+m_fileName+".gcb", "GcbDebugger::mapGcbToAsm" );
+    
+    bool isFunc = false;
+    int lineNum = 0;
     foreach( QString gcbLine, gcbLines )              // Get Declared Variables
-    {                                                 // Search lines containing "Dim"
-        QString line = gcbLine; 
-        if( !line.toUpper().contains( "DIM" )) continue;
-        
-        gcbLine = gcbLine.replace( "\t", " " );
+    {
         QStringList wordList = gcbLine.split( " " );
         wordList.removeAll( "" );
-        if( wordList.first().toUpper() != "DIM" ) continue;
         
-        QString type = wordList.at(3).toLower();
-        if( m_typesList.contains( type ) )
+        QString line = gcbLine;
+        line = line.toUpper();
+        if     ( line.startsWith( "FUNCTION" ) )     isFunc = true;
+        else if( line.startsWith( "END FUNCTION" ) ) isFunc = false;
+        
+        foreach( QString word, wordList )             // Find Subs Calls
         {
-            QString varName = wordList.at(1).toLower();
-            if( !m_varList.contains( varName ) )
-                m_varList[ varName ] = m_typesList[ type ];
-            //qDebug() << "GcbDebugger::mapGcbToAsm  variable "<<type<<varName<<m_typesList[ type ];
+            if( isFunc ) break;
+            
+            QString wordUp = word;
+            wordUp = wordUp.toUpper();
+            
+            if( wordUp == "IF" ) break;
+            
+            if( m_subs.contains( wordUp ) )
+            {
+                m_subLines.append( lineNum );
+                break;
+            }
         }
-    }
+        lineNum++;
+        
+        if( !line.contains( "DIM" )) continue; // Search lines containing "Dim"
+        
+        line = line.replace( "'", ";" ).split( ";" ).first(); // Remove comments
+        
+        gcbLine = gcbLine.replace( "\t", " " );
+        
+        if( !line.contains( "AS" ))  // Should be an array
+        {
+            if( !line.contains( "(" )) continue;
+            QStringList wordList = gcbLine.split( "(" );
+            QString varName = wordList.takeFirst();
+            QString varSize = wordList.takeFirst();
+            
+            wordList = varName.split( " " );
+            wordList.removeAll( "" );
+            varName = wordList.last();
+            
+            wordList = varSize.split( " " );
+            wordList.removeAll( "" );
+            varSize  = wordList.first().replace( ")", "" );
+            int size = varSize.toInt();
+            varSize  = QString::number( size+1 );
+            
+            QString type = "array"+varSize;
+            if( !m_varList.contains( varName ) )
+            {
+                m_varList[ varName ] = type;
+                m_varNames.append( varName );
+            }
+            
+            //qDebug() << "GcbDebugger::mapGcbToAsm  Array "<<type<<varName;
+        }
+        else
+        {
+            //QStringList wordList = gcbLine.split( " " );
+            //wordList.removeAll( "" );
+            if( wordList.first().toUpper() != "DIM" ) continue;
+            if( wordList.size() < 4 ) continue;
+            
+            QString type = wordList.at(3).toLower();
+            if( m_typesList.contains( type ) )
+            {
+                QString varName = wordList.at(1).toLower();
+                if( !m_varList.contains( varName ) )
+                {
+                    m_varList[ varName ] = m_typesList[ type ];
+                    m_varNames.append( varName );
+                }
+                //qDebug() << "GcbDebugger::mapGcbToAsm  variable "<<type<<varName<<m_typesList[ type ];
+            }
+        }
+    }//qDebug() << "GcbDebugger::mapGcbToAsm() SubLines\n" << m_subLines;
     m_flashToSource.clear();
     m_sourceToFlash.clear();
     
@@ -181,7 +280,26 @@ void GcbDebugger::mapGcbToAsm()  // Map asm_source_line <=> gcb_source_line
             QString type = "uint8";
             if( m_varList.contains( name ) ) type = m_varList[ name ];
             BaseProcessor::self()->addWatchVar( name, address ,type  );
-            //qDebug()<<asmLine<<name<< address<<type;
+            //qDebug()<<"GcbDebugger::mapGcbToAsm var:"<<asmLine<<name<< address<<type;
+            
+            if( type.contains( "array" ) )
+            {
+                m_varNames.removeOne( name );
+                m_varNames.append( name );
+                
+                QString ty = type;
+                int size = ty.replace( "array", "" ).toInt();
+                for( int i=1; i<size; i++ )
+                {
+                    QString elmName = name+"("+QString::number( i )+")";
+                    BaseProcessor::self()->addWatchVar( elmName, address+i ,"uint8"  );
+                    if( !m_varList.contains( elmName ) ) 
+                    {
+                        m_varList[ elmName ] = m_typesList[ "uint8" ];
+                        m_varNames.append( elmName );
+                    }
+                }
+            }
         }
         asmLineNumber++;
     }
@@ -272,7 +390,7 @@ void GcbDebugger::mapLstToAsm()
     }
 }
 
-void  GcbDebugger::getProcType()
+void GcbDebugger::getProcType()
 {
    //qDebug() << "m_asmPath: " << m_asmPath;
     QStringList lines = fileToStringList( m_fileDir+m_fileName+".asm", "CodeEditor::getProcType" );

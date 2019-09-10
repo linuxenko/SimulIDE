@@ -47,7 +47,7 @@ class MAINMODULE_EXPORT BaseProcessor : public QObject
         virtual bool getLoadStatus() { return m_loadStatus; }
         virtual void terminate();
 
-        virtual void setSteps( int steps );
+        virtual void setSteps( double steps );
         virtual void step()=0;
         virtual void stepOne()=0;
         virtual void stepCpu()=0;
@@ -68,11 +68,14 @@ class MAINMODULE_EXPORT BaseProcessor : public QObject
         
         virtual void initialized();
         virtual QStringList getRegList() { return m_regList; }
+        
+        virtual RamTable* getRamTable() { return m_ramTable; }
+        
+        virtual void setRegisters();
     
     protected:
  static BaseProcessor* m_pSelf;
- 
-        virtual void setRegisters();
+        
         virtual int  validate( int address )=0;
         
         void runSimuStep();
@@ -81,9 +84,9 @@ class MAINMODULE_EXPORT BaseProcessor : public QObject
         QString m_dataFile;
         QString m_device;
         
-        int  m_mcuStepsPT;
+        double m_mcuStepsPT;
         int  m_msimStep;
-        unsigned long m_nextCycle;
+        double m_nextCycle;
 
         RamTable* m_ramTable;
         QStringList m_regList;

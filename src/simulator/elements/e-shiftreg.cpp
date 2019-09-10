@@ -40,6 +40,7 @@ eShiftReg::eShiftReg( std::string id, int latchClk, int serOut )
 
     m_shiftReg.reset();
     m_latch.reset();
+    resetState();
 }
 eShiftReg::~eShiftReg()
 {

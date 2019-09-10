@@ -39,6 +39,7 @@ LibraryItem* ResistorDip::libraryItem()
 
 ResistorDip::ResistorDip( QObject* parent, QString type, QString id )
            : Component( parent, type, id )
+           , eResistorDip( id.toStdString() )
 {
     m_size = 0;
     setSize( 8 );
@@ -46,7 +47,7 @@ ResistorDip::ResistorDip( QObject* parent, QString type, QString id )
     m_unit = "Ω";
     setResist( 100 );
     setValLabelX( 5 );
-    setValLabelY(-28 );
+    setValLabelY(-26 );
     setValLabRot( 90 );
     setValLabelPos();
     //m_valLabel->setEnabled( false );
@@ -70,12 +71,12 @@ void ResistorDip::createResistors( int c )
         m_resistor[i] = new eResistor( reid.toStdString() );
         
         QPoint pinpos = QPoint(-16,-32+8+i*8 );
-        Pin* pin = new Pin( 180, pinpos, reid+"-pinP", 0, this);
+        Pin* pin = new Pin( 180, pinpos, reid+"-ePin"+QString::number(index), 0, this);
         m_resistor[i]->setEpin( 0, pin );
         m_pin[index] = pin;
         
         pinpos = QPoint( 16,-32+8+i*8 );
-        pin = new Pin( 0, pinpos, reid+"-pinN", 0, this);
+        pin = new Pin( 0, pinpos, reid+"-ePin"+QString::number(index+1), 0, this);
         m_resistor[i]->setEpin( 1, pin );
         m_pin[index+1] = pin;
     }
@@ -116,7 +117,8 @@ void ResistorDip::setSize( int size )
     if     ( size < m_size ) deleteResistors( m_size-size );
     else if( size > m_size ) createResistors( size-m_size );
     
-    m_area = QRect( -8, -28, 16, m_size*8 ); 
+    m_area = QRect( -8, -26, 16, m_size*8-4 );
+    setValLabelY(-26 );
     
     if( pauseSim ) Simulator::self()->runContinuous();
     Circuit::self()->update();
@@ -126,15 +128,25 @@ double ResistorDip::resist() { return m_value; }
 
 void ResistorDip::setResist( double r )
 {
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim )  Simulator::self()->pauseSim();
+    
     Component::setValue( r );       // Takes care about units multiplier
     
-    foreach( eResistor* res, m_resistor ) res->setResSafe( m_value*m_unitMult );
+    setRes( m_value*m_unitMult );
+    
+    if( pauseSim ) Simulator::self()->resumeSim();
 }
 
 void ResistorDip::setUnit( QString un ) 
 {
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim )  Simulator::self()->pauseSim();
+    
     Component::setUnit( un );
-    foreach( eResistor* res, m_resistor ) res->setResSafe( m_value*m_unitMult );
+    setRes( m_value*m_unitMult );
+    
+    if( pauseSim ) Simulator::self()->resumeSim();
 }
 
 void ResistorDip::remove()
@@ -149,7 +161,8 @@ void ResistorDip::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QW
     
     //p->setBrush( QColor( 80, 80, 80) );
 
-    p->drawRoundRect( boundingRect(), 4, 4 );
+    p->drawRoundRect( boundingRect(), 2, 2 );
 }
 
 #include "moc_resistordip.cpp"
+

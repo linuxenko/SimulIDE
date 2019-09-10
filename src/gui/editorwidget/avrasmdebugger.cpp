@@ -65,13 +65,24 @@ int AvrAsmDebugger::compile()
     QString listFile = m_fileDir+m_fileName+".lst";
     QString command  = m_compilerPath+"avra";
     
+    QProcess checkComp( this );
+    checkComp.start( command  );
+    checkComp.waitForFinished(-1);
+    
+    QString p_stdo = checkComp.readAllStandardOutput();
+    if( !p_stdo.toUpper().contains("VERSION") )
+    {
+        m_outPane->appendText( "\navra" );
+        toolChainNotFound();
+        return -1;
+    }
+
     #ifndef Q_OS_UNIX
     command  = addQuotes( command );
     listFile = addQuotes( listFile );
     file     = addQuotes( file );
     avraIncPath = addQuotes( avraIncPath );
     #endif
-
     
     command.append(" -W NoRegDef");             // supress some warnings
     command.append(" -l "+ listFile );               // output list file
@@ -91,7 +102,8 @@ int AvrAsmDebugger::compile()
     m_outPane->writeText( "\n\n" );
 
     int error = 0;
-    if( p_stderr.toUpper().contains("ERROR ") ) 
+
+    if( p_stderr.toUpper().contains("ERROR ") )
     { 
         QString line;
         QStringList lines = p_stderr.split("\n");

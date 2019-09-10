@@ -42,6 +42,19 @@ eMosfet::~eMosfet(){}
 
 void eMosfet::initialize()
 {
+    if( (m_ePin[0]->isConnected()) 
+      & (m_ePin[1]->isConnected())
+      & (m_ePin[2]->isConnected()) ) 
+    {
+        m_ePin[0]->getEnode()->addToNoLinList(this);
+        m_ePin[1]->getEnode()->addToNoLinList(this);
+        m_ePin[2]->getEnode()->addToNoLinList(this);
+    }
+    eResistor::initialize();
+}
+
+void eMosfet::resetState()
+{
     eResistor::setRes( m_RDSon );
     
     m_accuracy = Simulator::self()->NLaccuracy();
@@ -54,16 +67,6 @@ void eMosfet::initialize()
     m_kRDSon = m_RDSon*(10-m_threshold);
     m_Gth    = m_threshold-m_threshold/4;
     //if( m_depletion ) m_Gth = -m_Gth;
-    
-    if( (m_ePin[0]->isConnected()) 
-      & (m_ePin[1]->isConnected())
-      & (m_ePin[2]->isConnected()) ) 
-    {
-        m_ePin[0]->getEnode()->addToNoLinList(this);
-        m_ePin[1]->getEnode()->addToNoLinList(this);
-        m_ePin[2]->getEnode()->addToNoLinList(this);
-    }
-    eResistor::initialize();
 }
 
 void eMosfet::setVChanged()

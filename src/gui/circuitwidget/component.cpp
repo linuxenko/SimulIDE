@@ -21,6 +21,7 @@
 #include "mainwindow.h"
 #include "connector.h"
 #include "connectorline.h"
+#include "propertieswidget.h"
 #include "itemlibrary.h"
 #include "circuit.h"
 #include "utils.h"
@@ -37,17 +38,20 @@ static const char* Component_properties[] = {
     QT_TRANSLATE_NOOP("App::Property","Color")
 };
 
-Component::Component( QObject* parent , QString type, QString id )
-         : QObject(parent), QGraphicsItem()
+Component::Component( QObject* parent, QString type, QString id )
+         : QObject( parent )
+         , QGraphicsItem()
          , multUnits( "TGMk munp" )
 {
     Q_UNUSED( Component_properties );
     //setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    /*if( ( type != "Connector" )&&( type != "Node" ) )
+    if( ( type != "Connector" )&&( type != "Node" ) )
     {
         LibraryItem* li= ItemLibrary::self()->libraryItem( type );
         if( li ) m_help = li->help();
-    }*/
+    }
+    else m_help = new QString( "..." );
+    
     m_value    = 0;
     m_unitMult = 1;
     m_Hflip  = 1;
@@ -59,7 +63,7 @@ Component::Component( QObject* parent , QString type, QString id )
     m_showId = false;
     m_moving = false;
     m_printable = false;
-    m_BackGround = "";
+    m_BackGround = "";    
     
     QFont f;
     f.setPixelSize(10);
@@ -107,7 +111,7 @@ void Component::mousePressEvent( QGraphicsSceneMouseEvent* event )
                 setSelected( true );
             }
             QPropertyEditorWidget::self()->setObject( this );
-            //PropertiesWidget::self()->setHelpText( m_help );
+            PropertiesWidget::self()->setHelpText( m_help );
             
             setCursor( Qt::ClosedHandCursor );
         }
@@ -119,7 +123,7 @@ void Component::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* event )
     if ( event->button() == Qt::LeftButton )
     {
         QPropertyEditorWidget::self()->setObject( this );
-        //PropertiesWidget::self()->setHelpText( m_help );
+        PropertiesWidget::self()->setHelpText( m_help );
         //QPropertyEditorWidget::self()->setVisible( true );
     }
 }
@@ -136,7 +140,7 @@ void Component::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
     if( !deltaH && !deltaV ) return;
 
     QList<QGraphicsItem*> itemlist = Circuit::self()->selectedItems();
-    if( !itemlist.isEmpty() )
+    if( itemlist.size() > 1 )
     {
         if( !m_moving )
         {
@@ -168,12 +172,19 @@ void Component::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
             con->endPin()->isMoved();
         }
     }
+    else this->move( delta );
 }
 
 void Component::move( QPointF delta )
 {
     setPos( pos() + delta );
-    //emit moved();
+    emit moved();
+}
+
+void Component::moveTo( QPointF pos )
+{
+    setPos( pos );
+    emit moved();
 }
 
 void Component::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
@@ -231,6 +242,7 @@ void Component::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu 
 
 void Component::slotCopy()
 {
+    if( !isSelected() ) Circuit::self()->clearSelection();
     setSelected( true );
     Circuit::self()->copy( m_eventpoint );
 }
@@ -247,6 +259,8 @@ void Component::remove()
     for( uint i=0; i<m_pin.size(); i++ )   // Remove connectors attached
     {
         Pin* pin = m_pin[i];
+        if( !pin ) continue;
+        
         if( pin && pin->isConnected())
         {
             Connector* con = pin->connector();
@@ -259,7 +273,7 @@ void Component::remove()
 void Component::slotProperties()
 {
     QPropertyEditorWidget::self()->setObject( this );
-    //PropertiesWidget::self()->setHelpText( m_help );
+    PropertiesWidget::self()->setHelpText( m_help );
     MainWindow::self()->m_sidepanel->setCurrentIndex( 2 ); // Open Properties tab
 }
 

@@ -47,6 +47,8 @@ Simulator::Simulator( QObject* parent )
     m_timerId    = 0;
     m_lastStep   = 0;
     m_lastRefTime = 0;
+    m_timerSc    = 1;
+    m_timerTick  = 50;
     m_stepsPrea  = 50;
     m_stepsNolin = 10;
     m_simuRate   = 1000000;
@@ -96,7 +98,7 @@ void Simulator::timerEvent( QTimerEvent* e )  //update at m_timerTick rate (50 m
     if( deltaRefTime >= 1e9 )          // We want steps per Sec = 1e9 ns
     {
         stepsPerSec = (m_step-m_lastStep)*1e9/deltaRefTime;
-        CircuitWidget::self()->setRate( (stepsPerSec*100)/m_simuRate );
+        CircuitWidget::self()->setRate( (stepsPerSec*100)/1e6 /*m_simuRate*/ );
         m_lastStep    = m_step;
         m_lastRefTime = refTime;
     }
@@ -112,13 +114,6 @@ void Simulator::runCircuit()
     {
         if( !m_isrunning ) return;
         
-        // Run Graphic Elements
-        if( ++m_updtCounter >= m_circuitRate )
-        {
-            m_updtCounter = 0;
-            
-            PlotterWidget::self()->step();
-        }
         runCircuitStep();
     }
 }
@@ -126,6 +121,13 @@ void Simulator::runCircuit()
 void Simulator::runCircuitStep()
 {
     m_step ++;
+    
+    // Run Plotter
+    if( ++m_updtCounter >= m_circuitRate )
+    {
+        m_updtCounter = 0;
+        PlotterWidget::self()->step();
+    }
 
     // Run Reactive Elements
     if( ++m_reacCounter >= m_stepsPrea )
@@ -172,8 +174,13 @@ void Simulator::runCircuitStep()
 
 void Simulator::runGraphicStep()
 {
+    //qDebug() <<"Simulator::runGraphicStep";
+    CircuitView::self()->setCircTime( m_step);
+    
     foreach( eElement* el, m_updateList ) el->updateStep();
     TerminalWidget::self()->step();
+    PlotterWidget::self()->updateStep();
+    
     if( Circuit::self()->animate() ) Circuit::self()->update();
 }
  
@@ -201,7 +208,7 @@ void Simulator::runContinuous()
     simuRateChanged( m_simuRate );
     startSim();
     m_debugging = false;
-    std::cout << "\n    Running \n"<<std::endl;
+    std::cout << "\n    Running... \n"<<std::endl;
     m_timerId = this->startTimer( m_timerTick );
 }
 
@@ -209,23 +216,28 @@ void Simulator::debug()
 {
     startSim();
     m_debugging = true;
-    std::cout << "\n    Debugging \n"<<std::endl;
+    std::cout << "\n    Debugging... \n"<<std::endl;
 }
 
 void Simulator::startSim()
 {
+    foreach( eNode* busNode, m_eNodeBusList ) busNode->initialize(); // Clear Buses
+    foreach( eElement* el, m_elementList )    // Initialize all Elements
+    {
+        //std::cout << "initializing  "<< el->getId()
+        //         <<  std::endl;
+        if( !m_paused ) el->resetState();
+        el->initialize();
+    }
+    std::cout <<"\nInitializing "<< m_eNodeBusList.size() << " Buses"<< std::endl;
+    foreach( eNode* busNode, m_eNodeBusList ) busNode->createBus(); // Create Buses
+    foreach( eElement* el, m_elementList ) el->initialize();   // Initialize all Elements
+    
     m_nonLinear.clear();
     m_changedFast.clear();
     m_reactiveList.clear();
     m_eChangedNodeList.clear();
     
-    foreach( eElement* el, m_elementList )    // Initialize all Elements
-    {
-        //std::cout << "initializing  "<< el->getId()
-        //          <<  std::endl;
-        if( !m_paused ) el->resetState();
-        el->initialize();
-    }
     // Initialize Matrix
     m_matrix.createMatrix( m_eNodeList, m_elementList );
 
@@ -239,8 +251,14 @@ void Simulator::startSim()
         CircuitWidget::self()->setRate( -1 );
         return;
     }
-    m_reacCounter  = 0;
-    m_noLinCounter = 0;
+    std::cout << "\nCircuit Matrix looks good" <<  std::endl;
+    if( !m_paused )
+    {
+        m_lastStep    = 0;
+        m_lastRefTime = 0;
+        m_reacCounter  = 0;
+        m_noLinCounter = 0;
+    }
     m_isrunning = true;
     m_paused = false;
     m_error = false;
@@ -259,6 +277,7 @@ void Simulator::stopSim()
     
     m_paused = false;
     m_isrunning = false;
+    m_step = 0;
     
     stopTimer();
 
@@ -324,8 +343,10 @@ int Simulator::simuRateChanged( int rate )
     if( rate > 1e6 ) rate = 1e6;
     if( rate < 1 )   rate = 1;
 
-    m_timerTick  = 50;
+    m_timerTick  = 50/m_timerSc;
     int fps = 1000/m_timerTick;
+    int mult = 20;
+    if( fps == 40 ) mult = 40;
 
     m_circuitRate = rate/fps;
 
@@ -341,7 +362,8 @@ int Simulator::simuRateChanged( int rate )
         pauseSim();
         resumeSim();
     }
-    PlotterWidget::self()->setPlotterTick( m_circuitRate*20 );
+    
+    PlotterWidget::self()->setPlotterTick( m_circuitRate*mult );
 
     m_simuRate = m_circuitRate*fps;
 
@@ -352,8 +374,8 @@ int Simulator::simuRateChanged( int rate )
               /*<< "\nReactive   Speed: " << m_simuRate/m_stepsPrea*/
               << "\nReactive SubRate: " << m_stepsPrea
               << "\nNoLinear Subrate: " << m_stepsNolin
+              << std::endl
               << std::endl;
-
 
     return m_simuRate;
 }
@@ -426,6 +448,16 @@ uint64_t Simulator::step()
     return m_step;
 }
 
+void Simulator::addToEnodeBusList( eNode* nod )
+{
+    if( !m_eNodeBusList.contains(nod) ) m_eNodeBusList.append( nod );
+}
+
+void Simulator::remFromEnodeBusList( eNode* nod )
+{
+    if( m_eNodeBusList.contains(nod) ) m_eNodeBusList.removeOne( nod );
+}
+
 void Simulator::addToEnodeList( eNode* nod )
 {
     if( !m_eNodeList.contains(nod) ) m_eNodeList.append( nod );
@@ -433,7 +465,7 @@ void Simulator::addToEnodeList( eNode* nod )
 
 void Simulator::remFromEnodeList( eNode* nod, bool del )
 {
-    if( m_eNodeList.contains(nod) )m_eNodeList.removeOne( nod );
+    if( m_eNodeList.contains(nod) ) m_eNodeList.removeOne( nod );
 
     if( del ){ delete nod; }
 }
@@ -514,3 +546,4 @@ void Simulator::addToMcuList( BaseProcessor* proc )
 void Simulator::remFromMcuList( BaseProcessor* proc ) { m_mcuList.removeOne( proc ); }
 
 #include "moc_simulator.cpp"
+

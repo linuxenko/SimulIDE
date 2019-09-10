@@ -28,7 +28,7 @@
 
 Meter::Meter( QObject* parent, QString type, QString id )
      : Component( parent, type, id )
-     ,  eResistor( id.toStdString() )
+     , eResistor( id.toStdString() )
      , m_display( this )
 {
     m_area = QRectF( -24, -24, 48, 32 );
@@ -39,12 +39,15 @@ Meter::Meter( QObject* parent, QString type, QString id )
     pinId.append(QString("-lPin"));
     QPoint pinPos = QPoint(-8, 16);
     m_pin[0] = new Pin( 270, pinPos, pinId, 0, this);
+    //m_pin[0]->setLabelText( "+" );
+    m_pin[0]->setColor( Qt::red );
     m_ePin[0] = m_pin[0];
 
     pinId = m_id;
     pinId.append(QString("-rPin"));
     pinPos = QPoint(8, 16);
     m_pin[1] = new Pin( 270, pinPos, pinId, 1, this);
+    //m_pin[1]->setLabelText( "|" );
     m_ePin[1] = m_pin[1];
 
     pinId = id;

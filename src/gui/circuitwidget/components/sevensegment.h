@@ -46,9 +46,9 @@ class MAINMODULE_EXPORT SevenSegment : public Component, public eElement
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem *libraryItem();
         
-        void setColor( LedBase::LedColor color );
-
+        
         LedBase::LedColor color();
+        void setColor( LedBase::LedColor color );
 
         int numDisplays();
         void setNumDisplays( int dispNumber );
@@ -68,11 +68,9 @@ class MAINMODULE_EXPORT SevenSegment : public Component, public eElement
         double resistance() { return m_resistance; }
         void   setResistance( double res );
 
-
-        void initialize();
-        //void stamp();
+        virtual void initialize();
         
-        void remove();
+        virtual void remove();
 
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
 
@@ -88,6 +86,8 @@ class MAINMODULE_EXPORT SevenSegment : public Component, public eElement
         double m_threshold;
         double m_maxCurrent;
         double m_resistance;
+        
+        LedBase::LedColor m_ledColor;
 
         std::vector<ePin*>  m_commonPin;
         std::vector<ePin*>  m_cathodePin;

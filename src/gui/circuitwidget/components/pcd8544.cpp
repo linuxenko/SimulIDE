@@ -75,8 +75,7 @@ Pcd8544::Pcd8544( QObject* parent, QString type, QString id )
     setLabelPos( -32,-66, 0);
     setShowId( true );
     
-    clearDDRAM();
-    clearLcd();
+   resetState();
 }
 
 Pcd8544::~Pcd8544()

@@ -26,7 +26,8 @@
 
 #include <math.h>
 
-eCapacitor::eCapacitor( std::string id ) : eResistor( id )
+eCapacitor::eCapacitor( std::string id ) 
+          : eResistor( id )
 {
     m_cap = 0.00001; // Farads
     m_resist = m_tStep/m_cap;
@@ -41,11 +42,14 @@ void eCapacitor::initialize()
 {
     if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToReactiveList(this);
     if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToReactiveList(this);
-    
+    eResistor::initialize();
+}
+
+void eCapacitor::resetState()
+{
     m_tStep = (double)Simulator::self()->reaClock()/1e6;
     
     eResistor::setRes( m_tStep/m_cap );
-    eResistor::initialize();
 }
 
 void eCapacitor::setVChanged()

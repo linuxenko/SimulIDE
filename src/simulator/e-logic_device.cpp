@@ -62,8 +62,6 @@ void eLogicDevice::initialize()
     // Register for callBack when eNode volt change on clock or OE pins
     if( m_clockPin )
     {
-        m_clock = false;
-        
         eNode* enode = m_clockPin->getEpin()->getEnode();
         if( enode ) enode->addToChangedFast(this);
     }
@@ -81,6 +79,8 @@ void eLogicDevice::initialize()
 
 void eLogicDevice::resetState()
 {
+    if( m_clockPin ) m_clock = false;
+    
     for( int i=0; i<m_numOutputs; i++ )
         eLogicDevice::setOut( i, false );
 }
@@ -481,3 +481,4 @@ ePin* eLogicDevice::getEpin( QString pinName )
     
     return eElement::getEpin( pinName );
 }
+

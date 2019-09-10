@@ -20,8 +20,8 @@
 #include "codeeditorwidget.h"
 #include "mainwindow.h"
 
-CodeEditorWidget::CodeEditorWidget( QWidget *parent ) :
-    QWidget( parent )
+CodeEditorWidget::CodeEditorWidget( QWidget *parent ) 
+                : QWidget( parent )
 {
     m_mainWindow = MainWindow::self();
 

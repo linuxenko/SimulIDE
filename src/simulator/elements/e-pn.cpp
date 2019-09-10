@@ -23,7 +23,8 @@
 #include "e-pn.h"
 #include "simulator.h"
 
-ePN::ePN( std::string id ) : eResistor(id )
+ePN::ePN( std::string id ) 
+   : eResistor(id )
 {
     m_threshold = 0.7;
 }
@@ -33,15 +34,28 @@ ePN::~ePN()
 
 void ePN::initialize()
 {
+    if( m_ePin[0]->isConnected() )
+    {
+        eNode* node = m_ePin[0]->getEnode();
+        node->addToNoLinList(this);
+        if( node ) node->setSwitched( true );
+    }
+    if( m_ePin[1]->isConnected() )
+    {
+        eNode* node = m_ePin[1]->getEnode();
+        node->addToNoLinList(this);
+        if( node ) node->setSwitched( true );
+    }
+    eResistor::initialize();
+}
+
+void ePN::resetState()
+{
     eResistor::setRes( 0.6 );
     m_accuracy = Simulator::self()->NLaccuracy();
     m_voltPN  = 0;
     m_deltaV  = 0;
     m_current = 0;
-
-    if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToNoLinList(this);
-    if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToNoLinList(this);
-    eResistor::initialize();
 }
 
 void ePN::setVChanged()
@@ -50,11 +64,19 @@ void ePN::setVChanged()
 
     double deltaV = m_threshold;
 
-    if( m_voltPN < m_threshold ) deltaV = m_voltPN;
+    if( m_voltPN < m_threshold ) 
+    {
+        eResistor::setAdmit( 0 );
+        m_ePin[0]->stampCurrent( 0 );
+        m_ePin[1]->stampCurrent( 0 );
+        m_deltaV = m_voltPN;
+        return;
+    }
+    if( m_admit != 1/m_resist ) eResistor::setAdmit( 1/m_resist );
 
     //qDebug() <<"ePN::setVChanged,  deltaR: "<< deltaR << "  deltaV" << deltaV << "m_voltPN" << m_voltPN ;
 
-    if( fabs(deltaV-m_deltaV) < m_accuracy ) return;
+    if( fabs(deltaV-m_deltaV) < m_accuracy/10 ) return;
 
     m_deltaV = deltaV;
 
@@ -83,4 +105,3 @@ void ePN::updateVI()
         }
     }
 }
-

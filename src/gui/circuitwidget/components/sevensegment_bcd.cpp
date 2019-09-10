@@ -31,8 +31,8 @@ LibraryItem* SevenSegmentBCD::libraryItem()
 {
     return new LibraryItem(
         tr( "7 Seg BCD" ),
-        tr( "Logic" ),
-        "seven_segment.png",
+        tr( "Logic/Other Logic" ),
+        "7segbcd.png",
         "7-Seg BCD",
         SevenSegmentBCD::construct );
 }
@@ -58,6 +58,8 @@ SevenSegmentBCD::SevenSegmentBCD( QObject* parent, QString type, QString id )
         eLogicDevice::createInput( m_inPin[i] );
         
     Simulator::self()->addToUpdateList( this );
+    
+    resetState();
 }
 SevenSegmentBCD::~SevenSegmentBCD(){}
 

@@ -44,6 +44,7 @@ class MAINMODULE_EXPORT I2CRam : public LogicComponent, public eI2C
         void setRSize( int size );
         
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         virtual void writeByte();
         virtual void readByte();

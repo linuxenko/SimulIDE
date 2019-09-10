@@ -45,7 +45,7 @@ BaseDebugger::BaseDebugger( QObject* parent, OutPanelText* outPane, QString file
     m_fileName = m_fileName.remove( m_fileName.lastIndexOf( m_fileExt ), m_fileExt.size() );
 
     m_processorType = 0;
-    m_driveCirc = false;
+    type = 0;
     
     connect( &m_compProcess, SIGNAL(readyRead()), SLOT(ProcRead()) );
 }
@@ -60,8 +60,6 @@ bool BaseDebugger::loadFirmware()
     if( m_loadStatus ) return false;
     
     m_loadStatus = true;
-    
-    mapFlashToSource();
 
     return true;
 }
@@ -84,7 +82,12 @@ void BaseDebugger::upload()
         McuComponent::self()->load( m_firmware );
         m_outPane->appendText( "\n"+tr("FirmWare Uploaded to ")+McuComponent::self()->device()+"\n" );
         m_outPane->writeText( "\n\n" );
+        
+        BaseProcessor::self()->setRegisters();
+        BaseProcessor::self()->getRamTable()->setDebugger( this );
+        mapFlashToSource();
     }
+    else m_outPane->writeText( "\n"+tr("Error: No Mcu in Simulator... ")+"\n" );
 }
 
 void BaseDebugger::stop()
@@ -98,10 +101,25 @@ void BaseDebugger::getProcName()
 
 int BaseDebugger::step()
 {
-    BaseProcessor::self()->stepOne();
-
     int pc = BaseProcessor::self()->pc();
-    int line = m_flashToSource[ pc ];
+    
+    int i = 0;
+    for( i=0; i<10; i++ ) // If runs 10 times and get to same PC return 0
+    {
+        BaseProcessor::self()->stepOne();
+
+        int pc2 = BaseProcessor::self()->pc();
+        //qDebug() <<"BaseDebugger::step "<<pc<<pc2;
+        if( pc != pc2 ) 
+        {
+            pc = pc2;
+            break;
+        }
+    }
+    //qDebug() <<"BaseDebugger::step PC"<<pc<<i;
+    int line = -1;
+    if( i == 10 ) line = 0;        // It ran 10 times and get to same PC 
+    else if( m_flashToSource.contains( pc )) line = m_flashToSource[ pc ];
 
     return line ;
 }
@@ -112,6 +130,20 @@ int BaseDebugger::getValidLine( int line )
 {
     while( !m_sourceToFlash.contains(line) && line<=m_lastLine ) line++;
     return line;
+}
+
+QString BaseDebugger::getVarType( QString var )
+{
+    var= var.toUpper();
+    return m_varList[ var ];
+}
+
+QStringList BaseDebugger::getVarList()
+{
+    /*QStringList varList = m_varList.keys();
+    varList.sort();
+    return varList;*/
+    return m_varNames;
 }
 
 void BaseDebugger::ProcRead()
@@ -158,19 +190,11 @@ void BaseDebugger::setCompilerPath( QString path )
     MainWindow::self()->settings()->setValue( m_compSetting, m_compilerPath );
 }
 
-bool BaseDebugger::driveCirc()
-{
-    return m_driveCirc;
-}
-void BaseDebugger::setDriveCirc( bool drive )
-{
-    m_driveCirc = drive;
-}
-
 void BaseDebugger::toolChainNotFound()
 {
     m_outPane->appendText( tr(": ToolChain not found")+"\n" );
     m_outPane->writeText( "\n"+tr("Right-Click on Document Tab to set Path")+"\n\n" );
+    QApplication::restoreOverrideCursor();
 }
 #include "moc_basedebugger.cpp"
 

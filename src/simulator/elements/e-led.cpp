@@ -23,30 +23,22 @@
 eLed::eLed( std::string id ) 
     : eDiode( id )
 {
-    m_threshold = 2.4;
-
-    m_prevStep   = Simulator::self()->step();
+    m_threshold  = 2.4;
     m_maxCurrent = 0.03;
-    m_lastCurrent = 0.0;
-
-    m_disp_brightness  = 0;
-    m_avg_brightness   = 0;
-    m_lastUpdatePeriod = 0;
+    resetState();
 }
 eLed::~eLed() {}
 
-void eLed::initialize()
+void eLed::resetState()
 {
-    //qDebug() << "eLed::initialize";
     m_prevStep   = Simulator::self()->step();
     m_lastCurrent = 0.0;
-    m_bright = 0;
-
+    m_bright = 25;
     m_disp_brightness  = 0;
     m_avg_brightness   = 0;
     m_lastUpdatePeriod = 0;
 
-    eDiode::initialize();
+    eDiode::resetState();
 }
 
 void eLed::setVChanged()
@@ -67,7 +59,7 @@ void eLed::updateVI()
     if( m_lastCurrent > 0) m_avg_brightness += m_lastCurrent * period / m_maxCurrent;
     
     m_lastCurrent = m_current;
-    
+
     //qDebug()<<"current"<< m_current<<m_lastCurrent<<period<< m_lastUpdatePeriod <<m_avg_brightness;
     //label->setText( QString("%1 A"). arg(double(int(m_current*1000))/1000) );
 }
@@ -82,7 +74,7 @@ void eLed::updateBright()
         return;
     }
     updateVI();
-    
+
     if( m_lastUpdatePeriod > Simulator::self()->stepsPerSec/50 )
     {
         m_disp_brightness = m_avg_brightness/m_lastUpdatePeriod;

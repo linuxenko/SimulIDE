@@ -70,6 +70,10 @@ class MAINMODULE_EXPORT eNode
         
         void setSwitched( bool switched ); // This eNode has switches attached
         bool isSwitched();
+        
+        void setIsBus( bool bus );
+        void createBus();
+        void addBusPinList( QList<ePin*> list, int line );
 
         QList<ePin*> getEpins();
         QList<ePin*> getSubEpins();
@@ -78,6 +82,10 @@ class MAINMODULE_EXPORT eNode
     private:
         QList<ePin*>     m_ePinList;
         QList<ePin*>     m_ePinSubList;  // Used by Connector to find connected dpins
+        
+        QList<QList<ePin*>> m_eBusPinList;
+        QList<eNode*>       m_eNodeList;
+        
         QList<eElement*> m_changedFast;
         QList<eElement*> m_reactiveList;
         QList<eElement*> m_nonLinear;
@@ -85,6 +93,7 @@ class MAINMODULE_EXPORT eNode
         QHash<ePin*, double> m_admitList;
         QHash<ePin*, double> m_currList;
         QHash<ePin*, int>    m_nodeList;
+        
         QHash<int, double>   m_admit;
         QHash<int, double>   m_admitPrev;
         
@@ -103,6 +112,7 @@ class MAINMODULE_EXPORT eNode
         bool m_changed;
         bool m_single;
         bool m_switched;
+        bool m_isBus;
 };
 #endif
 

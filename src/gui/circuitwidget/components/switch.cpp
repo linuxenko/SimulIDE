@@ -76,13 +76,11 @@ void Switch::initialize()
         int epinN = i*m_numthrows*2;
         m_ePin[ epinN ]->setEnode( node );
 
-        if( m_numthrows > 1 )
-            m_ePin[ epinN+2 ]->setEnode( node );
+        if( m_numthrows > 1 ) m_ePin[ epinN+2 ]->setEnode( node );
     }
     for( uint i=0; i<m_ePin.size(); i++ )
     {
         eNode* node = m_ePin[i]->getEnode();
-        
         if( node ) node->setSwitched( true );
     }
     //m_closed = m_nClose;
@@ -232,6 +230,13 @@ void Switch::setDt( bool dt )
 
     if( throws != m_numthrows )
         SetupSwitches( m_numPoles, throws );
+}
+
+void Switch::remove()
+{
+    foreach( eResistor* res, m_switches ) delete res;
+
+    SwitchBase::remove();
 }
 
 void Switch::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )

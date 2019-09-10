@@ -41,8 +41,8 @@ LibraryItem* AudioOut::libraryItem()
 }
 
 AudioOut::AudioOut( QObject* parent, QString type, QString id )
-        : Component( parent, type, id ),
-          eResistor( id.toStdString() )
+        : Component( parent, type, id )
+        , eResistor( id.toStdString() )
 {
     Q_UNUSED( AudioOut_properties );
     
@@ -107,9 +107,11 @@ AudioOut::AudioOut( QObject* parent, QString type, QString id )
     connect( m_audioOutput, SIGNAL( notify() ), 
              this,          SLOT(   OnAudioNotify() ));
 
+    resetState();
 }
 
-AudioOut::~AudioOut(){
+AudioOut::~AudioOut()
+{
     //qDebug() << "AudioOut::~AudioOut deleting" << QString::fromStdString( m_elmId );
 }
 
@@ -121,7 +123,11 @@ void AudioOut::initialize()
         Simulator::self()->addToSimuClockList( this );
     
     eResistor::initialize();
-    
+}
+
+void AudioOut::resetState()
+{
+    if( m_deviceinfo.isNull() ) return;
     m_counter = 0;
     m_dataCount = 0;
     

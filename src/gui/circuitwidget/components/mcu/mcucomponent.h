@@ -31,7 +31,7 @@ class MAINMODULE_EXPORT McuComponent : public Chip
 {
     Q_OBJECT
     Q_PROPERTY( QString  Program     READ program WRITE setProgram DESIGNABLE true  USER true )
-    Q_PROPERTY( int      Mhz         READ freq    WRITE setFreq    DESIGNABLE true  USER true )
+    Q_PROPERTY( double   Mhz         READ freq    WRITE setFreq    DESIGNABLE true  USER true )
     Q_PROPERTY( bool     Ser_Port    READ serPort WRITE setSerPort )
     Q_PROPERTY( bool     Ser_Monitor READ serMon  WRITE setSerMon )
 
@@ -47,8 +47,8 @@ class MAINMODULE_EXPORT McuComponent : public Chip
         
         QString device() { return m_device; }
 
-        int  freq();
-        virtual void setFreq( int freq );
+        double freq();
+        virtual void setFreq( double freq );
         virtual void initChip();
         
         bool serPort();
@@ -86,7 +86,7 @@ class MAINMODULE_EXPORT McuComponent : public Chip
 
         BaseProcessor* m_processor;
 
-        int m_freq;             // Clock Frequency Mhz
+        double m_freq;           // Clock Frequency Mhz
         
         bool m_attached;
         bool m_serPort;

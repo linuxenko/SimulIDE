@@ -64,7 +64,7 @@ class MAINMODULE_EXPORT LedMatrix : public Component, public eElement
         double res();
         void  setRes( double resist );
         
-        void initialize();
+        virtual void initialize();
         
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
         
@@ -81,6 +81,12 @@ class MAINMODULE_EXPORT LedMatrix : public Component, public eElement
         std::vector<Pin*>    m_colPin;
         
         bool m_verticalPins;
+        
+        LedBase::LedColor m_ledColor;
+        
+        double m_resist;
+        double m_maxCurr;
+        double m_threshold;
         
         int m_rows;
         int m_cols;

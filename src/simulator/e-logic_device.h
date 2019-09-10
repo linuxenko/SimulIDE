@@ -137,4 +137,3 @@ class MAINMODULE_EXPORT eLogicDevice : public eElement
 
 #endif
 
-

@@ -46,6 +46,18 @@ int PicAsmDebugger::compile()
     m_outPane->writeText( "-------------------------------------------------------\n" );
     QString command = m_compilerPath+"gpasm";
     
+    QProcess checkComp( this );
+    checkComp.start( command  );
+    checkComp.waitForFinished(-1);
+    
+    QString p_stdo = checkComp.readAllStandardOutput();
+    if( !p_stdo.toUpper().contains("OPTIONS") )
+    {
+        m_outPane->appendText( "\ngpasm" );
+        toolChainNotFound();
+        return -1;
+    }
+    
     #ifndef Q_OS_UNIX
     command  = addQuotes( command );
     file     = addQuotes( file );

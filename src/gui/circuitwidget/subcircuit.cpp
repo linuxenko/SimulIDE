@@ -32,7 +32,9 @@
 #include "e-bcdtodec.h"
 #include "e-bincounter.h"
 #include "e-bjt.h"
+#include "e-bus.h"
 #include "e-capacitor.h"
+#include "e-clock.h"
 #include "e-dectobcd.h"
 #include "e-demux.h"
 #include "e-diode.h"
@@ -43,14 +45,15 @@
 #include "e-gate_or.h"
 #include "e-gate_xor.h"
 #include "e-gate_xor.h"
-#include "e-inbus.h"
 #include "e-latch_d.h"
+#include "e-lm555.h"
 #include "e-logic_device.h"
-#include "e-mux.h"
 #include "e-mosfet.h"
+#include "e-mux.h"
+#include "e-mux_analog.h"
 #include "e-op_amp.h"
-#include "e-outbus.h"
 #include "e-resistor.h"
+#include "e-resistordip.h"
 #include "e-shiftreg.h"
 #include "e-source.h"
 #include "e-volt_reg.h"
@@ -83,31 +86,30 @@ SubCircuit::SubCircuit( QObject* parent, QString type, QString id )
 {
     m_numItems = 0;
 
-    initChip();
-}
-SubCircuit::~SubCircuit()
-{
-}
-
-void SubCircuit::initChip()
-{
     QString compName = m_id.split("-").first(); // for example: "atmega328-1" to: "atmega328"
+    QString dataFile = ComponentSelector::self()->getXmlFile( compName );
+    
+    if( dataFile == "" )
+    {
+          MessageBoxNB( "SubCircuit::initChip", "                               \n"+
+                    tr( "There are no data files for " )+compName+"    ");
+          m_error = 23;
+          return;
+    }
 
-    m_dataFile = ComponentSelector::self()->getXmlFile( compName );
-
-    QFile file( m_dataFile );
+    QFile file( dataFile );
     if( !file.open(QFile::ReadOnly | QFile::Text) )
     {
-          MessageBoxNB( "SubCircuit::initChip",
-                    tr("Cannot read file %1:\n%2.").arg(m_dataFile).arg(file.errorString()));
+          MessageBoxNB( "SubCircuit::initChip", "                               \n"+
+                    compName+" "+ tr("Cannot read file %1:\n%2.").arg(dataFile).arg(file.errorString()));
           m_error = 21;
           return;
     }
     QDomDocument domDoc;
     if( !domDoc.setContent(&file) )
     {
-         MessageBoxNB( "SubCircuit::initChip",
-                   tr("Cannot set file %1\nto DomDocument") .arg(m_dataFile));
+         MessageBoxNB( "SubCircuit::initChip", "                               \n"+
+                   tr( "Cannot set file %1\nto DomDocument") .arg(dataFile));
          file.close();
          m_error = 22;
          return;
@@ -125,42 +127,44 @@ void SubCircuit::initChip()
         while( !node.isNull() )         // Find the "package", for example 628A is package: 627A, Same pins
         {
             QDomElement element = node.toElement();
-            if( element.attribute("name")==compName )
+            
+            if( element.attribute("name") == compName )
             {
-                QDir dataDir(  m_dataFile );
+                QDir dataDir(  dataFile );
                 dataDir.cdUp();             // Indeed it doesn't cd, just take out file name
                 
-                QString package =element.attribute( "package" );
-                if( package == "" )
-                {
-                    m_error = 201;
-                    return;
-                }
-                m_dataFile = dataDir.filePath( package );
-
-                Chip::initChip();
-                if( m_error != 0 ) return;
-
-                m_dataFile = dataDir.filePath( element.attribute( "subcircuit" ) );
+                m_pkgeFile = dataDir.filePath( element.attribute( "package" ) );
+                if( !m_pkgeFile.endsWith( ".package" ) ) m_pkgeFile += ".package" ;
+                
+                m_subcFile = dataDir.filePath( element.attribute( "subcircuit" ) );
+                if( !m_subcFile.endsWith( ".subcircuit" ) ) m_subcFile += ".subcircuit" ;
+                //qDebug() << "SubCircuit::SubCircuit"<<m_pkgeFile <<m_subcFile ;
                 break;
             }
             node = node.nextSibling();
         }
         rNode = rNode.nextSibling();
     }
+    initChip();
+}
+SubCircuit::~SubCircuit()
+{
+}
+
+void SubCircuit::initChip()
+{
+    Chip::initChip();
     initSubcircuit();
-    if( m_error != 0 ) return;
 }
 
 void SubCircuit::initSubcircuit()
 {
-    //QString dfPath = SIMUAPI_AppPath::self()->availableDataFilePath(m_dataFile);
-    //qDebug() << "SubCircuit::initSubcircuit datafile: " << dfPath;
-    QFile file( m_dataFile );
+    //qDebug() << "SubCircuit::initSubcircuit datafile: " << m_subcFile;
+    QFile file( m_subcFile );
     if( !file.open(QFile::ReadOnly | QFile::Text) )
     {
           MessageBoxNB( "SubCircuit::initSubcircuit",
-                    tr("Cannot read file %1:\n%2.").arg(m_dataFile).arg(file.errorString()));
+                    tr("Cannot read file %1:\n%2.").arg(m_subcFile).arg(file.errorString()));
           m_error = 23;
           return;
     }
@@ -168,7 +172,7 @@ void SubCircuit::initSubcircuit()
     if( !domDoc.setContent(&file) )
     {
          MessageBoxNB( "SubCircuit::initSubcircuit",
-                   tr("Cannot set file %1\nto DomDocument") .arg(m_dataFile));
+                   tr("Cannot set file %1\nto DomDocument") .arg(m_subcFile));
          file.close();
          m_error = 24;
          return;
@@ -181,7 +185,7 @@ void SubCircuit::initSubcircuit()
     if( root.tagName()!="subcircuit" )
     {
         MessageBoxNB( "SubCircuit::initSubcircuit",
-                  tr("Error reading Subcircuit file: %1\n") .arg(m_dataFile));
+                  tr("Error reading Subcircuit file: %1\n") .arg(m_subcFile));
         m_error = 25;
         return;
     }
@@ -208,12 +212,29 @@ void SubCircuit::initSubcircuit()
             QString id = m_id+"-"+type+"-"+QString::number(m_numItems);
             m_numItems++;
 
-            //qDebug() << "\nSubCircuit::initSubcircuit" << id;
+            //qDebug() << "\nSubCircuit::initSubcircuit" << id << type;
 
             eElement* ecomponent = 0l;
 
-            if     ( type == "eResistor" )  ecomponent = new eResistor( id.toStdString() );
-            else if( type == "eCapacitor" ) ecomponent = new eCapacitor( id.toStdString() );
+            if( type == "eResistor" )  
+            {
+                eResistor* eresistor = new eResistor( id.toStdString() );
+                if( element.hasAttribute("resistance") ) eresistor->setRes( element.attribute( "resistance" ).toDouble() );
+                ecomponent = eresistor;
+            }
+            else if( type == "eResistorDip" )  
+            {
+                int size = 8;
+                eResistorDip* eresistordip = new eResistorDip( id.toStdString() );
+                if( element.hasAttribute("size") ) size = element.attribute( "size" ).toInt();
+                eresistordip->setSize( size );
+                if( element.hasAttribute("resistance") ) eresistordip->setRes( element.attribute( "resistance" ).toDouble() );
+                ecomponent = eresistordip;
+            }
+            else if( type == "eCapacitor" ) 
+            {
+                ecomponent = new eCapacitor( id.toStdString() );
+            }
             else if( type == "eDiode" )     
             {
                 eDiode* ediode = new eDiode( id.toStdString() );
@@ -363,33 +384,29 @@ void SubCircuit::initSubcircuit()
                 edectobcd->createPins();
                 ecomponent = edectobcd;
             }
-            else if( type == "eInBus" )
+            else if( type == "eClock" )
             {
-                int numbits = 8;
-                if( element.hasAttribute("numBits") ) numbits = element.attribute( "numBits" ).toInt();
-                double addr = pow( 2, numbits )-1;
-                double vref = addr;
-                if( element.hasAttribute("vref") ) vref = element.attribute( "vref" ).toDouble();
-                eInBus* einbus = new eInBus( id.toStdString() );
-                einbus->setMaxAddr( addr );
-                einbus->setMaxVolt( vref );
-                einbus->setNumOuts( numbits );
-                einbus->setNumInps( 1 );
-                ecomponent = einbus;
+                double freq = 1000;
+                double volt = 5;
+                if( element.hasAttribute("freq") ) freq = element.attribute( "freq" ).toDouble();
+                if( element.hasAttribute("voltage") ) volt = element.attribute( "voltage" ).toDouble();
+                eClock* eclock = new eClock( id.toStdString() );
+                eclock->setFreq( freq );
+                eclock->setVolt( volt );
+                ecomponent = eclock;
             }
-            else if( type == "eOutBus" )
+            else if(( type == "eBus" )
+                  ||( type == "eOutBus" )
+                  ||( type == "eInBus" ) )
             {
                 int numbits = 8;
-                if( element.hasAttribute("numBits") ) numbits = element.attribute( "numBits" ).toInt();
-                double addr = pow( 2, numbits )-1;
-                double vref = addr;
-                if( element.hasAttribute("vref") ) vref = element.attribute( "vref" ).toDouble();
-                eOutBus* eoutbus = new eOutBus( id.toStdString() );
-                eoutbus->setMaxAddr( addr );
-                eoutbus->setMaxVolt( vref );
-                eoutbus->setNumInps( numbits );
-                eoutbus->setNumOuts( 1 );
-                ecomponent = eoutbus;
+                //int startBit = 0;
+                if( element.hasAttribute("numBits") )  numbits = element.attribute( "numBits" ).toInt();
+                //if( element.hasAttribute("startBit") ) startBit = element.attribute( "startBit" ).toInt();
+                eBus* ebus = new eBus( id.toStdString() );
+                ebus->setNumLines( numbits );
+                //ebus->setStartBit( startBit );
+                ecomponent = ebus;
             }
             else if( type == "eRail" )  
             {
@@ -433,6 +450,10 @@ void SubCircuit::initSubcircuit()
                 {
                     if( element.attribute( "pNP" ) == "true" ) { ebjt->setPnp( true ); }
                 }
+                if( element.hasAttribute("bCdiode") )
+                {
+                    if( element.attribute( "bCdiode" ) == "true" ) { ebjt->setBCd( true ); }
+                }
                 ecomponent = ebjt;
             }
             else if( type == "eVoltReg" )
@@ -458,6 +479,17 @@ void SubCircuit::initSubcircuit()
                 eopamp->setPowerPins( powerPins );
                 ecomponent = eopamp;
             }
+            else if( type == "eMuxAnalog" )
+            {
+                eMuxAnalog* muxAn = new eMuxAnalog( id.toStdString() );
+                double imp = 1;
+                if( element.hasAttribute("impedance") ) imp = element.attribute( "impedance" ).toDouble();
+                muxAn->setResist( imp );
+                int bits = 3;
+                if( element.hasAttribute("addressBits") ) bits = element.attribute( "addressBits" ).toInt();
+                muxAn->setBits( bits );
+                ecomponent = muxAn;
+            }
             else if( type == "LedSmd" )
             {
                 int width = 8;
@@ -465,6 +497,10 @@ void SubCircuit::initSubcircuit()
                 if( element.hasAttribute("width") )  width  = element.attribute( "width" ).toDouble();
                 if( element.hasAttribute("height") ) height = element.attribute( "height" ).toDouble();
                 ecomponent = new LedSmd( this, "LEDSMD", id, QRectF( 0, 0, width, height )  );
+            }
+            else if( type == "eLm555" )
+            {
+                ecomponent = new eLm555( id.toStdString() );
             }
             
             if( ecomponent )
@@ -482,11 +518,6 @@ void SubCircuit::initSubcircuit()
                 {
                     eCapacitor* ecapacitor = static_cast<eCapacitor*>(ecomponent);
                     ecapacitor->setCap( element.attribute( "capacitance" ).toDouble() );
-                }
-                if( element.hasAttribute("resistance") )
-                {
-                    eResistor* eresistor = static_cast<eResistor*>(ecomponent);
-                    eresistor->setRes( element.attribute( "resistance" ).toDouble() );
                 }
                 if( element.hasAttribute("outHighV") )
                 {
@@ -565,7 +596,6 @@ void SubCircuit::initSubcircuit()
                     }
                 }
 
-                // Get the connections list
                 QStringList connectionList = element.attribute( "connections" ).split(" ");
                 //qDebug() << "connectionList" << connectionList;
 
@@ -586,7 +616,7 @@ void SubCircuit::initSubcircuit()
                     }
                     else epin = ecomponent->getEpin( pin );
 
-                    if( epin ) connectEpin( epin, pins.last() );   // Connect points (ePin to Pin or eNode)
+                    if( epin ) connectEpin( epin, pins.last().replace( "\n", "" ).replace( "\r", "" ) );   // Connect points (ePin to Pin or eNode)
                     else 
                     {
                         qDebug() << "SubCircuit::initSubcircuit Pin Doesn't Exist:" << pin;
@@ -594,6 +624,7 @@ void SubCircuit::initSubcircuit()
                         return;
                     }
                 }
+                ecomponent->resetState();
             }
             else 
             {
@@ -607,7 +638,7 @@ void SubCircuit::initSubcircuit()
 }
 
 void SubCircuit::connectEpin( ePin* epin, QString connetTo )
-{
+{//qDebug() << "\nSubCircuit::connectEpin"<<QString::fromStdString( epin->getId() ) << connetTo << m_numpins;
     if( connetTo.startsWith("eNode") )
     {
         int eNodeNum = connetTo.remove("eNode").toInt();
@@ -619,6 +650,26 @@ void SubCircuit::connectEpin( ePin* epin, QString connetTo )
         int pinNum = connetTo.remove("packagePin").toInt()-1;
         //qDebug() << "SubCircuit::connectEpin to Pin " << connetTo << pinNum;
         m_pinConections[pinNum].append( epin );
+    }
+    else if( connetTo.startsWith("Package_") )          // Find pin by id
+    {
+        connetTo = connetTo.replace( "Package_", "" );
+        bool found = false;
+        for( int i=0; i<m_numpins; i++ )
+        {
+            Pin* pin = m_pin[i];
+            QString pinId = pin->pinId().split("-").last().replace( " ", "" );
+            //qDebug() << "SubCircuit::connectEpin search"<< pinId << connetTo << i;
+            
+            if( pinId == connetTo )
+            {
+                found = true;
+                m_pinConections[i].append( epin );
+                //qDebug() << "SubCircuit::connectEpin Found "<< pinId << connetTo << i;
+                break;
+            }
+        }
+        if( !found ) qDebug() << "SubCircuit::connectEpin ERROR Pin Not Found"<< connetTo;
     }
 }
 
@@ -644,7 +695,7 @@ void SubCircuit::initialize()
                 }
             }
         }
-        //qDebug() << "\nSubCircuit::initialize() Pin"<< i;//<< QString::fromStdString( m_ePin[i]->getId() );
+        //qDebug() << "SubCircuit::initialize() Pin"<< QString::fromStdString( m_ePin[i]->getId() )<< enod->itemId();
         foreach( ePin* epin, m_pinConections[i] ) 
         {
             //qDebug() << "SubCircuit::initialize()"<< QString::fromStdString( epin->getId() )<<enod;
@@ -653,23 +704,49 @@ void SubCircuit::initialize()
     }
 }
 
-void SubCircuit::remove()
+void SubCircuit::setLogicSymbol( bool ls )
+{
+    if(m_isLS == ls ) return;
+    
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim ) Simulator::self()->pauseSim();
+    
+    Circuit::self()->saveState();
+    
+    clear();
+    
+    Chip::setLogicSymbol( ls );
+    
+    initSubcircuit();
+    
+    if( pauseSim ) Simulator::self()->runContinuous();
+}
+
+void SubCircuit::clear()
 {
     for( int i=0; i<m_numpins; i++ )
     {
         foreach( ePin* epin, m_pinConections[i] ) epin->setEnode(0l);
     }
+    m_pinConections.clear();
     foreach( eNode* node, m_internal_eNode )
     {
         Simulator::self()->remFromEnodeList( node, true );
         //delete node;
     }
+    m_internal_eNode.clear();
     foreach( eElement* el, m_elementList )
     {
-        //qDebug() << "deleting" << QString::fromStdString( el->getId() );
+        qDebug() << "deleting" << QString::fromStdString( el->getId() );
         delete el;
     }
+    m_elementList.clear();
+    m_numItems = 0;
+}
 
+void SubCircuit::remove()
+{
+    clear();
     Chip::remove();
 }
 
@@ -685,3 +762,4 @@ void SubCircuit::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 }
 
 #include "moc_subcircuit.cpp"
+

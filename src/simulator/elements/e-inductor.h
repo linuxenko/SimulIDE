@@ -30,7 +30,8 @@ class MAINMODULE_EXPORT eInductor : public eResistor
         eInductor( std::string id );
         ~eInductor();
 
-        void initialize();
+        virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
 
         double ind();

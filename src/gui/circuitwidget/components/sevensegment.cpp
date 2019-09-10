@@ -53,6 +53,7 @@ SevenSegment::SevenSegment( QObject* parent, QString type, QString id )
     m_idLabel->setPos( 30, -70);
 
     m_color = QColor(0,0,0);
+    m_ledColor = LedBase::yellow;
     m_commonCathode = true;
     m_verticalPins  = false;
     m_numDisplays = 0;
@@ -94,13 +95,15 @@ int SevenSegment::numDisplays()
 
 void SevenSegment::setColor( LedBase::LedColor color ) 
 { 
+    m_ledColor = color;
+    
     foreach( LedSmd* segment, m_segment )
         segment->setColor( color ); 
 }
 
 LedBase::LedColor SevenSegment::color() 
 { 
-    return m_segment[0]->color(); 
+    return m_ledColor; 
 }
 
 void SevenSegment::setNumDisplays( int displays )
@@ -125,10 +128,12 @@ void SevenSegment::setNumDisplays( int displays )
         resizeData( displays );
     }
     m_numDisplays = displays;
-    Circuit::self()->update();
-    update();
+    setResistance( m_resistance );
+    setThreshold( m_threshold );
+    setMaxCurrent( m_maxCurrent );
 
     if( pauseSim ) Simulator::self()->runContinuous();
+    Circuit::self()->update();
 }
 
 void SevenSegment::resizeData( int displays )
@@ -191,12 +196,12 @@ void SevenSegment::setVerticalPins( bool v )
     }
     
     for( int i=0; i<8; i++ ) m_pin[i]->isMoved();
-    update();
+    Circuit::self()->update();
 }
         
 void SevenSegment::setResistance( double res )
 {
-    if( res == 0 ) res = 1;
+    if( res < 1e-6 ) res = 1;
     m_resistance = res;
     
     for( uint i=0; i<m_segment.size(); i++ )
@@ -212,7 +217,7 @@ double SevenSegment::threshold()
 
 void SevenSegment::setThreshold( double threshold )
 {
-    if( threshold == 0 ) threshold = 2.4;
+    if( threshold < 1e-6 ) threshold = 2.4;
     m_threshold = threshold;
     
     for( uint i=0; i<m_segment.size(); i++ )
@@ -228,7 +233,7 @@ double SevenSegment::maxCurrent()
 
 void SevenSegment::setMaxCurrent( double current )
 {
-    if( current == 0 ) current = 0.02;
+    if( current < 1e-6 ) current = 0.02;
     m_maxCurrent = current;
     
     for( uint i=0; i<m_segment.size(); i++ )

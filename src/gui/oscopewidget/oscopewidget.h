@@ -44,7 +44,7 @@ class MAINMODULE_EXPORT OscopeWidget : public QWidget, public eElement
         void setFilter( double filter ) { m_filter = filter; }
         
         virtual void simuClockStep();
-        virtual void initialize();
+        virtual void resetState();
         
     public slots:
         void HscaleChanged( int Hscale );
@@ -67,16 +67,12 @@ class MAINMODULE_EXPORT OscopeWidget : public QWidget, public eElement
         QDial* m_VposDial;
         RenderOscope* m_display;
         
-        //Probe* m_probe;
         Oscope* m_oscope;
-        
-        bool newReading;
         
         int m_data[140];
         int m_counter;
-        int m_newReadCount;
-        int m_stepCount;
-        int m_updtCount;
+        int m_step;
+        int m_totalP;
         int m_ticksPs;
         int m_tick;
         int m_lastMax;
@@ -86,6 +82,7 @@ class MAINMODULE_EXPORT OscopeWidget : public QWidget, public eElement
         
         int m_Hscale;
         int m_prevHscale;
+        int Hpos;
         int m_Hpos;
         int m_prevHpos;
         
@@ -95,16 +92,12 @@ class MAINMODULE_EXPORT OscopeWidget : public QWidget, public eElement
         double m_prevVpos;
         double m_ampli;
         double m_filter;
-        
-        
-        int Hpos;
         double m_lastData;
         double m_max;
-        double m_mid;
         double m_min;
         
         bool m_reading;
-        bool m_haveFreq;
+        bool m_newRead;
         bool m_rising;
         bool m_falling;
         bool m_auto;

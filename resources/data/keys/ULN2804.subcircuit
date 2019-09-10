@@ -13,8 +13,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin1
-        output0-packagePin18" >
+        input0-Package_IN1
+        output0-Package_OUT1" >
     </item>
 
     <item itemtype="eBuffer"
@@ -28,8 +28,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin2
-        output0-packagePin17" >
+        input0-Package_IN2
+        output0-Package_OUT2" >
     </item>
 
     <item itemtype="eBuffer"
@@ -43,8 +43,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin3
-        output0-packagePin16" >
+        input0-Package_IN3
+        output0-Package_OUT3" >
     </item>
 
     <item itemtype="eBuffer"
@@ -58,8 +58,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin4
-        output0-packagePin15" >
+        input0-Package_IN4
+        output0-Package_OUT4" >
     </item>
 
     <item itemtype="eBuffer"
@@ -73,8 +73,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin5
-        output0-packagePin14" >
+        input0-Package_IN5
+        output0-Package_OUT5" >
     </item>
 
     <item itemtype="eBuffer"
@@ -88,8 +88,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin6
-        output0-packagePin13" >
+        input0-Package_IN6
+        output0-Package_OUT6" >
     </item>
 
     <item itemtype="eBuffer"
@@ -103,8 +103,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin7
-        output0-packagePin12" >
+        input0-Package_IN7
+        output0-Package_OUT7" >
     </item>
 
     <item itemtype="eBuffer"
@@ -118,8 +118,8 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin8
-        output0-packagePin11" >
+        input0-Package_IN8
+        output0-Package_OUT8" >
     </item>
 
 </subcircuit>

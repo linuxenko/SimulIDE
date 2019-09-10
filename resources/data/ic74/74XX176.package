@@ -18,7 +18,7 @@
     <pin side="right" pos="5" type="" id="B"     label="B"/><!-- packagePin10 -->
     <pin side="right" pos="4" type="" id="D"     label="D" /><!-- packagePin11 -->
     <pin side="right" pos="3" type="" id="QD"    label="QD" /><!-- packagePin12 -->
-    <pin side="right" pos="2" type="" id="!CLR"   label="!CLR" /><!-- packagePin13 -->
+    <pin side="right" pos="2" type="" id="!CLR"  label="!CLR" /><!-- packagePin13 -->
     
     <pin side="right" pos="1" type="unused" id="Vcc" label="Vcc"/><!-- packagePin14 -->
     

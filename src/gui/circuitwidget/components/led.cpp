@@ -60,16 +60,17 @@ Led::~Led(){}
 void Led::drawBackground( QPainter *p )
 {
     p->drawEllipse( -8, -8, 16, 16 );
+    p->drawLine( 11,-5, 11, 5 );
 }
 
 void Led::drawForeground( QPainter *p )
 {
     static const QPointF points[3] = {
-        QPointF( 5, 0 ), QPointF(-5,-5 ),QPointF(-5, 5 ) };
+        QPointF( 8, 0 ), QPointF(-3,-6 ),QPointF(-3, 6 ) };
 
     p->drawPolygon( points, 3 );
-    p->drawLine( 5,-5, 5, 5 );
-    p->drawLine(-8, 0, 8, 0 );
+    //p->drawLine( 10,-4, 10, 4 );
+    p->drawLine(-8, 0, 11, 0 );
 }
 
 #include "moc_led.cpp"

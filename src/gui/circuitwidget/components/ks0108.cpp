@@ -90,9 +90,7 @@ Ks0108::Ks0108( QObject* parent, QString type, QString id )
     setLabelPos( -32,-80, 0);
     setShowId( true );
     
-    clearDDRAM();
-    clearLcd();
-    reset();
+    resetState();
 }
 
 Ks0108::~Ks0108(){}

@@ -88,7 +88,7 @@ void BaseProcessor::runSimuStep()
     }
 }
 
-void BaseProcessor::setSteps( int steps ){ m_mcuStepsPT = steps; }
+void BaseProcessor::setSteps( double steps ){ m_mcuStepsPT = steps; }
 
 QString BaseProcessor::getFileName() { return m_symbolFile; }
 
@@ -110,12 +110,15 @@ void BaseProcessor::hardReset( bool rst )
 }
 
 int BaseProcessor::getRegAddress( QString name ) 
-{ 
-    return m_regsTable.value( name ); 
+{
+    name = name.toUpper();
+    if( m_regsTable.contains( name ) ) return m_regsTable.value( name ); 
+    return -1;
 }
 
 void BaseProcessor::updateRamValue( QString name )
 {
+    name = name.toUpper();
     QString type = "";
     if( m_typeTable.contains( name )) type = m_typeTable[ name ];
     else return;
@@ -123,6 +126,8 @@ void BaseProcessor::updateRamValue( QString name )
     QByteArray ba;
     ba.resize(4);
     int address = getRegAddress( name );
+    if( address < 0 ) return;
+    
     int bits = 8;
     
     if( type.contains( "32" ) )    // 4 bytes
@@ -156,11 +161,11 @@ void BaseProcessor::updateRamValue( QString name )
     }
     else                                              // char, int, long
     {
-        int value = 0;
+        int32_t value = 0;
         
         if( type.contains( "u" ) ) 
         {
-            uint val = 0;
+            uint32_t val = 0;
             memcpy(&val, ba, 4);
             value = val;
         }
@@ -173,7 +178,7 @@ void BaseProcessor::updateRamValue( QString name )
                 
                 value = val;
             }
-            if( bits == 16 )
+            else if( bits == 16 )
             {
                 int16_t val = 0;
                 memcpy(&val, ba, 2);
@@ -188,15 +193,28 @@ void BaseProcessor::updateRamValue( QString name )
                 value = val;
             }
         }
-
-        m_ramTable->setItemValue( 1, value  );
+        m_ramTable->setItemValue( 2, value  );
         
-        if( type.contains( "8" ) )
-            m_ramTable->setItemValue( 2, decToBase(value, 2, 8)  );
+        if     ( type.contains( "8" ) ) m_ramTable->setItemValue( 3, decToBase(value, 2, 8)  );
+        else if( type.contains( "string" ) ) 
+        {
+            QString strVal = "";
+            for( int i=address; i<=address+value; i++ )
+            {
+                QString str = "";
+                const QChar cha = getRamValue( i );
+                str.setRawData( &cha, 1 );
+                
+                strVal += str; //QByteArray::fromHex( getRamValue( i ) );
+            }
+            //qDebug() << "string" << name << value << strVal;
+            m_ramTable->setItemValue( 3, strVal  );
+        }
         
     }
     //qDebug()<<name<<type <<address<<value;
-    if( !type.contains( "8" ) ) m_ramTable->setItemValue( 2, type  );
+    //if( !type.contains( "8" ) ) 
+    m_ramTable->setItemValue( 1, type  );
 }
 
 
@@ -207,19 +225,20 @@ int BaseProcessor::getRamValue( QString name )
     bool isNumber = false;
     int address = name.toInt( &isNumber );      // Try to convert to integer
 
-    if( !isNumber ) {address = m_regsTable[name.toUpper()];  /* Is a register name*/}
+    if( !isNumber ) 
+    { 
+        address = m_regsTable[name.toUpper()];  // Is a register name
+    }
 
     return getRamValue( address );
 }
 
 void BaseProcessor::addWatchVar( QString name, int address, QString type )
 {
-    if( !m_regsTable.contains(name) ) 
-    {
-        m_regsTable.insert( name, address );
-        m_typeTable.insert( name, type );
-        m_regList.append( name );
-    }
+    name = name.toUpper();
+    if( !m_regsTable.contains(name) ) m_regList.append( name );
+    m_regsTable[ name ] = address;
+    m_typeTable[ name ] = type;
 }
 
 void BaseProcessor::setRegisters() // get register addresses from data file

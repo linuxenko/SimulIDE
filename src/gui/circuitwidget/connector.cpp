@@ -38,7 +38,7 @@ Connector::Connector( QObject* parent, QString type, QString id, Pin* startpin, 
     if( startpin )
     {
         m_startPin   =  startpin;
-        m_startpinid = startpin->itemID();
+        m_startpinid = startpin->pinId();
         setPos( startpin->scenePos() );
         if( m_startPin->isBus() ) setIsBus( true );
     }
@@ -46,7 +46,7 @@ Connector::Connector( QObject* parent, QString type, QString id, Pin* startpin, 
     if( endpin )
     {
         m_endPin   = endpin;
-        m_endpinid = endpin->itemID();
+        m_endpinid = endpin->pinId();
         m_startPin->setConnector( this );
         m_endPin->setConnector( this );
         m_startPin->setConPin( m_endPin );
@@ -84,6 +84,7 @@ void Connector::remNullLines()      // Remove lines with leght = 0 or aligned
             }
         }
     }
+    //
     if( m_conLineList.length() < 2 )
     {
         m_lastindex = 0;
@@ -96,11 +97,10 @@ void Connector::remConLine( ConnectorLine* line  )
 {
     int index = m_conLineList.indexOf( line );
 
-    disconnectLines( index, index-1 );
-    disconnectLines( index, index+1 );
     connectLines( index-1, index+1 );
     Circuit::self()->removeItem( line );
     m_conLineList.removeOne( line );
+    if( m_actLine > 0 )  m_actLine -= 1;
 }
 
 void Connector::refreshPointList()
@@ -269,7 +269,6 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
             if( line->isSelected() ) newLine->setSelected( true );
 
             line->setP2( point );
-            //remNullLines();
 
         }
         else if( m_lastindex < m_actLine )        // Update first corner
@@ -287,7 +286,6 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
                 {
                     preline->sSetP1( line->p1() );
                     remConLine( line  );
-                    if( m_actLine > 0 )  m_actLine -= 1;
                 }
             }
         }
@@ -306,7 +304,6 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
                 {
                     preline->sSetP2( line->p2() );
                     remConLine( line  );
-                    if( m_actLine > 0 )  m_actLine -= 1;
                 }
             }
         }
@@ -370,7 +367,7 @@ void Connector::remove()
     if( pauseSim ) Simulator::self()->runContinuous();
 }
 
-void Connector::closeCon( Pin* endpin )
+void Connector::closeCon( Pin* endpin, bool connect  )
 {
     bool pauseSim = Simulator::self()->isRunning();
     if( pauseSim ) Simulator::self()->pauseSim();
@@ -378,45 +375,46 @@ void Connector::closeCon( Pin* endpin )
     m_endPin   = endpin;
     m_endpinid = endpin->objectName();
 
-    QString enodid = "enode";
-    enodid.append(m_id);
-    enodid.remove("Connector");
-    eNode* newEnode = new eNode( enodid );
-
-    eNode* startPinEnode = m_startPin->getEnode();
-    eNode* endPinEnode   = m_endPin->getEnode();
-
-    // We will get all ePins from stratPin and endPin nets an add to new eNode
-    m_startPin->setConPin( 0l );
-    m_endPin->setConPin( 0l );
-
-    QList<ePin*> epins; 
-
-    if( startPinEnode==0l ) { m_startPin->setEnode( newEnode ); }
-    else
+    if( connect )
     {
-        // Get connected pins of old eNode and assing to new one.
-        // If old eNode ran out of pins will delete itself.
-        
-        // If it's a Node Pin,  get all connected Pins
-        m_startPin->findNodePins(); 
-        
-        // All connected pins will register in eNode 
-        epins = startPinEnode->getSubEpins();
-        
-        // Set new eNode, ePins will unregister from old eNode
-        foreach( ePin* epin, epins ) epin->setEnode( newEnode );
-    }
+        QString enodid = "enode";
+        enodid.append(m_id);
+        enodid.remove("Connector");
+        eNode* newEnode = new eNode( enodid );
 
-    if( endPinEnode==0l ) { m_endPin->setEnode( newEnode ); }
-    else //if( endPinEnode!=startPinEnode )     // Same than startPinEnode
-    {
-        m_endPin->findNodePins();
-        epins = endPinEnode->getSubEpins();
-        foreach( ePin* epin, epins )
-            if( epin ) epin->setEnode( newEnode );
-    }
+        eNode* startPinEnode = m_startPin->getEnode();
+        eNode* endPinEnode   = m_endPin->getEnode();
 
+        // We will get all ePins from stratPin and endPin nets an add to new eNode
+        m_startPin->setConPin( 0l );
+        m_endPin->setConPin( 0l );
+
+        QList<ePin*> epins; 
+
+        if( startPinEnode==0l ) { m_startPin->setEnode( newEnode ); }
+        else
+        {
+            // Get connected pins of old eNode and assing to new one.
+            // If old eNode ran out of pins will delete itself.
+            startPinEnode->initialize();
+            m_startPin->findNodePins();// If it's a Node Pin,  get all connected Pins
+            
+            epins = startPinEnode->getSubEpins();// All connected pins will register in eNode 
+            
+            foreach( ePin* epin, epins ) epin->setEnode( newEnode );// Set new eNode, ePins will unregister from old eNode
+        }
+
+        if( endPinEnode==0l ) { m_endPin->setEnode( newEnode ); }
+        else //if( endPinEnode!=startPinEnode )     // Same than startPinEnode
+        {
+            endPinEnode->initialize();
+            m_endPin->findNodePins();
+            epins = endPinEnode->getSubEpins();
+            foreach( ePin* epin, epins ) { if( epin ) epin->setEnode( newEnode ); }
+        }
+        if( m_isBus ) newEnode->setIsBus( true );
+    }
+    
     m_startPin->setConnector( this );
     m_endPin->setConnector( this );
     
@@ -501,12 +499,12 @@ Pin* Connector::endPin()             { return m_endPin; }
 void Connector::setEndPin( Pin* pin) { m_endPin = pin; }
 
 eNode* Connector::enode()            { return m_startPin->getEnode(); }
+
 void   Connector::setEnode( eNode* enode )
 { 
-    //m_eNode = enode;
-    //m_enodid = m_eNode->itemId();
     if( m_startPin ) m_startPin->setEnode( enode );
     if( m_endPin )   m_endPin->setEnode( enode );
+    if( m_isBus )    enode->setIsBus( true );
 }
 
 double Connector::getVolt()

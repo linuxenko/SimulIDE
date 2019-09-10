@@ -35,7 +35,7 @@ class MAINMODULE_EXPORT Component : public QObject, public QGraphicsItem
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
 
-    Q_PROPERTY( QString  itemtype  READ itemType )
+    Q_PROPERTY( QString  itemtype  READ itemType  USER true )
     Q_PROPERTY( QString  id        READ itemID    WRITE setId      DESIGNABLE true USER true )
     Q_PROPERTY( bool     Show_id   READ showId    WRITE setShowId  DESIGNABLE true USER true )
     Q_PROPERTY( qreal    rotation  READ rotation  WRITE setRotation )
@@ -117,6 +117,7 @@ class MAINMODULE_EXPORT Component : public QObject, public QGraphicsItem
         virtual void inStateChanged( int ){}
 
         virtual void move( QPointF delta );
+        void moveTo( QPointF pos );
 
         virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 

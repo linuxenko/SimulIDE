@@ -21,13 +21,14 @@
 
 <itemlib>
     
-    <itemset category="Logic" type="Subcircuit">
+    <itemset category="Logic" type="">
         <item name="Keys"  package=""  subcircuit=""  icon="ic2.png" ></item>
     </itemset>
     
     <itemset category="Logic/Keys" type="Subcircuit">
 
     <item name="8Nchkey"  package="keys/8Nchkey.package"  subcircuit="keys/8Nchkey.subcircuit" ></item>
+    <item name="8NPNkey"  package="keys/8Nchkey.package"  subcircuit="keys/8npnkey.subcircuit" ></item>
     <item name="ULN2804"  package="keys/ULN2804.package"  subcircuit="keys/ULN2804.subcircuit" ></item>
     <item name="ULN2804_OC"  package="keys/ULN2804_OC.package"  subcircuit="keys/ULN2804_OC.subcircuit" ></item>
     

@@ -38,7 +38,9 @@ Pin::Pin( int angle, const QPoint &pos, QString id, int index, Component* parent
     m_conPin     = 0l;
     m_enode      = 0l;
     m_angle      = angle;
-    m_id         = id;
+   // m_id         = id;
+    
+    m_color = Qt::black;
 
     m_area = QRect(-4, -4, 12, 8);
 
@@ -49,7 +51,7 @@ Pin::Pin( int angle, const QPoint &pos, QString id, int index, Component* parent
     setLength(8);
     setCursor( Qt::CrossCursor );
     setFlag( QGraphicsItem::ItemStacksBehindParent, true );
-    setFlag( QGraphicsItem::ItemIsSelectable, true );
+    setFlag( QGraphicsItem::ItemIsSelectable, false );
 
     QFont sansFont( "Helvetica [Cronyx]", 5 );
     sansFont.setPixelSize(6);
@@ -57,22 +59,27 @@ Pin::Pin( int angle, const QPoint &pos, QString id, int index, Component* parent
     m_label.setText("");
     m_label.setBrush( QColor( 250, 250, 200 ) );
     
-    Circuit::self()->addPin( this, m_id );
+    Circuit::self()->addPin( this, id );
 
     connect( parent, SIGNAL( moved() ), this, SLOT( isMoved() ) );
 }
 Pin::~Pin()
 { 
-    Circuit::self()->removePin( m_id );
+    Circuit::self()->removePin( QString::fromStdString( m_id ) );
 }
 
 void Pin::reset()
 {
     //qDebug() << "Pin::reset "<< m_id << m_numConections;
     setConnector( 0l );
-    ePin::reset();
+    m_connected = false;
+    
     //qDebug() << "ePin::reset new:" << m_numConections;
     m_component->inStateChanged( 1 );          // Used by node to remove
+    
+    if( m_isBus ) m_component->inStateChanged( 3 ); // Used by Bus to remove
+    
+    ePin::reset(); 
 }
 
 void Pin::setUnused( bool unused )
@@ -130,6 +137,28 @@ Connector* Pin::connector() { return my_connector; }
 void Pin::isMoved()
 {
     if( my_connector ) my_connector->updateConRoute( this, scenePos() );
+    else
+    {
+        if( QApplication::queryKeyboardModifiers() & Qt::ControlModifier )
+        {
+            QList<QGraphicsItem*> list = this->collidingItems();
+            foreach( QGraphicsItem* it, list )
+            {
+                if( it->type() == 65536+3 )                         // Pin found
+                {
+                    Pin* pin =  qgraphicsitem_cast<Pin *>( it );
+                    
+                    if( !pin->connector() )
+                    {
+                        Circuit::self()->newconnector( this );
+                        Circuit::self()->closeconnector( pin );
+                    }
+                    //qDebug() << " Pin: Pin found";
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void Pin::mousePressEvent(QGraphicsSceneMouseEvent* event)
@@ -205,13 +234,27 @@ void Pin::setLabelColor( QColor color )
     m_label.setBrush( color );
 }
 
+void Pin::setPinAngle( int angle )
+{
+    m_angle= angle;
+    setRotation( 180-angle );
+}
+
 void Pin::moveBy( int dx, int dy )
 {
     m_label.moveBy( dx, dy );
     QGraphicsItem::moveBy( dx, dy );
 }
 
-QString Pin::itemID() { return  m_id; }
+void Pin::setPinId( QString id ) 
+{ 
+    m_id = id.toStdString(); 
+}
+        
+QString Pin::pinId() 
+{ 
+    return  QString::fromStdString( m_id ); 
+}
 
 void Pin::setLength( int length )
 {
@@ -236,7 +279,7 @@ void Pin::setIsBus( bool bus )
     if( my_connector ) my_connector->setIsBus( true );
     if( m_conPin ) m_conPin->setIsBus( true );
     
-    m_component->inStateChanged( 2 );
+    m_component->inStateChanged( 2 );         // Propagate Is Bus (Node)
 }
 
 bool Pin::isBus()
@@ -248,7 +291,7 @@ void Pin::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
 {
     Q_UNUSED(option); Q_UNUSED(widget);
 
-    QPen pen(Qt::black, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    QPen pen(m_color, 3, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
 
     //painter->setBrush( Qt::red );
     //painter->drawRect( boundingRect() );

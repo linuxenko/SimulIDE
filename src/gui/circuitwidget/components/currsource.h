@@ -45,13 +45,11 @@ class MAINMODULE_EXPORT CurrSource : public Component, public eElement
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem* libraryItem();
         
-        void updateStep();
+        virtual void initialize();
+        virtual void updateStep();
 
         double current() const      { return m_value; }
         void setCurrent( double c );
-        
-        //double volt() const      { return m_voltHight; }
-        //void setVolt( double v );
         
         void setUnit( QString un );
 
@@ -69,8 +67,6 @@ class MAINMODULE_EXPORT CurrSource : public Component, public eElement
         
         double m_current;
         double m_maxCurrent;
-        //double m_voltHight;
-        //double m_voltOut;
         
         Pin* outpin;
         

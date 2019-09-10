@@ -51,16 +51,10 @@ BJT::BJT( QObject* parent, QString type, QString id )
     Q_UNUSED( BJT_properties );
     
     m_area =  QRectF( -12, -14, 28, 28 );
-    
-    m_PNP = false;
-    
-    //m_voltPos = 0;
-    //m_voltNeg = 0;
-    
-    m_pin.resize( 3 );
-    
+
     QString newId = id;
     
+    m_pin.resize( 3 );
     newId.append(QString("-collector"));
     m_pin[0] = new Pin( 90, QPoint(8,-16), newId, 0, this );
     m_pin[0]->setLabelText( "" );
@@ -79,6 +73,8 @@ BJT::BJT( QObject* parent, QString type, QString id )
     m_pin[2] = new Pin( 180, QPoint(-16, 0), newId, 0, this );
     m_pin[2]->setLabelColor( QColor( 0, 0, 0 ) );
     m_ePin[2] = m_pin[2];
+    
+    resetState();
 }
 BJT::~BJT(){}
 
@@ -87,10 +83,20 @@ void BJT::updateStep()
     update();
 }
 
-void BJT::setPnp( double pnp ) 
+void BJT::setPnp( bool pnp ) 
 {
     m_PNP = pnp;
     update();
+}
+
+void BJT::setBCd( bool bcd ) 
+{ 
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim )  Simulator::self()->pauseSim();
+    
+    eBJT::setBCd( bcd );
+    
+    if( pauseSim ) Simulator::self()->runContinuous();
 }
 
 void BJT::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )
@@ -128,3 +134,4 @@ void BJT::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *w
 }
 
 #include "moc_bjt.cpp"
+

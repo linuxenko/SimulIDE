@@ -57,7 +57,6 @@ class PicProcessor : public BaseProcessor
         virtual int  validate( int address );
         
         double m_ipc;
-        double m_pendingIpc;
         
         pic_processor* m_pPicProcessor;
         

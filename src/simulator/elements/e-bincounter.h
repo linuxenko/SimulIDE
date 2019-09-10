@@ -33,7 +33,8 @@ class MAINMODULE_EXPORT eBinCounter : public eLogicDevice
         int  TopValue() const;
         void setTopValue( int );
         
-        void initialize();
+        virtual void initialize();
+        virtual void resetState();
 
         void createPins();
         virtual void setVChanged();

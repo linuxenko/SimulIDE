@@ -20,7 +20,10 @@
 #include "e-resistor.h"
 #include "simulator.h"
 
-eResistor::eResistor( std::string id ) : eElement( id )
+#include <sstream>
+
+eResistor::eResistor( std::string id ) 
+         : eElement( id )
 {
     m_resist = 100;
     m_admit  = 1/m_resist;
@@ -39,13 +42,17 @@ void eResistor::initialize()
 
 void eResistor::stamp()
 {
+    if( !m_ePin[0] ) return;
     //double admit = 1/m_resist;
     m_ePin[0]->stampAdmitance( m_admit );
     m_ePin[1]->stampAdmitance( m_admit );
     //qDebug() << "eResistor::stamp" << m_resist;
 }
 
-double eResistor::res() { return m_resist; }
+double eResistor::res() 
+{ 
+    return m_resist; 
+}
 
 void eResistor::setRes( double resist )
 {
@@ -57,7 +64,12 @@ void eResistor::setRes( double resist )
     stamp();
 }
 
-void eResistor::setAdmit( double admit )
+double eResistor::admit()
+{
+    return m_admit;
+}
+
+void eResistor::setAdmit( double admit )               // Admit can be 0 
 {
     m_admit = admit;
     stamp();
@@ -89,5 +101,16 @@ void eResistor::updateVI()
         //qDebug() << " current " <<m_current<<volt;
     }
     else m_current = 0;
+}
+
+void eResistor::initEpins()
+{
+    std::stringstream sl;
+    sl << m_elmId << "-lPin";
+    m_ePin[0] = new ePin( sl.str(), 0 );
+    
+    std::stringstream sr;
+    sr << m_elmId << "-rPin";
+    m_ePin[1] = new ePin( sr.str(), 1 );
 }
 

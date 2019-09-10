@@ -45,11 +45,10 @@ elCapacitor::~elCapacitor(){}
 
 void elCapacitor::initialize()
 {
+    eCapacitor::initialize();
     m_reversed = false;
     m_counter = 0;
     update();
-    
-    eCapacitor::initialize();
 }
 
 void elCapacitor::updateStep()
@@ -73,7 +72,6 @@ void elCapacitor::updateStep()
         m_counter = 0;
         update();
     }
-    
 }
 
 void elCapacitor::remove()

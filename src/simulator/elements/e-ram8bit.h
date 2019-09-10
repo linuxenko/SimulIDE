@@ -29,6 +29,7 @@ class MAINMODULE_EXPORT eRam8bit : public eLogicDevice
         ~eRam8bit();
         
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
     private:

@@ -24,7 +24,7 @@
 #include "simulator.h"
 
 eVoltReg::eVoltReg( std::string id )
-    : eResistor( id )
+        : eResistor( id )
 {
     m_ePin.resize(3);
 }
@@ -34,16 +34,20 @@ eVoltReg::~eVoltReg()
 
 void eVoltReg::initialize()
 {
-    eResistor::setRes( 1e-6 );
-    
-    m_accuracy = Simulator::self()->NLaccuracy();
-    
-    m_lastOut = 0;
     if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToNoLinList(this);
     if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToNoLinList(this);
     if( m_ePin[2]->isConnected() ) m_ePin[2]->getEnode()->addToNoLinList(this);
     
     eResistor::initialize();
+}
+
+void eVoltReg::resetState()
+{
+    eResistor::setRes( 1e-6 );
+    
+    m_accuracy = Simulator::self()->NLaccuracy();
+    
+    m_lastOut = 0;
 }
 
 void eVoltReg::setVChanged() 

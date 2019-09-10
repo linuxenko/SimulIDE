@@ -64,9 +64,9 @@ Servo::Servo( QObject* parent, QString type, QString id )
     eLogicDevice::createClockPin( m_inPin[2] );           // Input Clock
 
     m_pos = 90;
-    m_targetPos = 90;
-    m_pulseStart = 0;
     m_speed = 0.2;
+    
+    resetState();
 
     Simulator::self()->addToUpdateList( this );
 }
@@ -92,6 +92,7 @@ void Servo::resetState()
 {
     m_targetPos = 90;
     m_pulseStart = 0;
+    m_lastUpdate = Simulator::self()->step();
     
     eLogicDevice::resetState();
 }

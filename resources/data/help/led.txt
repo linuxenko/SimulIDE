@@ -1,0 +1,6 @@
+Led:
+
+Led will blink white when the maximun current is exedeed by aprox 50%.
+
+More Info:
+ http://simulide.blogspot.com/p/leds.html

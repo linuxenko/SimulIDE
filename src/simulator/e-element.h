@@ -23,7 +23,7 @@
 #include <string>
 #include <math.h>
 #include <QPointer>
-
+#include <QDebug>
 #include "e-pin.h"
 
 
@@ -38,7 +38,7 @@
 class MAINMODULE_EXPORT eElement
 {
     public:
-    eElement( std::string id=0 );
+        eElement( std::string id=0 );
         virtual ~eElement();
 
         virtual void initEpins();
@@ -58,8 +58,6 @@ class MAINMODULE_EXPORT eElement
         virtual void simuClockStep(){;}
         virtual void updateStep(){;}
         virtual void setVChanged(){;}
-        
-        //virtual bool converged() { return m_converged; }
 
         static GNU_CONST_STATIC_FLOAT_DECLARATION double cero_doub         = 1e-14;
         static GNU_CONST_STATIC_FLOAT_DECLARATION double high_imp          = 1e14;
@@ -71,8 +69,7 @@ class MAINMODULE_EXPORT eElement
         std::vector<ePin*> m_ePin;
 
         std::string m_elmId;
-        
-        //bool m_converged;
 };
 
 #endif
+

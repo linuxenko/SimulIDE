@@ -44,7 +44,7 @@ class MAINMODULE_EXPORT VoltSource : public Component, public eElement
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem* libraryItem();
         
-        void updateStep();
+        virtual void updateStep();
 
         double volt() const      { return m_value; }
         void setVolt( double v );
