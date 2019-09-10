@@ -35,6 +35,7 @@ class MAINMODULE_EXPORT eDiode : public eResistor
         virtual void  setZenerV( double zenerV );
 
         virtual void initialize();
+        virtual void resetState();
 
         virtual void setVChanged();
 

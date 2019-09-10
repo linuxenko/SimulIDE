@@ -40,8 +40,6 @@ class AVRComponentPin : public McuComponentPin
         AVRComponentPin( McuComponent *mcu, QString id, QString type, QString label, int pos, int xpos, int ypos, int angle );
         ~AVRComponentPin();
         
-        void initialize();
-
         void attach( avr_t * AvrProcessor );
 
         void set_pinVoltage( uint32_t value );
@@ -53,6 +51,8 @@ class AVRComponentPin : public McuComponentPin
         void setVChanged();
         
         void adcread();
+        
+        virtual void resetState();
 
         static void port_hook( struct avr_irq_t* irq, uint32_t value, void* param )
         {

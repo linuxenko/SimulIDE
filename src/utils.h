@@ -124,7 +124,9 @@ inline QPoint roundDown( const QPoint & p, int roundness )
     return QPoint( roundDown( p.x(), roundness ), roundDown( p.y(), roundness ) );
 }
 
-inline int snapToGrid( int x  ) { return roundDown( x, 8 )*8 + 4; }
+inline int snapToGrid( int x ) { return roundDown( x, 8 )*8 + 4; }
+
+inline int snapToCompGrid( int x ) { return roundDown( x+4, 8 )*8; }
 
 inline QPointF togrid( QPointF point )
 {
@@ -153,6 +155,17 @@ inline int getAlignment( QPointF p1, QPointF p2 )
     if( p1.y() == p2.y() ) align += 1;           // Aligned in X axis
 
     return align;
+}
+
+#include "pin.h"
+inline bool lessPinX( Pin* pinA, Pin* pinB )
+{
+    return pinA->x() < pinB->x();
+}
+
+inline bool lessPinY( Pin* pinA, Pin* pinB )
+{
+    return pinA->y() < pinB->y();
 }
 #endif
 

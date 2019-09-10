@@ -52,6 +52,10 @@ CircuitWidget::CircuitWidget( QWidget *parent  )
              &m_serial, &SerialPortWidget::slotWriteData );
     
     m_rateLabel = new QLabel( this );
+    QFont font( "Arial", 10, QFont::Normal );
+    double fontScale = MainWindow::self()->fontScale();
+    font.setPixelSize( int(10*fontScale) );
+    m_rateLabel->setFont( font );
     
     createActions();
     createToolBars();
@@ -69,6 +73,7 @@ CircuitWidget::~CircuitWidget() { }
 void CircuitWidget::clear()
 {
     m_circView.clear();
+    m_circView.setCircTime( 0 );
 }
 
 void CircuitWidget::createActions()
@@ -148,10 +153,9 @@ bool CircuitWidget::newCircuit()
                                   "Do you want to save your changes?\n"),
                                QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
                                
-        if( ret == QMessageBox::Save ) saveCirc();
+        if     ( ret == QMessageBox::Save ) saveCirc();
         else if( ret == QMessageBox::Cancel ) return false;
     }
-    
     clear();
     m_curCirc = "";
 
@@ -182,6 +186,7 @@ void CircuitWidget::loadCirc( QString path )
         MainWindow::self()->setTitle(path.split("/").last());
         MainWindow::self()->settings()->setValue( "lastCircDir", m_lastCircDir );
         //FileBrowser::self()->setPath(m_lastCircDir);
+        m_circView.setCircTime( 0 );
     }
 }
 
@@ -247,7 +252,7 @@ void CircuitWidget::powerCircDebug( bool run )
         else      
         {
             Simulator::self()->debug();
-            m_rateLabel->setText( tr("Real Speed: Debugger") );
+            m_rateLabel->setText( tr("    Real Speed: Debugger") );
         }
 }
 
@@ -276,6 +281,7 @@ void CircuitWidget::about()
                +t+"Chris Roper <br>"
                +t+"Sergei Chiyanov <br>"
                +t+"Sergey Roenko <br>"
+               +t+"Gabor Nagy <br>"
                "<br>"
                "<b>Translations:</b> <br>"
                +t+"Spanish: Santiago Gonzalez. <br>"
@@ -287,7 +293,7 @@ void CircuitWidget::setRate( int rate )
 {
     if( rate < 0 ) m_rateLabel->setText( tr("Circuit ERROR!!!") );
     else 
-        m_rateLabel->setText( tr("Real Speed: ")+QString::number(rate) +" %" );
+        m_rateLabel->setText( tr("    Real Speed: ")+QString::number(rate) +" %" );
 }
 
 /*void CircuitWidget::setSerialPortWidget( QWidget* serialPortWidget )

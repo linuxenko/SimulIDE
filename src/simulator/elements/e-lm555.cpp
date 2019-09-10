@@ -26,11 +26,14 @@
 eLm555::eLm555( std::string id )
       : eElement( id )
 {
-    m_ePin.resize( 8 );
+    setNumEpins(8);
+    resetState();
 }
 eLm555::~eLm555()
 { 
     delete m_output;
+    delete m_cv;
+    delete m_dis;
 }
 
 void eLm555::initialize()
@@ -42,6 +45,10 @@ void eLm555::initialize()
         
         if( m_ePin[i]->isConnected() ) m_ePin[i]->getEnode()->addToNoLinList(this);
     }
+}
+
+void eLm555::resetState()
+{
     m_outState = false;
     m_volt = 0;
 }
@@ -109,7 +116,7 @@ void eLm555::setVChanged()
 }
 
 void eLm555::initEpins()
-{
+{//qDebug() << "eLm555::initEpins";
     setNumEpins(8); 
     
     std::stringstream ss;
@@ -119,13 +126,13 @@ void eLm555::initEpins()
     m_output->setOut( true );
     
     std::stringstream ss1;
-    ss << m_elmId << "-cv-eSource";
+    ss1 << m_elmId << "-cv-eSource";
     m_cv = new eSource( ss1.str(), m_ePin[4] );
-    m_cv->setImp( high_imp );
+    m_cv->setImp( 10 );
     m_cv->setOut( true );
     
     std::stringstream ss2;
-    ss << m_elmId << "-dis-eSource";
+    ss2 << m_elmId << "-dis-eSource";
     m_dis = new eSource( ss2.str(), m_ePin[6] );
     m_dis->setImp( high_imp );
     m_dis->setOut( false );

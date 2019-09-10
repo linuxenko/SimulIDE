@@ -42,6 +42,11 @@ LedMatrix::LedMatrix( QObject* parent, QString type, QString id )
 {
     m_rows = 8;
     m_cols = 8;
+    m_resist  = 0.6;
+    m_maxCurr = 0.02;
+    m_threshold = 2.4;
+    
+    m_ledColor = LedBase::yellow;
     m_color = QColor(0,0,0);
     m_verticalPins = false;
     createMatrix();
@@ -113,14 +118,20 @@ void LedMatrix::createMatrix()
             QString ledid = m_id;
             ledid.append( QString( "-led"+QString::number(row)+"_"+QString::number(col) ) );
             LedSmd* lsmd = new LedSmd( this, "LEDSMD", ledid, QRectF(-2, -2, 4, 4) );
-            m_led[row][col] = lsmd;
+
             lsmd->setParentItem(this);
             lsmd->setNumEpins(2);
             lsmd->setMaxCurrent( 0.02 );
             lsmd->setPos( col*8, row*8 );
+            lsmd->setRes( m_resist );
+            lsmd->setMaxCurrent( m_maxCurr );
+            lsmd->setThreshold( m_threshold );
+            lsmd->setColor( m_ledColor );
             //lsmd->setEnabled(false);
             lsmd->setFlag( QGraphicsItem::ItemIsSelectable, false );
             lsmd->setAcceptedMouseButtons(0);
+
+            m_led[row][col] = lsmd;
         }
     }
     for( int col=0; col<m_cols; col++ )
@@ -155,7 +166,9 @@ void LedMatrix::deleteMatrix()
 }
 
 void LedMatrix::setColor( LedBase::LedColor color ) 
-{ 
+{
+    m_ledColor = color;
+    
     for( int row=0; row<m_rows; row++ )
     {
         for( int col=0; col<m_cols; col++ )
@@ -167,7 +180,7 @@ void LedMatrix::setColor( LedBase::LedColor color )
 
 LedBase::LedColor LedMatrix::color() 
 { 
-    return m_led[0][0]->color(); 
+    return m_ledColor; 
 }
 
 int LedMatrix::rows()
@@ -178,6 +191,7 @@ int LedMatrix::rows()
 void LedMatrix::setRows( int rows )
 {
     if( rows == m_rows ) return;
+    if( rows < 1 ) rows = 1;
     setupMatrix( rows, m_cols );
 }
 
@@ -189,6 +203,7 @@ int LedMatrix::cols()
 void LedMatrix::setCols( int cols )
 {
     if( cols == m_cols ) return;
+    if( cols < 1 ) cols = 1;
     setupMatrix( m_rows, cols );
 }
 
@@ -228,11 +243,14 @@ void LedMatrix::setVerticalPins( bool v )
 
 double LedMatrix::threshold()                     
 { 
-    return m_led[0][0]->threshold(); 
+    return m_threshold; 
 }
 
 void LedMatrix::setThreshold( double threshold ) 
 { 
+    if( threshold < 1e-6 ) threshold = 1e-6;
+    m_threshold = threshold;
+    
     for( int row=0; row<m_rows; row++ )
     {
         for( int col=0; col<m_cols; col++ )
@@ -244,10 +262,13 @@ void LedMatrix::setThreshold( double threshold )
 
 double LedMatrix::maxCurrent()                   
 { 
-    return m_led[0][0]->maxCurrent(); 
+    return m_maxCurr; 
 }
 void LedMatrix::setMaxCurrent( double current ) 
-{ 
+{
+    if( current < 1e-6 ) current = 1e-6;
+    m_maxCurr = current;
+    
     for( int row=0; row<m_rows; row++ )
     {
         for( int col=0; col<m_cols; col++ )
@@ -259,13 +280,15 @@ void LedMatrix::setMaxCurrent( double current )
 
 double LedMatrix::res() 
 { 
-    return m_led[0][0]->res(); 
+    return m_resist; 
 }
 
 void LedMatrix::setRes( double resist )
 {
     if( resist == 0 ) resist = 1e-14;
 
+    m_resist = resist;
+    
     for( int row=0; row<m_rows; row++ )
     {
         for( int col=0; col<m_cols; col++ )
@@ -290,3 +313,4 @@ void LedMatrix::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWid
 }
 
 #include "moc_ledmatrix.cpp"
+

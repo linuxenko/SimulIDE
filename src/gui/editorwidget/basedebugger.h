@@ -27,7 +27,6 @@
 class BaseDebugger : public QObject    // Base Class for all debuggers
 {
     Q_OBJECT
-    Q_PROPERTY( bool    Drive_Circuit READ driveCirc    WRITE setDriveCirc    DESIGNABLE true USER true )
     Q_PROPERTY( QString Compiler_Path READ compilerPath WRITE setCompilerPath DESIGNABLE true USER true )
     
     public:
@@ -37,9 +36,6 @@ class BaseDebugger : public QObject    // Base Class for all debuggers
         QString compilerPath();
         virtual void setCompilerPath( QString path );
         
-        bool driveCirc();
-        void setDriveCirc( bool drive );
-
         virtual bool loadFirmware();
         virtual void upload();
         virtual int  step();        // Run 1 step,returns actual source line number
@@ -58,17 +54,25 @@ class BaseDebugger : public QObject    // Base Class for all debuggers
         
         virtual void readSettings();
         
+        virtual QString getVarType( QString var );
+        
+        virtual QStringList getVarList();
+        
+        virtual QList<int> getSubLines() { return m_subLines; }
+        
+        int type;
+        
     public slots:
         void ProcRead();
 
     protected:
         void toolChainNotFound();
+        virtual void getSubs(){;}
     
         OutPanelText*  m_outPane;
 
  static bool m_loadStatus;                          // Is symbol file loaded?
         bool m_running;                             // Is processor running?
-        bool m_driveCirc;
 
         int m_processorType;
         int m_lastLine;
@@ -82,10 +86,14 @@ class BaseDebugger : public QObject    // Base Class for all debuggers
         QString m_compilerPath;
         QString m_compSetting;
         
+        QStringList m_varNames;
+        QStringList m_subs;
+        QList<int>  m_subLines;
+        
         QHash<QString, QString> m_typesList;
         QHash<QString, QString> m_varList;
         QHash<int, int> m_flashToSource;            // Map flash adress to Source code line
-        QHash<int, int> m_sourceToFlash;               // Map .asm code line to flash adress
+        QHash<int, int> m_sourceToFlash;            // Map .asm code line to flash adress
         
         QProcess m_compProcess;
 };

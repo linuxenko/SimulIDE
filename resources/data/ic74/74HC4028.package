@@ -10,7 +10,7 @@
     <pin side="left" pos="6"  type="" id="Y5"   label="Y5" /><!--  packagePin6 -->
     <pin side="left" pos="7"  type="" id="Y6"   label="Y6" /><!-- packagePin7 -->
     
-    <pin side="left" pos="8"  type="unused" id="GND" label="GND"/><!-- packagePin8 -->
+    <pin side="left" pos="8"  type="unused" id="Gnd" label="Gnd"/><!-- packagePin8 -->
 
     <pin side="right" pos="8" type="" id="Y8"  label="Y8" /><!-- packagePin9  -->
     <pin side="right" pos="7" type="" id="A0"  label="A0" /><!-- packagePin10 -->

@@ -41,6 +41,7 @@ class MAINMODULE_EXPORT eI2C : public eLogicDevice
         ~eI2C();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         virtual void writeByte();
         virtual void readByte();

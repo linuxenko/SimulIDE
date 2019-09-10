@@ -28,6 +28,8 @@ eNode::eNode( QString id )
     m_nodeNum = 0;
     m_numCons = 0;
     m_volt    = 0;
+    m_isBus = false;
+    
     initialize();
     //qDebug() << "+eNode" << m_id;
 
@@ -60,6 +62,14 @@ void eNode::initialize()
     m_nodeList.clear();
     
     m_volt = 0;
+    
+    if( m_isBus )
+    {
+        m_eBusPinList.clear();
+        m_eNodeList.clear();
+        
+        //qDebug() << "\neNode::initialize" << m_eBusPinList.size();
+    }
 }
 
 void eNode::stampCurrent( ePin* epin, double data )
@@ -116,27 +126,12 @@ void eNode::stampMatrix()
 
             ePin* epin = i.key();
             int enode = m_nodeList[epin];
+
             m_admit[enode] += adm;
             m_totalAdmit   += adm;
         }
         if( !m_single || m_switched ) stampAdmit();
         
-        if( m_switched )                       // Find open/close events
-        {
-            QHashIterator<int, double> ai(m_admit);
-            while ( ai.hasNext() )                // Iterate eNode-Admit
-            {
-                ai.next();
-                int enode = ai.key();
-                double admit = ai.value();
-                double admitP = m_admitPrev[enode];
-
-                if( admit == admitP ) continue;
-                
-                if( (admit==0)||(admitP==0) ) CircMatrix::self()->setCircChanged();
-            }
-            m_admitPrev = m_admit;
-        }
         m_admitChanged = false;
     }
     
@@ -154,12 +149,28 @@ void eNode::stampMatrix()
 
 void eNode::stampAdmit()
 {
+    int nonCero = 0;
     QHashIterator<int, double> ai(m_admit); // iterate admitance hash: eNode-Admit
     while ( ai.hasNext() ) 
     {
         ai.next();
         int enode = ai.key();
-        if( enode>0 ) CircMatrix::self()->stampMatrix( m_nodeNum, enode, -ai.value() );
+        double admit = ai.value();
+        if( enode>0 ) CircMatrix::self()->stampMatrix( m_nodeNum, enode, -admit );
+        
+        if( m_switched )                       // Find open/close events
+        {
+            if( admit > 0 ) nonCero++;
+            double admitP = m_admitPrev[enode];
+
+            if(( admit != admitP )
+              &&((admit==0)||(admitP==0))) CircMatrix::self()->setCircChanged();
+        }
+    }
+    if( m_switched )
+    {
+        m_admitPrev = m_admit;
+        if( nonCero < 2 ) m_totalAdmit += 1e-12; //pnpBias example error
     }
     CircMatrix::self()->stampMatrix( m_nodeNum, m_nodeNum, m_totalAdmit );
 }
@@ -168,14 +179,6 @@ void eNode::stampCurr()
 {
     CircMatrix::self()->stampCoef( m_nodeNum, m_totalCurr );
 }
-
-void eNode::setSingle( bool single ){ m_single = single; }      // This eNode can calculate it's own Volt
-
-bool eNode::isSingle(){ return m_single; }
-
-void eNode::setSwitched( bool switched ){ m_switched = switched; } // This eNode has switches attached
-
-bool eNode::isSwitched(){ return m_switched; }
 
 void eNode::solveSingle()
 {
@@ -215,9 +218,76 @@ void  eNode::setVolt( double v )
 }
 double eNode::getVolt() { return m_volt; }
 
+void eNode::setIsBus( bool bus )
+{
+    m_isBus = bus;
+    
+    Simulator::self()->remFromEnodeList( this, /*delete=*/ false );
+    Simulator::self()->addToEnodeBusList( this );
+}
+
+void eNode::createBus()
+{
+    int busSize = m_eBusPinList.size();
+    
+    //qDebug()<<"\neNode::createBus"<<busSize << m_eBusPinList;
+    
+    for( int i=0; i<m_eBusPinList.size(); i++ )      // Clear this eNode from Bus ePins
+    {
+        QList<ePin*> pinList = m_eBusPinList.at( i );
+
+        foreach( ePin* epin, pinList ) epin->setEnode( 0l );
+    }
+    
+    m_eNodeList.clear();
+    for( int i=0; i<busSize; i++ )
+    {
+        QList<ePin*> pinList = m_eBusPinList.at( i );
+        
+        eNode* enode = 0l;
+        
+        if( !pinList.isEmpty() ) 
+        {
+            enode = new eNode( m_id+"-eNode-"+QString::number( i ) );
+            
+            foreach( ePin* epin, pinList ) 
+            {
+                //qDebug() <<"eNode::createBus"<< QString::fromStdString(epin->getId())<<enode;
+                epin->setEnode( enode );
+            }
+        }
+        m_eNodeList.append( enode );
+    }
+}
+
+void eNode::addBusPinList( QList<ePin*> list, int line )
+{
+    int size = line+1;
+    int busSize = m_eBusPinList.size();
+    
+    if( size > busSize )
+    {
+        for( int i=0; i<size-busSize; i++ )
+        {
+            QList<ePin*> newList;
+            m_eBusPinList.append( newList );
+        }
+    }
+    
+    QList<ePin*> pinList = m_eBusPinList.at( line );
+    foreach( ePin* epin, list ) if( !pinList.contains( epin )) pinList.append( epin ); 
+    //qDebug() << "eNode::addBusPinList" << line << busSize<<"\n"<<pinList;
+    m_eBusPinList.replace( line, pinList );
+}
+
 QList<ePin*> eNode::getEpins()    { return m_ePinList; }
 
-QList<ePin*> eNode::getSubEpins() { return m_ePinSubList; }
+QList<ePin*> eNode::getSubEpins() 
+{ 
+    QList<ePin*> list = m_ePinSubList;
+    m_ePinSubList.clear();
+    return list; 
+}
 
 void eNode::addEpin( ePin* epin ) 
 { 
@@ -236,9 +306,15 @@ void eNode::remEpin( ePin* epin )
     //qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId());
     if( m_ePinList.contains(epin) )    m_ePinList.removeOne(epin);
     if( m_ePinSubList.contains(epin) ) m_ePinSubList.removeOne(epin);
+    
+//qDebug() << "eNode::remEpin" << m_id << QString::fromStdString(epin->getId())<<m_ePinList.size();
 
     // If No epins then remove this enode
-    if( m_ePinList.size()== 0 ) Simulator::self()->remFromEnodeList( this, true );
+    if( m_ePinList.size()== 0 ) 
+    {
+        if( m_isBus ) Simulator::self()->remFromEnodeBusList( this );
+        else          Simulator::self()->remFromEnodeList( this, true );
+    }
 }
 
 void eNode::addToChangedFast( eElement* el )   
@@ -275,7 +351,12 @@ void eNode::remFromNoLinList( eElement* el )
     if( m_changedFast.isEmpty() & m_nonLinear.isEmpty()) m_fastUpdated = false;
 }
 
+void eNode::setSingle( bool single ){ m_single = single; }      // This eNode can calculate it's own Volt
+bool eNode::isSingle(){ return m_single; }
+
+void eNode::setSwitched( bool switched ){ m_switched = switched; } // This eNode has switches attached
+bool eNode::isSwitched(){ return m_switched; }
+
 int eNode::getNodeNumber() { return m_nodeNum; }
 
 QString eNode::itemId() { return m_id; }
-

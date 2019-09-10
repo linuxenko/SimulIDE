@@ -22,14 +22,16 @@
 #include "e-pin.h"
 #include "e-node.h"
 
+//#include <QDebug>
+
 ePin::ePin( std::string id, int index )
 {
-    m_id     = id;
+    m_id    = id;
     m_index = index;
     m_enode    = 0l;
     m_enodeCon = 0l;
     m_connected = false;
-    m_inverted   = false;
+    m_inverted  = false;
 }
 ePin::~ePin()
 {
@@ -42,13 +44,17 @@ void ePin::reset()
     setEnode( 0l );
 }
 
-eNode* ePin::getEnode()    { return m_enode; }
+eNode* ePin::getEnode()
+{
+    //qDebug() << "ePin::getEnode" << m_connected<<m_enode;
+    return m_enode; 
+}
 
 void ePin::setEnode( eNode* enode )
 {
     if( enode == m_enode ) return;
 
-    //qDebug() << "ePin::setEnode" << QString::fromStdString(m_id) << enode;
+    //qDebug() << "ePin::setEnode" << QString::fromStdString(m_id) << enode <<m_enode;
 
     if( m_enode ) m_enode->remEpin( this );
     if( enode )   enode->addEpin( this );
@@ -104,4 +110,5 @@ void ePin::setInverted( bool inverted ){ m_inverted = inverted; }
 std::string ePin::getId() { return m_id; }
 
 void ePin::setId( std::string id ) { m_id = id; }
+
 

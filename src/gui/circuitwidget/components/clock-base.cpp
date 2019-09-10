@@ -56,15 +56,17 @@ void ClockBase::updateStep()
     }
 }
 
-int ClockBase::freq() { return m_freq; }
+double ClockBase::freq() { return m_freq; }
 
-void ClockBase::setFreq( int freq )
+void ClockBase::setFreq( double freq )
 {
-    m_stepsPC = 1e6/(double)freq;
+    m_stepsPC = 1e6/freq+0.5;
     
-    if (m_stepsPC < 1) m_stepsPC = 1;
+    if( m_stepsPC < 2 ) m_stepsPC = 2;
     
     m_freq = 1e6/m_stepsPC;
+    
+    //qDebug() << "ClockBase::setFreq"<<freq<<m_freq<<m_stepsPC;
     
     emit freqChanged();
 }

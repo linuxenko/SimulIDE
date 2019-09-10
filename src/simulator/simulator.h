@@ -51,13 +51,18 @@ class MAINMODULE_EXPORT Simulator : public QObject
         void runGraphicStep();
         void runExtraStep();
         
+        int circuitRate() { return m_circuitRate; }
         int simuRate() { return m_simuRate; }
         int simuRateChanged( int rate );
+        
+        void setTimerScale( int ts ) { m_timerSc = ts; }
 
         int  reaClock();
         void setReaClock( int value );
+        
         int  noLinClock();
         void setNoLinClock( int value );
+        
         int  noLinAcc();
         void setNoLinAcc( int ac );
         double NLaccuracy();
@@ -68,6 +73,9 @@ class MAINMODULE_EXPORT Simulator : public QObject
         uint64_t step();
 
         QList<eNode*> geteNodes() { return m_eNodeList; }
+
+        void addToEnodeBusList( eNode* nod );
+        void remFromEnodeBusList( eNode* nod );
 
         void addToEnodeList( eNode* nod );
         void remFromEnodeList( eNode* nod, bool del );
@@ -117,6 +125,7 @@ class MAINMODULE_EXPORT Simulator : public QObject
 
         QList<eNode*>    m_eNodeList;
         QList<eNode*>    m_eChangedNodeList;
+        QList<eNode*>    m_eNodeBusList;
         
         QList<eElement*> m_elementList;
         QList<eElement*> m_updateList;
@@ -140,6 +149,7 @@ class MAINMODULE_EXPORT Simulator : public QObject
         int m_stepsPrea;
         int m_stepsNolin;
         int m_timerTick;
+        int m_timerSc;
         
         int m_circuitRate;
         int m_noLinCounter;
@@ -153,3 +163,5 @@ class MAINMODULE_EXPORT Simulator : public QObject
         QElapsedTimer m_RefTimer;
 };
  #endif
+
+

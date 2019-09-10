@@ -73,18 +73,18 @@ void McuComponent::initChip()
 {
     QString compName = m_id.split("-").first(); // for example: "atmega328-1" to: "atmega328"
 
-    m_dataFile = ComponentSelector::self()->getXmlFile( compName );
+    QString dataFile = ComponentSelector::self()->getXmlFile( compName );
     
-    QFile file( m_dataFile );
+    QFile file( dataFile );
     
-    if(( m_dataFile == "" ) || ( !file.exists() ))
+    if(( dataFile == "" ) || ( !file.exists() ))
     {
         m_error = 1;
         return;
     }
     if( !file.open(QFile::ReadOnly | QFile::Text) )
     {
-        MessageBoxNB( "Error", tr("Cannot read file %1:\n%2.").arg(m_dataFile).arg(file.errorString()) );
+        MessageBoxNB( "Error", tr("Cannot read file %1:\n%2.").arg(dataFile).arg(file.errorString()) );
         m_error = 1;
         return;
     }
@@ -92,7 +92,7 @@ void McuComponent::initChip()
     
     if( !domDoc.setContent(&file) )
     {
-        MessageBoxNB( "Error", tr("Cannot set file %1\nto DomDocument").arg(m_dataFile) );
+        MessageBoxNB( "Error", tr("Cannot set file %1\nto DomDocument").arg(dataFile) );
         file.close();
         m_error = 1;
         return;
@@ -114,9 +114,9 @@ void McuComponent::initChip()
             if( element.attribute("name")==compName )
             {
                 // Get package file
-                QDir dataDir(  m_dataFile );
+                QDir dataDir(  dataFile );
                 dataDir.cdUp();             // Indeed it doesn't cd, just take out file name
-                m_dataFile = dataDir.filePath( element.attribute( "package" ) )+".package";
+                m_pkgeFile = dataDir.filePath( element.attribute( "package" ) )+".package";
                 
                 // Get device
                 m_device = element.attribute( "device" );
@@ -142,11 +142,11 @@ void McuComponent::initChip()
     }
 }
 
-int McuComponent::freq()
+double McuComponent::freq()
 { 
     return m_freq; 
 }
-void McuComponent::setFreq( int freq )
+void McuComponent::setFreq( double freq )
 { 
     if     ( freq < 0  )  freq = 0;
     else if( freq > 100 ) freq = 100;
@@ -264,9 +264,8 @@ void McuComponent::slotLoad()
                        tr("Hex Files (*.hex);;ELF Files (*.elf);;all files (*.*)"));
                        
     if (fileName.isEmpty()) return; // User cancels loading
-
-    QDir circuitDir = QFileInfo(Circuit::self()->getFileName()).absoluteDir();
-    load( circuitDir.relativeFilePath(fileName) );
+    
+    load( fileName );
 }
 
 void McuComponent::slotReload()
@@ -289,7 +288,7 @@ void McuComponent::load( QString fileName )
         if( !m_attached ) attachPins();
         reset();
         
-        m_symbolFile = fileName;
+        m_symbolFile = circuitDir.relativeFilePath( fileName );
         m_lastFirmDir = cleanPathAbs;
 
         QSettings* settings = MainWindow::self()->settings();

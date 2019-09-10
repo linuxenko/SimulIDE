@@ -37,48 +37,94 @@ LibraryItem* Bus::libraryItem()
 }
 
 Bus::Bus( QObject* parent, QString type, QString id )
-   : LogicComponent( parent, type, id )
+   : Component( parent, type, id )
    , eBus( id.toStdString() )
-{    
-    m_width  = 1;
-    m_height = 8;
-
-    setNumInps( 8 );                           // Create Input Pins
-
-    LogicComponent::setNumOuts( 1 );
+{
+    setNumLines( 8 );                           // Create Input Pins
     
-    m_outPin[0] = new Pin( 0, QPoint( 8, 0 ), m_id+"-out", 1, this );
-                          
-    eLogicDevice::createOutput( m_outPin[0] );
-    
-    m_outPin[0]->setIsBus( true );
+    m_busPin = new Pin( 0, QPoint( 8, 0 ), m_id+"-ePin0", 1, this );
+    m_busPin->setIsBus( true );
+    m_pin[0] = m_busPin;
 }
 Bus::~Bus(){
 }
 
-void Bus::setNumInps( int inputs )
+void Bus::setNumLines( int lines )
 {
-    if( inputs == m_numInputs ) return;
-    if( inputs < 1 ) return;
+    if( lines == m_numLines ) return;
+    if( lines < 1 ) return;
 
-    eLogicDevice::deleteInputs( m_numInputs );
-    LogicComponent::setNumInps( inputs );
-    
-    for( int i=0; i<inputs; i++ )
+    for( int i=1; i<=m_numLines; i++ )
     {
-        m_inPin[i] = new Pin( 180, QPoint(-8,-8*inputs+i*8+8 )
-                               , m_id+"-in"+QString::number(i), i, this );
-
-        //m_inPin[i]->setLength( 2 );
-        //m_inPin[i]->setFlag( QGraphicsItem::ItemStacksBehindParent, false );
-
-        eLogicDevice::createInput( m_inPin[i] );
+        if( m_pin[i]->isConnected() ) m_pin[i]->connector()->remove();
+        if( m_pin[i]->scene() ) Circuit::self()->removeItem( m_pin[i] );
+        delete m_pin[i];
     }
-    m_maxAddr = pow( 2, m_numInputs )-1;
-    m_maxVolt = m_maxAddr;
+    m_numLines = lines;
 
-    m_height = inputs-1;
+    m_pin.resize( lines+1 );
+    
+    for( int i=1; i<=lines; i++ )
+    {
+        m_pin[i] = new Pin( 180, QPoint(-8,-8*lines+(i-1)*8+8 )
+                               , m_id+"-ePin"+QString::number(i), i, this );
+    }
+    m_height = lines-1;
     m_area = QRect( -2, -m_height*8-4, 4, m_height*8+8 );
+    Circuit::self()->update();
+}
+
+void Bus::initialize()
+{
+    if( !m_busPin->isConnected() ) return;
+    
+    //qDebug() << "\nBus::initialize()" << m_numLines;
+
+    for( int i=1; i<=m_numLines; i++ )
+    {
+        QList<ePin*> epins;
+        
+        if( m_pin[i]->isConnected() )
+        {
+            Pin* pin = m_pin[i];
+            eNode* enode = pin->getEnode();
+            
+            if( enode )
+            {
+                pin->findConnectedPins(); // All connected pins will register in eNode 
+                epins = enode->getSubEpins();
+                //foreach( ePin* epin, epins )  epin->setEnode( 0l );
+                //pin->setEnode( 0l );
+            }
+            eNode* busEnode = m_busPin->getEnode();
+            if( busEnode ) busEnode->addBusPinList( epins, m_startBit+i );
+        }
+    }
+}
+
+void Bus::inStateChanged( int msg )  // Called by m_busPin when removing
+{
+    if( msg != 3 ) return;                    // Only accept remove msgs
+    
+    for( int i=1; i<=m_numLines; i++ )
+    {
+        QList<ePin*> epins;
+        
+        if( m_pin[i]->isConnected() )
+        {
+            Pin* pin = m_pin[i];
+            eNode* enode = pin->getEnode();
+            
+            if( enode )
+            {
+                pin->findConnectedPins(); // All connected pins will register in eNode 
+                epins = enode->getSubEpins();
+                
+                eNode* enode = new eNode( m_id+"eNode"+QString::number( i ) );
+                foreach( ePin* epin, epins )  epin->setEnode( enode );
+            }
+        }
+    }
 }
 
 void Bus::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )
@@ -90,7 +136,7 @@ void Bus::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *w
     {
         QPen pen = p->pen();
 
-        if( m_driving )
+        /*if( m_driving )
         {
             pen.setColor( QColor( 200, 50, 50 ) );
             p->setPen(pen);
@@ -103,7 +149,7 @@ void Bus::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *w
             p->setPen(pen);
             p->drawLine( 1, 0, 5, 3 );
             p->drawLine( 1, 0, 5,-3 );
-        }
+        }*/
         pen.setColor( Qt::black );
         p->setPen(pen);
     }

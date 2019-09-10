@@ -31,6 +31,8 @@ eBJT::eBJT( std::string id )
     m_ePin.resize(3);
     
     m_gain = 100;
+    m_PNP = false;
+    m_BCdiodeOn = false;
     
     std::stringstream ssa;
     ssa << m_elmId << "-BEdiode";
@@ -38,22 +40,73 @@ eBJT::eBJT( std::string id )
     m_BEdiode->initEpins();
     setBEthr( 0.7 );
     
-    /*std::stringstream ssb;
+    std::stringstream ssb;
     ssb << m_elmId << "-BCdiode";
     m_BCdiode = new eDiode( ssb.str() );
-    m_BCdiode->initEpins();*/
+    m_BCdiode->initEpins();
 }
 eBJT::~eBJT()
 { 
     delete m_BEdiode;
-    //delete m_BCdiode;
+    delete m_BCdiode;
 }
 
 void eBJT::initialize()
 {
+     // C
+    {
+        eNode* enod0 = m_ePin[0]->getEnode();
+        if( enod0 )
+        {
+            enod0->addToNoLinList(this);
+            enod0->setSwitched( true );
+        }
+        if( m_BCdiodeOn )
+        {
+            if( m_PNP ) m_BCdiode->getEpin( 0 )->setEnode( enod0 );
+            else        m_BCdiode->getEpin( 1 )->setEnode( enod0 );
+        }
+    }
+     // E
+    {
+        eNode* enod1 = m_ePin[1]->getEnode();
+        if( enod1 )
+        {
+            enod1->addToNoLinList(this);
+            enod1->setSwitched( true );
+        }
+        
+        if( m_PNP ) m_BEdiode->getEpin( 0 )->setEnode( enod1 );
+        else        m_BEdiode->getEpin( 1 )->setEnode( enod1 );
+        
+    }
+     // B
+    {
+        eNode* enod2 = m_ePin[2]->getEnode();
+        if( enod2 ) enod2->addToNoLinList(this);
+        
+        if( m_PNP ) 
+        {
+            m_BEdiode->getEpin( 1 )->setEnode( enod2 );
+            if( m_BCdiodeOn ) m_BCdiode->getEpin( 1 )->setEnode( enod2 );
+        }
+        else
+        {
+            m_BEdiode->getEpin( 0 )->setEnode( enod2 );
+            if( m_BCdiodeOn ) m_BCdiode->getEpin( 0 )->setEnode( enod2 );
+        }
+    }
+    eResistor::initialize();
+}
+
+void eBJT::resetState()
+{
     //eResistor::setRes( 400/m_gain );
     eResistor::setAdmit( 0 );
     eResistor::stamp();
+
+    m_BEdiode->resetState();
+    if( m_BCdiodeOn ) m_BCdiode->resetState();
     
     m_accuracy = Simulator::self()->NLaccuracy();
     //m_stage = 0;
@@ -61,41 +114,6 @@ void eBJT::initialize()
     m_baseCurr = 0;
     m_voltE = 0;
     m_Efollow = false;
-    
-    if( m_ePin[0]->isConnected() ) // C
-    {
-        eNode* enod0 = m_ePin[0]->getEnode();
-        enod0->addToNoLinList(this);
-        
-        //if( m_PNP ) m_BCdiode->getEpin( 0 )->setEnode( enod0 );
-        //else        m_BCdiode->getEpin( 1 )->setEnode( enod0 );
-    }
-    if( m_ePin[1]->isConnected() ) // E
-    {
-        eNode* enod1 = m_ePin[1]->getEnode();
-        enod1->addToNoLinList(this);
-        
-        if( m_PNP ) m_BEdiode->getEpin( 0 )->setEnode( enod1 );
-        else        m_BEdiode->getEpin( 1 )->setEnode( enod1 );
-        
-    }
-    if( m_ePin[2]->isConnected() ) // B
-    {
-        eNode* enod2 = m_ePin[2]->getEnode();
-        enod2->addToNoLinList(this);
-        
-        if( m_PNP ) 
-        {
-            m_BEdiode->getEpin( 1 )->setEnode( enod2 );
-            //m_BCdiode->getEpin( 1 )->setEnode( enod2 );
-        }
-        else
-        {
-            m_BEdiode->getEpin( 0 )->setEnode( enod2 );
-            //m_BCdiode->getEpin( 0 )->setEnode( enod2 );
-        }
-    }
-    eResistor::initialize();
 }
 
 void eBJT::setVChanged() 
@@ -133,7 +151,6 @@ void eBJT::setVChanged()
             eResistor::setRes( 400/m_gain );
             eResistor::stamp();
         }
-        
         m_voltE = voltE;
     }
     double satK = 0;
@@ -183,14 +200,45 @@ void eBJT::setVChanged()
         eResistor::setAdmit( admit );
         eResistor::stamp();
         m_lastOut = admit;
+        //qDebug()<< QString::fromStdString( m_elmId )<<" voltBE"<<voltBE << " admit" <<admit;
     }
 }
 
-double eBJT::BEthr() {return m_BEthr;}
+double eBJT::BEthr()
+{
+    return m_BEthr;
+}
+
+void eBJT::setBEthr( double thr )
+{
+    if( thr == 0 ) thr = 0.7;
+    m_BEdiode->setThreshold( thr );
+    m_BEthr = thr;
+}
+
+void eBJT::setBCd( bool bcd ) 
+{ 
+    if( !bcd )
+    {
+        m_BCdiode->getEpin( 0 )->setEnode( 0l );
+        m_BCdiode->getEpin( 1 )->setEnode( 0l );
+    }
+    m_BCdiodeOn = bcd; 
+}
 
 void eBJT::initEpins()
 {
-    setNumEpins(3); 
+    std::stringstream sd;
+    sd << m_elmId << "-collector";
+    m_ePin[0] = new ePin( sd.str(), 0 );
+    
+    std::stringstream ss;
+    ss << m_elmId << "-emiter";
+    m_ePin[1] = new ePin( ss.str(), 1 ); 
+    
+    std::stringstream sg;
+    sg << m_elmId << "-base";
+    m_ePin[2] = new ePin( sg.str(), 2 );  
 }
 
 ePin* eBJT::getEpin( QString pinName )
@@ -202,9 +250,3 @@ ePin* eBJT::getEpin( QString pinName )
     return pin;
 }
 
-void eBJT::setBEthr( double thr )
-{
-    if( thr == 0 ) thr = 0.7;
-    m_BEdiode->setThreshold(thr);
-    m_BEthr = thr;
-}

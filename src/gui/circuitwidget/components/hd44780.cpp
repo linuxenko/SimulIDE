@@ -86,8 +86,6 @@ void Hd44780::initialize()
 {
     eNode* enode = m_pinEn->getEnode();// Register for clk changes callback
     if( enode ) enode->addToChangedFast(this);
-    
-    resetState();
 }
 
 void Hd44780::resetState()

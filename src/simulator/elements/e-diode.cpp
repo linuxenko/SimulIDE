@@ -25,12 +25,11 @@
 #include "simulator.h"
 
 eDiode::eDiode( std::string id ) 
-      : eResistor(id )
+      : eResistor( id )
 {
     m_imped = 0.6;
     m_threshold = 0.7;
     m_zenerV = 0;
-    m_resist = high_imp;
 }
 eDiode::~eDiode()
 { 
@@ -38,13 +37,6 @@ eDiode::~eDiode()
 
 void eDiode::initialize()
 {
-    m_resist = high_imp;
-    m_admit = 0;
-    m_converged = true;
-    m_voltPN  = 0;
-    m_deltaV  = 0;
-    m_current = 0;
-
     if( m_ePin[0]->isConnected() )
     {
         eNode* node = m_ePin[0]->getEnode();
@@ -60,19 +52,19 @@ void eDiode::initialize()
     eResistor::initialize();
 }
 
+void eDiode::resetState()
+{
+    m_resist = high_imp;
+    m_admit = 0;
+    m_converged = true;
+    m_voltPN  = 0;
+    m_deltaV  = 0;
+    m_current = 0;
+}
+
 void eDiode::setVChanged()
 {
     m_voltPN = m_ePin[0]->getVolt()-m_ePin[1]->getVolt();
-    
-    /*if( m_converged )
-    {
-        m_converged = false;
-        m_admit = 0;
-        eResistor::stamp();
-        m_ePin[0]->stampCurrent( 0 );
-        m_ePin[1]->stampCurrent( 0 );
-    }*/
-    //if( m_voltPN > 1e6 ) m_voltPN = m_threshold;
 
     double deltaR = m_imped;
     double deltaV = m_threshold;
@@ -87,7 +79,6 @@ void eDiode::setVChanged()
             deltaR = high_imp;
         }
     }
-    //if( deltaV < 0 ) deltaV = 0;
     //qDebug() <<"eDiode::setVChanged,  deltaR: "<< deltaR << "  deltaV" << deltaV << "m_voltPN" << m_voltPN<<m_threshold<<m_imped ;
     //qDebug() <<"eDiode::setVChanged : "<< (m_voltPN==m_threshold);
 
@@ -103,13 +94,12 @@ void eDiode::setVChanged()
         m_deltaV = deltaV;
 
         double current = deltaV/m_resist;
-        
+        //qDebug() <<"eDiode::setVChanged current: "<< current;
         if( deltaR == high_imp ) current = 0;
 
         m_ePin[0]->stampCurrent( current );
         m_ePin[1]->stampCurrent(-current );
     }
-    //else m_converged = true;
 }
 
 void eDiode::setThreshold( double threshold )

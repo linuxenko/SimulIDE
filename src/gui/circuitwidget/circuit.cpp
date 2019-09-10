@@ -21,6 +21,7 @@
 #include "itemlibrary.h"
 #include "mainwindow.h"
 #include "circuitwidget.h"
+#include "connectorline.h"
 #include "node.h"
 #include "utils.h"
 
@@ -128,6 +129,24 @@ void Circuit::removeItems()                     // Remove Selected items
     {
         bool isNode = comp->objectName().contains( "Node" ); // Don't remove Graphical Nodes
         if( comp->isSelected() && !isNode )  removeComp( comp );
+    }
+    
+    QList<QGraphicsItem*> itemlist = selectedItems();
+    while( !itemlist.isEmpty() )
+    {
+        QList<Connector*> connectors;
+        
+        foreach( QGraphicsItem* item, itemlist )
+        {
+            ConnectorLine* line =  qgraphicsitem_cast<ConnectorLine* >( item );
+            if( line->objectName() == "" ) 
+            {
+                Connector* con = line->connector();
+                if( !connectors.contains( con ) ) connectors.append( con );
+            }
+        }
+        foreach( Connector* con, connectors ) con->remove();
+        itemlist = selectedItems();
     }
     if( pauseSim ) Simulator::self()->runContinuous();
 }
@@ -352,7 +371,7 @@ Pin* Circuit::findPin( int x, int y, QString id )
 //qDebug()<< it->scenePos() << pointList.first().toInt()<< pointList.at(1).toInt();
         if( pin )
         {
-            if( pin->itemID().left(1) == id.left(1) ) // Test if names start by same letter
+            if( pin->pinId().left(1) == id.left(1) ) // Test if names start by same letter
             {
                 //qDebug() <<"FIND BY POS: startpin"<<startpinid<<pinId;
                 return pin;
@@ -458,8 +477,8 @@ void Circuit::loadDomDoc( QDomDocument* doc )
                 {
                     Connector* con  = new Connector( this, type, id, startpin, endpin );
 
-                    element.setAttribute( "startpinid", startpin->itemID() );
-                    element.setAttribute(   "endpinid", endpin->itemID() );
+                    element.setAttribute( "startpinid", startpin->pinId() );
+                    element.setAttribute(   "endpinid", endpin->pinId() );
 
                     loadProperties( element, con );
 
@@ -494,8 +513,8 @@ void Circuit::loadDomDoc( QDomDocument* doc )
                 }
                 else // Start or End pin not found
                 {
-                    if( !startpin ) qDebug() << "\n   ERROR!!  Circuit::loadCircuit:  null startpin in " << itemId << startpinid;
-                    if( !endpin )   qDebug() << "\n   ERROR!!  Circuit::loadCircuit:  null endpin in "   << itemId << endpinid;
+                    if( !startpin ) qDebug() << "\n   ERROR!!  Circuit::loadDomDoc:  null startpin in " << itemId << startpinid;
+                    if( !endpin )   qDebug() << "\n   ERROR!!  Circuit::loadDomDoc:  null endpin in "   << itemId << endpinid;
                     m_error = 1;
                 }
             }
@@ -813,21 +832,20 @@ void Circuit::loadObjectProperties( QDomElement element, QObject* Item )
 {
     const QMetaObject* metaobject = Item->metaObject();
     int count = metaobject->propertyCount();
+    
     for( int i=0; i<count; ++i )
     {
         QMetaProperty metaproperty = metaobject->property(i);
         const char* chName = metaproperty.name();
-        const char* name = chName;
-        
-        if( !element.hasAttribute( name ) ) // Take care of new capitalization in some properties
-        {
-            QString n = name;
-            n.replace(0, 1, n[0].toLower());
-            name = n.toLatin1();
-        }
-        QVariant value( element.attribute( name ) );
-        
+        QString n = chName;
 
+        if( !element.hasAttribute( chName ) ) // Take care of new capitalization in some properties
+        {
+            n.replace(0, 1, n[0].toLower());
+            if( !element.hasAttribute( n.toUtf8() ) ) continue;
+        }
+        QVariant value( element.attribute( n.toUtf8() ) );
+        
         if     ( metaproperty.type() == QVariant::Int    ) Item->setProperty( chName, value.toInt() );
         else if( metaproperty.type() == QVariant::Double ) Item->setProperty( chName, value.toDouble() );
         else if( metaproperty.type() == QVariant::PointF ) Item->setProperty( chName, value.toPointF() );
@@ -835,7 +853,7 @@ void Circuit::loadObjectProperties( QDomElement element, QObject* Item )
         else if( metaproperty.type() == QVariant::StringList )
         {
             QStringList list= value.toString().split(",");
-            Item->setProperty( name, list );
+            Item->setProperty( chName, list );
         }
         else Item->setProperty( chName, value );
         //else qDebug() << "    ERROR!!! Circuit::loadObjectProperties\n  unknown type:  "<<"name "<<name<<"   value "<<value ;
@@ -880,6 +898,8 @@ void Circuit::paste( QPointF eventpoint )
 {
     bool pauseSim = Simulator::self()->isRunning();
     if( pauseSim ) Simulator::self()->stopSim();
+    
+    bool animate = m_animate;
 
     saveState();
 
@@ -890,6 +910,8 @@ void Circuit::paste( QPointF eventpoint )
     loadDomDoc( &m_copyDoc );
 
     m_pasting = false;
+    
+    setAnimate( animate );
 
     if( pauseSim ) Simulator::self()->runContinuous();
 }
@@ -918,12 +940,17 @@ void Circuit::createSubcircuit()
                 QString name = property.name();
                 
                 if( !name.contains( "Show" ) 
-                 && !name.contains( "Unit" ) )
+                 && !name.contains( "Unit" ) 
+                 && !name.contains( "itemtype" ) )
                 {
                     QString propName = property.name();
                     QString valString = "";
                     
-                    if( propName == "Resistance" )
+                    if(( propName == "Resistance" ) 
+                     | ( propName == "Capacitance" )
+                     | ( propName == "Inductance" )
+                     | ( propName == "Voltage" )
+                     | ( propName == "Current" ))
                     {
                         valString = QString::number( component->getmultValue() );
                     }
@@ -934,7 +961,6 @@ void Circuit::createSubcircuit()
                         QVariant value = component->property( charname );
                         valString = value.toString();
                     }
-                    
                     if( name == "Functions" ) valString = valString.replace("&", "&amp;");
                     if( name == "id") compId = valString;
                     else
@@ -953,7 +979,7 @@ void Circuit::createSubcircuit()
 
     int nodes = 0;
     foreach( eNode* node,  eNodeList  ) // Get all the connections in each eNode
-    {
+    {//qDebug() << "\nCircuit::createSubcircuit New Node ";
         QStringList pinConList;
         QList<ePin*> pinList =  node->getEpins();
 
@@ -962,20 +988,25 @@ void Circuit::createSubcircuit()
             Pin* pin = (static_cast<Pin*>(epin));
             Component* component = pin->component();
             QString    compId    = component->itemID();
-
-            QString test = compId.toLower();
-            if( test.contains("packagepin") )
+            QString    compType  = component->itemType();
+            QString    pinId     = pin->pinId().split( "-" ).last().replace( " ", "" );
+            
+            if( compType == "Package" )
             {
                 // Take care about "packagepin" bad spelling
-                compId = compId.replace( test.indexOf("packagepin"), 10, "packagePin");
-                pinConList.prepend( compId );
+                //compId = compId.replace( test.indexOf("packagepin"), 10, "packagePin");
+                //pinConList.prepend( compId );
+                
+                if( pin->inverted() && !pinId.startsWith( "!" ) ) pinId = "!"+pinId;
+                
+                pinConList.prepend( "Package_"+pinId );
             }
             else if( compId.contains( "Node") ) ;
             else
             {
                 pinConList.append( compId );
-                pinConList.append( component->itemType() );
-                pinConList.append( QString::fromStdString( epin->getId() ).split( "-" ).last() );
+                pinConList.append( compType );
+                pinConList.append( pinId );
             }
         }
         QString conType = "Node";
@@ -990,6 +1021,7 @@ void Circuit::createSubcircuit()
 
             pinConList << compty << compId << pin1+"-"+pin2;
             connectionList.append( pinConList );
+            //qDebug() << "Circuit::createSubcircuit PackagePin to pin\n" << pinConList;
         }
         else                                      // Multiple connection
         {
@@ -998,7 +1030,8 @@ void Circuit::createSubcircuit()
 
             foreach( QString entry, pinConList )
             {
-                if( entry.contains("packagePin") ) // No Node, connection to packagePin
+                //if( entry.contains("packagePin") ) // No Node, connection to packagePin Package
+                if( entry.contains("Package") ) // No Node, connection to packagePin
                 {
                     pin2 = entry;
                     pinConList.removeOne( entry );
@@ -1015,6 +1048,7 @@ void Circuit::createSubcircuit()
 
                 pinConList2 << compId << compty << pin1+"-"+pin2;
                 connectionList.append( pinConList2 );
+                //qDebug() << "Circuit::createSubcircuit Multiple connection\n" << pinConList2;
             }
             if( isNode ) nodes++;
         }
@@ -1032,6 +1066,7 @@ void Circuit::createSubcircuit()
         QString conect = list.takeFirst();
 
         subcircuit += "    <item itemtype=\""+compty+"\"\n";
+        //subcircuit += "    <item ";
         subcircuit += compList[compId];                        // Properties
         subcircuit += "        connections=\"";
         subcircuit += "\n        "+conect;
@@ -1063,7 +1098,7 @@ void Circuit::createSubcircuit()
     fileName = QFileDialog::getSaveFileName( MainWindow::self()
                             , tr( "Create Subcircuit" )
                             , fileName
-                            , "(*.*)"  );
+                            , "Subcircuits (*.subcircuit);;All files (*)"  );
     
     QFile file( fileName );
 
@@ -1108,7 +1143,7 @@ void Circuit::newconnector( Pin*  startpin )
 void Circuit::closeconnector( Pin* endpin )
 {
     m_con_started = false;
-    new_connector->closeCon( endpin );
+    new_connector->closeCon( endpin, /*connect=*/true );
 }
 
 void Circuit::constarted( bool started) { m_con_started = started; }
@@ -1234,4 +1269,5 @@ void Circuit::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
 }
 
 #include "moc_circuit.cpp"
+
 

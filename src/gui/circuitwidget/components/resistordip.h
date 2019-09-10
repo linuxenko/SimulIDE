@@ -21,11 +21,11 @@
 #define RESISTORDIP_H
 
 #include "component.h"
-#include "e-resistor.h"
+#include "e-resistordip.h"
 
 class LibraryItem;
 
-class MAINMODULE_EXPORT ResistorDip : public Component
+class MAINMODULE_EXPORT ResistorDip : public Component, public eResistorDip
 {
     Q_OBJECT
     Q_PROPERTY( int    Size       READ size     WRITE setSize    DESIGNABLE true USER true )
@@ -57,10 +57,7 @@ class MAINMODULE_EXPORT ResistorDip : public Component
         virtual void remove();
 
     private:
-        std::vector<eResistor*> m_resistor;
         std::vector<Pin*> m_pin;
-        
-        int m_size;
 };
 
 #endif

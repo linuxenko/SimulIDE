@@ -54,15 +54,6 @@ void Clock::simuClockStep()
     }
 }
 
-void Clock::setFreq( int freq )
-{
-    m_stepsPC = (int)1e6/freq;
-    
-    if (m_stepsPC < 1) m_stepsPC = 1;
-    
-    m_freq = 1e6/(int)m_stepsPC;
-}
-
 void Clock::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )
 {
     Component::paint( p, option, widget );

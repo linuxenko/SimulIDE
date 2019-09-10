@@ -26,8 +26,8 @@
 class MAINMODULE_EXPORT ClockBase : public LogicInput
 {
     Q_OBJECT
-    Q_PROPERTY( int  Freq    READ freq    WRITE setFreq   DESIGNABLE true USER true )
-    Q_PROPERTY( bool Running READ running WRITE setRunning )
+    Q_PROPERTY( double Freq    READ freq    WRITE setFreq   DESIGNABLE true USER true )
+    Q_PROPERTY( bool   Running READ running WRITE setRunning )
 
     public:
     
@@ -38,8 +38,8 @@ class MAINMODULE_EXPORT ClockBase : public LogicInput
 
         virtual void updateStep();
         
-        int freq();
-        virtual void setFreq( int freq );
+        double freq();
+        virtual void setFreq( double freq );
         
         bool running();
         virtual void setRunning( bool running );
@@ -54,10 +54,10 @@ class MAINMODULE_EXPORT ClockBase : public LogicInput
     protected:
         bool m_isRunning;
         
-        int m_freq;
-        int m_step;
+        double m_freq;
         
-        double m_stepsPC;
+        int m_step;
+        int m_stepsPC;
 };
 
 #endif

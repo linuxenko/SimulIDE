@@ -59,7 +59,6 @@ Arduino::Arduino( QObject* parent, QString type, QString id )
        : McuComponent( parent, type, id )
 {
     m_pSelf = this;
-    m_dataFile = "arduinos.xml";
     m_processor = AvrProcessor::self();
     
     setLabelPos( 100,-21, 0); // X, Y, Rot
@@ -86,19 +85,14 @@ Arduino::~Arduino()
 void Arduino::remove()
 {
     m_pb5Pin->setEnode( 0l );
-    
-    Circuit::self()->compList()->removeOne( m_boardLed );
-    Simulator::self()->remFromUpdateList( m_boardLed );
-    
-    delete m_ground;
-    delete m_groundpin;
-    delete m_boardLed;
-    
-    Simulator::self()->remFromEnodeList( m_groundEnode, true );
-    Simulator::self()->remFromEnodeList( m_boardLedEnode, true );
-    Simulator::self()->remFromElementList( this );
-
+    m_boardLed->getEpin(0)->setEnode( 0l );
     McuComponent::remove();
+
+    Simulator::self()->remFromEnodeList( m_groundEnode, true );
+    Simulator::self()->remFromUpdateList( m_boardLed );
+    Circuit::self()->compList()->removeOne( m_boardLed );
+
+    delete m_ground;
 }
 
 void Arduino::initialize()
@@ -117,7 +111,7 @@ void Arduino::initialize()
         m_boardLedEnode = enod;
     }
     else return;                       // Already connected to boardLed eNode: Do nothing
-    
+    //qDebug() << "Arduino::initialize() Pin 13"<<enod->itemId() ;
     m_boardLed->getEpin(0)->setEnode(enod);
 }
 
@@ -159,7 +153,7 @@ void Arduino::initBoard()
         pin->setLength(0);
         pin->setFlag( QGraphicsItem::ItemStacksBehindParent, false );
         
-        QString pinId = pin->itemID();
+        QString pinId = pin->pinId();
         QString type  = mcuPin->ptype();
         if     ( pinId.contains( "GND" ) )                   // Gnd Pins
         {    

@@ -29,6 +29,7 @@ class MAINMODULE_EXPORT eCapacitor : public eResistor
         ~eCapacitor();
 
         virtual void initialize();
+        virtual void resetState();
         void setVChanged();
 
         double cap();

@@ -21,19 +21,25 @@
 
 
 eBinCounter::eBinCounter( std::string id )
-          : eLogicDevice( id )
+           : eLogicDevice( id )
 {
     m_TopValue = 1;
+    resetState();
 }
 eBinCounter::~eBinCounter() {}
 
 void eBinCounter::initialize()
 {
-    m_Counter = 0;
     eNode* enode = m_input[0]->getEpin()->getEnode();              // Reset pin
     if( enode ) enode->addToChangedFast(this);
     
     eLogicDevice::initialize();
+}
+
+void eBinCounter::resetState()
+{
+    m_Counter = 0;
+    eLogicDevice::resetState();
 }
 
 void eBinCounter::createPins()

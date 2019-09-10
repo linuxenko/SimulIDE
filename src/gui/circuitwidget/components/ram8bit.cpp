@@ -58,14 +58,14 @@ Ram8bit::Ram8bit( QObject* parent, QString type, QString id )
             << "IR10 CS"
             
             // Outputs:
-            << "OR01 D0"
-            << "OR02 D1"
-            << "OR03 D2"
-            << "OR04 D3"
-            << "OR05 D4"
-            << "OR06 D5"
-            << "OR07 D6"
-            << "OR08 D7"
+            << "OR01 D0 "
+            << "OR02 D1 "
+            << "OR03 D2 "
+            << "OR04 D3 "
+            << "OR05 D4 "
+            << "OR06 D5 "
+            << "OR07 D6 "
+            << "OR08 D7 "
             ;
     init( pinList );                   // Create Pins Defined in pinList
      

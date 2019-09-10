@@ -60,7 +60,6 @@ AVRComponent::AVRComponent( QObject* parent, QString type, QString id )
             : McuComponent( parent, type, id )
 {
     m_pSelf = this;
-    m_dataFile = "avrs.xml";
     m_processor = AvrProcessor::self();
 
     initChip();

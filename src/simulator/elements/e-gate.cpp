@@ -46,6 +46,7 @@ void eGate::initialize()
     }
     m_oscCtrl  = false;
     m_oscCount = 0;
+    m_lastStep = Simulator::self()->step();
 }
 
 void eGate::setVChanged()

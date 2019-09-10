@@ -43,7 +43,7 @@ void AVRComponentPin::attach( avr_t*  AvrProcessor )
         QString portName = "PORT";
         portName.append( m_id.at(1) );
         int portAddr = BaseProcessor::self()->getRegAddress( portName );
-        if( !portAddr )
+        if( portAddr < 0 )
         {
             qDebug()  << tr("Register descriptor file for this AVR processor %1 is corrupted - cannot attach pin").arg(AvrProcessor->mmcu)
                       << portName << m_pinN
@@ -65,7 +65,7 @@ void AVRComponentPin::attach( avr_t*  AvrProcessor )
         QString ddrName = "DDR";
         ddrName.append( m_id.at(1) );
         int ddrAddr = BaseProcessor::self()->getRegAddress( ddrName );
-        if( !ddrAddr )
+        if( ddrAddr < 0 )
         {
             qDebug()  << tr("Register descriptor file for this AVR processor %1 is corrupted - cannot attach pin \n").arg(AvrProcessor->mmcu)
                       << ddrName << m_pinN
@@ -119,9 +119,11 @@ void AVRComponentPin::attach( avr_t*  AvrProcessor )
          m_pinType = 24;
     }
     m_attached = true;
+    
+    resetState();
 }
 
-void AVRComponentPin::initialize() 
+void AVRComponentPin::resetState() 
 {
     if( m_pinType == 1 )                         // Initialize irq flags
     {
@@ -137,7 +139,6 @@ void AVRComponentPin::initialize()
                       << m_port << m_pinN;
         }
     }
-    McuComponentPin::initialize();
 }
 
 void AVRComponentPin::setVChanged()
@@ -176,7 +177,8 @@ void AVRComponentPin::setPullup( uint32_t value )
         eSource::setImp( high_imp );
         m_voltOut = m_voltLow;
     }
-    if( !(m_ePin[0]->isConnected()) ) {
+    if( !(m_ePin[0]->isConnected()) ) 
+    {
         avr_raise_irq( m_Write_stat_irq, (value>0)? 1:0 );
         return;
     }
@@ -191,8 +193,7 @@ void AVRComponentPin::setPullup( uint32_t value )
 void AVRComponentPin::set_pinVoltage( uint32_t value )
 {
     if( m_isInput ) return;
-    //qDebug() << "Port" << m_port << m_id << "   estado: " << value;
-
+    
     //if( m_isInput ) setPullup( value>0 ); // Activate pullup when port is written while input
 
     if( value > 0 ) m_voltOut = m_voltHigh;
@@ -200,9 +201,11 @@ void AVRComponentPin::set_pinVoltage( uint32_t value )
     
     if( !(m_ePin[0]->isConnected()) ) return;
     
-    //eSource::setOut( value >0 );
-    //eSource::stampOutput();
-    m_ePin[0]->stampCurrent( m_voltOut/m_imp ); // Save some calls
+    //qDebug() << "\nPort" << m_port << m_id << "   estado: " << value<<m_voltHigh<<m_voltLow<<m_imp;
+    
+    eSource::setOut( value > 0 );
+    eSource::stampOutput();
+    //m_ePin[0]->stampCurrent( m_voltOut/m_imp ); // Save some calls
     //if( m_ePin[0]->getEnode()->needFastUpdate() ) 
     {
         Simulator::self()->runExtraStep();

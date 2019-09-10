@@ -44,5 +44,4 @@ class MAINMODULE_EXPORT eInBus : public eLogicDevice
         
 };
 
-
 #endif

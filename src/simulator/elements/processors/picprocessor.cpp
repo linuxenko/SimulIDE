@@ -118,14 +118,15 @@ bool PicProcessor::loadFirmware( QString fileN )
 
     initialized();
     
-    m_pendingIpc = 0;
     m_nextCycle  = m_mcuStepsPT/cpi;
     if( m_nextCycle == 0 ) m_nextCycle = 1;
     
     int address = getRegAddress( "RCSTA" );
-    Register* rcsta = m_pPicProcessor->rma.get_register( address );
-    m_rcsta = dynamic_cast<_RCSTA*>(rcsta); 
-
+    if( address >= 0 )
+    {
+        Register* rcsta = m_pPicProcessor->rma.get_register( address );
+        m_rcsta = dynamic_cast<_RCSTA*>(rcsta);
+    }
     return true;
 }
 
@@ -133,34 +134,23 @@ void PicProcessor::step()                 // Run 1 step
 {
     if( !m_loadStatus || m_resetStatus || m_mcuStepsPT==0 ) return;
     
-    double dCycles = (double)m_mcuStepsPT*m_ipc + m_pendingIpc;
-    
-    int cycles = (int)dCycles;
-    
-    m_pendingIpc = dCycles-(double)cycles;
-
-    for( int k=0; k<cycles; k++ ) 
+    while( m_nextCycle >= 1 )
     {
         m_pPicProcessor->step_cycle();
+        m_nextCycle -= 1;
     }
+    m_nextCycle += m_mcuStepsPT*m_ipc;
 }
 
 void PicProcessor::stepOne() 
 {
-    if( m_nextCycle > 0 )
+    m_pPicProcessor->step_cycle();
+    m_nextCycle -= 1;
+    
+    while( m_nextCycle < 1 )
     {
-        m_pPicProcessor->step_cycle();
-        m_nextCycle--;
-    }
-    if( m_nextCycle == 0 )
-    {
-        double stepsPT = (double)McuComponent::self()->freq();
-        double dCycles = stepsPT*m_ipc + m_pendingIpc;
-        int cycles = (int)dCycles;
-        m_pendingIpc = dCycles-(double)cycles;
-        m_nextCycle = cycles;
-        
         runSimuStep(); // 1 simu step = 1uS
+        m_nextCycle += McuComponent::self()->freq()*m_ipc;
     }
 }
 

@@ -21,16 +21,14 @@
 #define BUS_H
 
 #include "itemlibrary.h"
-#include "logiccomponent.h"
+#include "component.h"
 #include "e-bus.h"
 
-class MAINMODULE_EXPORT Bus : public LogicComponent, public eBus
+class MAINMODULE_EXPORT Bus : public Component, public eBus
 {
     Q_OBJECT
-    //Q_PROPERTY( double Input_High_V READ inputHighV WRITE setInputHighV DESIGNABLE true USER true )
-    //Q_PROPERTY( double Input_Low_V  READ inputLowV  WRITE setInputLowV  DESIGNABLE true USER true )
-    //Q_PROPERTY( double Input_Imped  READ inputImp   WRITE setInputImp   DESIGNABLE true USER true )
-    Q_PROPERTY( int    Num_Bits     READ numInps    WRITE setNumInps    DESIGNABLE true USER true )
+    Q_PROPERTY( int Num_Bits  READ numLines    WRITE setNumLines    DESIGNABLE true USER true )
+    Q_PROPERTY( int Start_Bit READ startBit    WRITE setStartBit    DESIGNABLE true USER true )
 
     public:
         Bus( QObject* parent, QString type, QString id );
@@ -39,11 +37,18 @@ class MAINMODULE_EXPORT Bus : public LogicComponent, public eBus
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem *libraryItem();
         
-        virtual void setNumInps( int inputs );
+        void setNumLines( int lines );
+        
+        virtual void initialize();
+        void inStateChanged( int msg );
 
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
         
     protected:
+        int m_height;
+        
+        Pin* m_busPin;
 };
 
 #endif
+

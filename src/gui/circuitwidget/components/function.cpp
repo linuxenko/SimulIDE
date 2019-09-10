@@ -22,6 +22,9 @@
 #include "circuit.h"
 #include "itemlibrary.h"
 
+static const char* Function_properties[] = {
+    QT_TRANSLATE_NOOP("App::Property","Functions")
+};
 
 Component* Function::construct( QObject* parent, QString type, QString id )
 {
@@ -42,6 +45,8 @@ Function::Function( QObject* parent, QString type, QString id )
         : LogicComponent( parent, type, id )
         , eFunction( id.toStdString() )
 {
+    Q_UNUSED( Function_properties );
+    
     setNumInps( 2 );                           // Create Input Pins
     setNumOuts( 1 );
     
@@ -174,7 +179,8 @@ void Function::onbuttonclicked()
     }
     bool ok;
     QString text = QInputDialog::getText(0l, tr("Set Function"),
-                                             "Output "+QString::number(i)+tr(" Function:"), QLineEdit::Normal,
+                                             "Output "+QString::number(i)+tr(" Function:"), 
+                                             QLineEdit::Normal,
                                              m_funcList[i], &ok);
     if( ok && !text.isEmpty() )
     {

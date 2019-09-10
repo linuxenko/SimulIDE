@@ -88,6 +88,11 @@ CurrSource::~CurrSource()
 { 
 }
 
+void CurrSource::initialize()
+{
+    m_changed = true;
+}
+
 void CurrSource::updateStep()
 {
     if( m_changed ) 

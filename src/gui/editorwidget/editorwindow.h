@@ -36,11 +36,14 @@ class EditorWindow : public QWidget
  static EditorWindow* self() { return m_pSelf; }
 
         bool close();
+        
+        void enableStepOver( bool en );
 
     public slots:
         void loadFile(const QString &fileName);
         void pause();
         void stop();
+        void run();
         bool save();
         
     private slots:
@@ -58,8 +61,8 @@ class EditorWindow : public QWidget
         void paste();
         void undo();
         void redo();
+        
         void debug();
-        void run();
         void step();
         void stepOver();
         void reset();
@@ -76,6 +79,7 @@ class EditorWindow : public QWidget
         void writeSettings();
         void enableFileActs( bool enable );
         void enableDebugActs( bool enable );
+        void setStepActs();
         void keyPressEvent(QKeyEvent *event);
 
         bool maybeSave();

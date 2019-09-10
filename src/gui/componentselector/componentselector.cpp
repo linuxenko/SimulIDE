@@ -145,8 +145,13 @@ void ComponentSelector::loadXml( const QString &setFile )
                     icon = compSetDir.absoluteFilePath( element.attribute("icon") );
                 }
                 QString name = element.attribute( "name" );
-                addItem( name, category, icon, type );
+                
                 m_xmlFileList[ name ] = setFile;   // Save xml File used to create this item
+                
+                if( element.hasAttribute("info") ) name += "???"+element.attribute( "info" );
+                
+                addItem( name, category, icon, type );
+                
                 node = node.nextSibling();
             }
         }
@@ -180,8 +185,15 @@ void ComponentSelector::addItem( LibraryItem* libItem )
     }
 }
 
-void ComponentSelector::addItem( const QString &name, const QString &_category, const QString &icon, const QString &type )
+void ComponentSelector::addItem( const QString &caption, const QString &_category, const QString &icon, const QString &type )
 {
+    QStringList nameFull = caption.split( "???" );
+    QString name = nameFull.first();
+    QString info = "";
+    if( nameFull.size() > 1 ) info = nameFull.last();
+    
+    //qDebug()<<name<<info;
+    
     bool hidden = MainWindow::self()->settings()->value( name+"/hidden" ).toBool();
 
     QTreeWidgetItem* catItem = 0l;
@@ -246,16 +258,26 @@ void ComponentSelector::addItem( const QString &name, const QString &_category, 
     QTreeWidgetItem* item =  new QTreeWidgetItem(0);
     QFont font = item->font(0);
     
-    if( type == "" ) font.setPixelSize( 13*MainWindow::self()->fontScale() );
-    else             font.setPixelSize( 11*MainWindow::self()->fontScale() );
+    double fontScale = MainWindow::self()->fontScale();
+    if( type == "" ) font.setPixelSize( 12*fontScale );
+    else             font.setPixelSize( 11*fontScale );
     font.setWeight( QFont::Bold );
     
     item->setFont( 0, font );
-    item->setText( 0, name );
     item->setFlags( QFlag(32) );
     item->setIcon( 0, QIcon(icon) );
+    item->setText( 0, name+info );
     item->setData( 0, Qt::UserRole, type );
-
+    
+    if( ( type == "Subcircuit" )
+      ||( type == "PIC" )
+      ||( type == "AVR" )
+      ||( type == "Arduino" ) )
+    {
+         item->setData( 0, Qt::WhatsThisRole, name );
+    }
+    else item->setData( 0, Qt::WhatsThisRole, type );
+    
     catItem->addChild( item );
     item->setHidden( hidden );
     if( MainWindow::self()->settings()->contains( name+"/collapsed" ) )
@@ -303,14 +325,13 @@ void ComponentSelector::slotItemClicked( QTreeWidgetItem* item, int column )
     if( !item ) return;
     
     QString type = item->data(0, Qt::UserRole).toString();
-    //m_lastItemClicked = type;
     
     if( type == "" ) return;
     
     QMimeData* mimeData = new QMimeData;
     
-    QString name = item->text(0);
-    //qDebug() <<"ComponentSelector::slotItemClicked"<<name;
+    QString name = item->data(0, Qt::WhatsThisRole).toString(); //item->text(0);
+    //qDebug() <<"ComponentSelector::slotItemClicked"<<name<<type;
     mimeData->setText( name );
     mimeData->setHtml( type );              // esto hay que revisarlo
     

@@ -44,6 +44,7 @@
 #include "ellipse.h"
 #include "flipflopd.h"
 #include "flipflopjk.h"
+#include "frequencimeter.h"
 #include "fulladder.h"
 #include "function.h"
 #include "gate_and.h"
@@ -66,6 +67,7 @@
 #include "logicinput.h"
 #include "mosfet.h"
 #include "mux.h"
+#include "mux_analog.h"
 #include "op_amp.h"
 #include "oscope.h"
 //#include "outbus.h"
@@ -84,8 +86,10 @@
 #include "sevensegment.h"
 #include "sevensegment_bcd.h"
 #include "shiftreg.h"
+#include "sr04.h"
 #include "stepper.h"
 #include "subcircuit.h"
+#include "subpackage.h"
 #include "switch.h"
 #include "switchdip.h"
 #include "textcomponent.h"
@@ -114,6 +118,7 @@ void ItemLibrary::loadItems()
     addItem( Probe::libraryItem() );
     addItem( Voltimeter::libraryItem() );
     addItem( Amperimeter::libraryItem() );
+    addItem( Frequencimeter::libraryItem() );
     addItem( Oscope::libraryItem() );
     // Sources
     addItem( LogicInput::libraryItem() );
@@ -142,6 +147,7 @@ void ItemLibrary::loadItems()
     addItem( OpAmp::libraryItem() );
     addItem( Mosfet::libraryItem() );
     addItem( BJT::libraryItem() );
+    addItem( MuxAnalog::libraryItem() );
     // Outputs
     addItem( Led::libraryItem() );
     addItem( LedBar::libraryItem() );
@@ -158,8 +164,9 @@ void ItemLibrary::loadItems()
     addItem( PICComponent::libraryItem() );
     addItem( AVRComponent::libraryItem() );
     addItem( Arduino::libraryItem() );
+    addItem( new LibraryItem( tr("Sensors"),tr("Micro"), "1to2.png","", 0l ) );
+    addItem( SR04::libraryItem() );
     // Logic
-    addItem( SevenSegmentBCD::libraryItem() );
     addItem( new LibraryItem( tr("Gates"),tr("Logic"), "gates.png","", 0l ) );
     addItem( new LibraryItem( tr("Arithmetic"),tr("Logic"), "2to2.png","", 0l ) );
     addItem( new LibraryItem( tr("Memory"),tr("Logic"), "subc.png","", 0l ) );
@@ -184,8 +191,7 @@ void ItemLibrary::loadItems()
     addItem( ADC::libraryItem() );
     addItem( DAC::libraryItem() );
     addItem( Bus::libraryItem() );
-//    addItem( OutBus::libraryItem() );
-//    addItem( InBus::libraryItem() );
+    addItem( SevenSegmentBCD::libraryItem() );
     addItem( Ram8bit::libraryItem() );
     addItem( I2CRam::libraryItem() );
     addItem( I2CToParallel::libraryItem() );
@@ -197,12 +203,13 @@ void ItemLibrary::loadItems()
     addItem( Rectangle::libraryItem() );
     addItem( Ellipse::libraryItem() );
     addItem( Line::libraryItem() );
+    
+    addItem( SubPackage::libraryItem() );
 }
 
 void ItemLibrary::addItem( LibraryItem* item )
 {
-    if (!item)
-        return;
+    if (!item) return;
     m_items.append(item);
 }
 
@@ -301,6 +308,8 @@ QString* LibraryItem::help()
         QString locale   = "_"+QLocale::system().name().split("_").first();
         QString type = m_type;
         QString dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/"+type.toLower()+locale+".txt" );
+        
+        type= type.replace( " ", "" );
         
         if( dfPath == "" ) 
             dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/"+type.toLower()+".txt" );

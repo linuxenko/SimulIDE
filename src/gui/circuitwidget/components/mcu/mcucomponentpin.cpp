@@ -50,7 +50,9 @@ McuComponentPin::McuComponentPin( McuComponent *mcuComponent, QString id, QStrin
      || type == "vcc" 
      || type == "unused" 
      || type == "nc" ) 
-     this->pin()->setUnused( true );
+     pin->setUnused( true );
+     
+    resetState();
 }
 
 McuComponentPin::~McuComponentPin()
@@ -66,7 +68,7 @@ void McuComponentPin::resetState()
 {
     if( m_pinType == 1 )
     {
-        //eSource::setImp( high_imp );// All  IO Pins should be inputs at start-up
+        eSource::setImp( high_imp );// All  IO Pins should be inputs at start-up
         eSource::setOut(false);
         eSource::stamp();
     }
@@ -74,13 +76,12 @@ void McuComponentPin::resetState()
 
 void McuComponentPin::initialize()
 {
-    if( m_pinType == 1 ) eSource::setImp( high_imp );// All  IO Pins should be inputs at start-up
+    //if( m_pinType == 1 ) eSource::setImp( high_imp );// All  IO Pins should be inputs at start-up
     
     if( m_ePin[0]->isConnected() && m_attached )
         m_ePin[0]->getEnode()->addToChangedFast(this);
         
     //if( m_pinType == 21 ) BaseProcessor::self()->hardReset( true );
-
     eSource::initialize();
 }
 

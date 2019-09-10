@@ -42,6 +42,7 @@
         <file alias="powerdeb.png">../src/icons/mainwindow/powerdeb.png</file>
         
         <file alias="remove.png">../src/icons/mainwindow/remove.png</file>
+        <file alias="properties.png">../src/icons/mainwindow/properties.png</file>
         <file alias="rotateCW.png">../src/icons/mainwindow/rotateCW.png</file>
         <file alias="rotateCCW.png">../src/icons/mainwindow/rotateCCW.png</file>
         <file alias="rotate180.png">../src/icons/mainwindow/rotate180.png</file>
@@ -53,6 +54,10 @@
         <file alias="closeterminal.png">../src/icons/mainwindow/closeterminal.png</file>
         <file alias="saveimage.png">../src/icons/mainwindow/saveimage.png</file>
         
+        <file alias="rename.png">../src/icons/mainwindow/rename.png</file>
+        <file alias="invert.png">../src/icons/mainwindow/invert.png</file>
+        <file alias="unuse.png">../src/icons/mainwindow/unuse.png</file>
+        
         <file alias="breakpoint.png">../src/icons/mainwindow/breakpoint.png</file>
         <file alias="nobreakpoint.png">../src/icons/mainwindow/nobreakpoint.png</file>
     
@@ -63,11 +68,13 @@
         <file alias="voltage.png">../src/icons/components/voltage.png</file>
         <file alias="ic2.png">../src/icons/components/ic2.png</file>
         <file alias="subc.png">../src/icons/components/subc.png</file>
+        <file alias="subc2.png">../src/icons/components/subc2.png</file>
         <file alias="ground.png">../src/icons/components/ground.png</file>
         <file alias="voltsource.png">../src/icons/components/voltsource.png</file>
         <file alias="capacitor.png">../src/icons/components/capacitor.png</file>
         <file alias="elcapacitor.png">../src/icons/components/elcapacitor.png</file>
         <file alias="seven_segment.png">../src/icons/components/seven_segment.png</file>
+        <file alias="7segbcd.png">../src/icons/components/7segbcd.png</file>
         <file alias="switch.png">../src/icons/components/switch.png</file>
         <file alias="switchdip.png">../src/icons/components/switchdip.png</file>
         <file alias="inductor.png">../src/icons/components/inductor.png</file>
@@ -92,6 +99,7 @@
         <file alias="text.png">../src/icons/components/text.png</file>
         <file alias="voltimeter.png">../src/icons/components/voltimeter.png</file>
         <file alias="amperimeter.png">../src/icons/components/amperimeter.png</file>
+        <file alias="frequencimeter.png">../src/icons/components/frequencimeter.png</file>
         <file alias="servo.png">../src/icons/components/servo.png</file>
         <file alias="relay-spst.png">../src/icons/components/relay-spst.png</file>
         <file alias="voltreg.png">../src/icons/components/voltreg.png</file>
@@ -109,6 +117,7 @@
         <file alias="outbus.png">../src/icons/components/outbus.png</file>
         <file alias="1to2.png">../src/icons/components/1to2.png</file>
         <file alias="1to3.png">../src/icons/components/1to3.png</file>
+        <file alias="1to3-c.png">../src/icons/components/1to3-c.png</file>
         <file alias="2to1.png">../src/icons/components/2to1.png</file>
         <file alias="2to2.png">../src/icons/components/2to2.png</file>
         <file alias="2to3.png">../src/icons/components/2to3.png</file>
@@ -128,9 +137,11 @@
         <file alias="duemilanove.png">../src/icons/components/duemilanove.png</file>
         <file alias="leonardo.png">../src/icons/components/leonardo.png</file>
         <file alias="mega.png">../src/icons/components/mega.png</file>
+        <file alias="sr04.png">../src/icons/components/sr04.png</file>
         
         <file alias="blanc.png">../src/icons/components/blanc.png</file>
         <file alias="font2.png">../src/icons/font/font2.png</file>
         
     </qresource>
 </RCC>
+

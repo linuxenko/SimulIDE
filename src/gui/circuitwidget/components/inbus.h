@@ -47,3 +47,4 @@ class MAINMODULE_EXPORT InBus : public LogicComponent, public eInBus
 };
 
 #endif
+

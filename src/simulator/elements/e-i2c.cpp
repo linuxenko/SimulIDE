@@ -34,7 +34,12 @@ void eI2C::initialize()                    // Called at Simulation Start
 
     eNode* enode = m_input[0]->getEpin()->getEnode();
     if( enode ) enode->addToChangedFast( this );
+}
 
+void eI2C::resetState()
+{
+    eLogicDevice::resetState();
+    
     m_txReg = 0;
     m_rxReg = 0;
     m_bitPtr = 0;

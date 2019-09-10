@@ -14,11 +14,11 @@
         inverted = "false"
         trigger = "2"
         connections="
-        input0-packagePin2
-        input1-packagePin3
-        inputEnable-packagePin13
-        output0-packagePin16
-        output1-packagePin15" >
+        input0-Package_D0
+        input1-Package_D1
+        inputEnable-Package_E01
+        output0-Package_Q0
+        output1-Package_Q1" >
     </item>
 
     <item itemtype="eLatchD"
@@ -33,11 +33,11 @@
         inverted = "true"
         trigger = "2"
         connections="
-        input0-packagePin2
-        input1-packagePin3
-        inputEnable-packagePin13
-        output0-packagePin1
-        output1-packagePin14" >
+        input0-Package_D0
+        input1-Package_D1
+        inputEnable-Package_E01
+        output0-Package_!Q0
+        output1-Package_!Q1" >
     </item>
 
     <item itemtype="eLatchD"
@@ -52,11 +52,11 @@
         inverted = "false"
         trigger = "2"
         connections="
-        input1-packagePin7
-        inputEnable-packagePin4
-        output0-packagePin10
-        output1-packagePin9
-        input0-packagePin6" >
+        input1-Package_D3
+        inputEnable-Package_E23
+        output0-Package_Q2
+        output1-Package_Q3
+        input0-Package_D2" >
     </item>
 
     <item itemtype="eLatchD"
@@ -71,11 +71,11 @@
         inverted = "true"
         trigger = "2"
         connections="
-        input1-packagePin7
-        inputEnable-packagePin4
-        input0-packagePin6
-        output0-packagePin11
-        output1-packagePin8" >
+        input1-Package_D3
+        inputEnable-Package_E23
+        input0-Package_D2
+        output0-Package_!Q2
+        output1-Package_!Q3" >
     </item>
 
 </subcircuit>

@@ -31,9 +31,9 @@
         input1-eNode0
         input2-eNode2
         output0-eNode16
-        output1-packagePin5
-        input0-packagePin1
-        clock-packagePin14" >
+        output1-Package_!Q1
+        input0-Package_DATA
+        clock-Package_CLK" >
     </item>
 
     <item itemtype="eBuffer"
@@ -48,7 +48,7 @@
         tristate = "false"
         connections="
         output0-eNode1
-        input0-packagePin2" >
+        input0-Package_JAM1" >
     </item>
 
     <item itemtype="eOrGate"
@@ -62,7 +62,7 @@
         openCollector = "false"
         numInputs = "2"
         connections="
-        input1-packagePin2
+        input1-Package_JAM1
         output0-eNode3
         input0-eNode25" >
     </item>
@@ -80,7 +80,7 @@
         connections="
         output0-eNode2
         input0-eNode3
-        input1-packagePin15" >
+        input1-Package_RES" >
     </item>
 
     <item itemtype="eOrGate"
@@ -95,7 +95,7 @@
         numInputs = "2"
         connections="
         output0-eNode4
-        input1-packagePin3
+        input1-Package_JAM2
         input0-eNode25" >
     </item>
 
@@ -112,7 +112,7 @@
         connections="
         input0-eNode4
         output0-eNode6
-        input1-packagePin15" >
+        input1-Package_RES" >
     </item>
 
     <item itemtype="eOrGate"
@@ -144,8 +144,8 @@
         input1-eNode5
         input2-eNode6
         input0-eNode16
-        output1-packagePin4
-        clock-packagePin14" >
+        output1-Package_!Q2
+        clock-Package_CLK" >
     </item>
 
     <item itemtype="eBuffer"
@@ -159,7 +159,7 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin3
+        input0-Package_JAM2
         output0-eNode7" >
     </item>
 
@@ -176,7 +176,7 @@
         connections="
         output0-eNode8
         input0-eNode9
-        input1-packagePin15" >
+        input1-Package_RES" >
     </item>
 
     <item itemtype="eFlipFlopD"
@@ -191,10 +191,10 @@
         connections="
         input2-eNode8
         input1-eNode10
-        output1-packagePin6
+        output1-Package_!Q3
         input0-eNode18
         output0-eNode19
-        clock-packagePin14" >
+        clock-Package_CLK" >
     </item>
 
     <item itemtype="eOrGate"
@@ -208,7 +208,7 @@
         openCollector = "false"
         numInputs = "2"
         connections="
-        input1-packagePin9
+        input1-Package_JAM4
         output0-eNode13
         input0-eNode25" >
     </item>
@@ -224,7 +224,7 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin9
+        input0-Package_JAM4
         output0-eNode12" >
     </item>
 
@@ -240,7 +240,7 @@
         numInputs = "2"
         connections="
         output0-eNode9
-        input1-packagePin7
+        input1-Package_JAM3
         input0-eNode25" >
     </item>
 
@@ -273,7 +273,7 @@
         connections="
         output0-eNode11
         input0-eNode13
-        input1-packagePin15" >
+        input1-Package_RES" >
     </item>
 
     <item itemtype="eFlipFlopD"
@@ -288,10 +288,10 @@
         connections="
         input2-eNode11
         input1-eNode14
-        output1-packagePin11
+        output1-Package_!Q4
         input0-eNode19
         output0-eNode24
-        clock-packagePin14" >
+        clock-Package_CLK" >
     </item>
 
     <item itemtype="eOrGate"
@@ -321,7 +321,7 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin7
+        input0-Package_JAM3
         output0-eNode15" >
     </item>
 
@@ -336,8 +336,8 @@
         openCollector = "false"
         numInputs = "2"
         connections="
-        input0-packagePin5
-        input1-packagePin6
+        input0-Package_!Q1
+        input1-Package_!Q3
         output0-eNode17" >
     </item>
 
@@ -353,7 +353,7 @@
         numInputs = "2"
         connections="
         input1-eNode17
-        input0-packagePin4
+        input0-Package_!Q2
         output0-eNode18" >
     </item>
 
@@ -368,7 +368,7 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin12
+        input0-Package_JAM5
         output0-eNode23" >
     </item>
 
@@ -383,7 +383,7 @@
         openCollector = "false"
         numInputs = "2"
         connections="
-        input1-packagePin12
+        input1-Package_JAM5
         output0-eNode21
         input0-eNode25" >
     </item>
@@ -401,7 +401,7 @@
         connections="
         output0-eNode20
         input0-eNode21
-        input1-packagePin15" >
+        input1-Package_RES" >
     </item>
 
     <item itemtype="eFlipFlopD"
@@ -416,9 +416,9 @@
         connections="
         input2-eNode20
         input1-eNode22
-        output1-packagePin13
+        output1-Package_!Q5
         input0-eNode24
-        clock-packagePin14" >
+        clock-Package_CLK" >
     </item>
 
     <item itemtype="eOrGate"
@@ -448,7 +448,7 @@
         openCollector = "false"
         tristate = "false"
         connections="
-        input0-packagePin10
+        input0-Package_PE
         output0-eNode25" >
     </item>
 

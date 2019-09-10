@@ -20,31 +20,30 @@
 #ifndef EBUS_H
 #define EBUS_H
 
-#include "e-logic_device.h"
+#include "e-element.h"
 
-class MAINMODULE_EXPORT eBus : public eLogicDevice
+class MAINMODULE_EXPORT eBus : public eElement
 {
     public:
 
         eBus( std::string id  );
         ~eBus();
 
-        double maxVolt()               { return m_maxVolt; }
-        void setMaxVolt( double volt ) { m_maxVolt = volt; }
-
-        double maxAddr()               { return m_maxAddr; }
-        void setMaxAddr( double volt ) { m_maxAddr = volt; }
-
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
+        
+        int numLines() { return m_numLines; }
+        virtual void initEpins();
+        
+        virtual void setNumLines( int lines );
+        
+        int startBit() { return m_startBit; }
+        void setStartBit( int bit );
                              
     protected:
-        double m_maxVolt;
-        double m_maxAddr;
-        double m_threshold;
-        
-        bool m_driving;
+        int m_numLines;
+        int m_startBit;
 };
-
 
 #endif

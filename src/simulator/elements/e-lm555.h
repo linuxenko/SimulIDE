@@ -31,7 +31,8 @@ class MAINMODULE_EXPORT eLm555 : public eElement
         eLm555( std::string id );
         ~eLm555();
         
-        void initialize();
+        virtual void initialize();
+        virtual void resetState();
 
         virtual void setVChanged();
         

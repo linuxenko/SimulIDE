@@ -65,7 +65,10 @@ void WaveGen::simuClockStep()
     m_step++;
     
     if(( m_qSteps > 0 )
-    &&( remainder( m_step, m_qSteps )!= 0 )) return;
+    &&( remainder( m_step, m_qSteps )!= 0 )) 
+    {
+        if( m_step < m_stepsPC ) return;
+    }
     
     if( m_type == Sine )     genSine();
     if( m_type == Saw )      genSaw();
@@ -133,6 +136,13 @@ void WaveGen::updateValues()
 {
     setDuty( m_duty );
     setQuality( m_quality );
+}
+
+void WaveGen::setFreq( double freq )
+{
+    if( freq > 1e5 ) freq = 1e5;
+    
+    ClockBase::setFreq( freq );
 }
 
 double WaveGen::duty()

@@ -39,6 +39,7 @@ class AudioOut : public Component, public eResistor
     static LibraryItem *libraryItem();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void simuClockStep();
         
         virtual QPainterPath shape() const;

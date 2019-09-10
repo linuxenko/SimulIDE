@@ -55,7 +55,6 @@ Lm555::Lm555( QObject* parent, QString type, QString id )
     newId.append(QString("-ePin0"));
     m_pin[0] = new Pin( 180, QPoint(-8, 8*1), newId, 0, this );
     m_pin[0]->setLabelText( "Gnd" );
-    m_pin[0]->setUnused( true );
     m_ePin[0] = m_pin[0];
     
     newId = id;
@@ -75,41 +74,41 @@ Lm555::Lm555( QObject* parent, QString type, QString id )
     m_output->setOut( true );
     
     newId = id;
-    newId.append(QString("ePin3"));
+    newId.append(QString("-ePin3"));
     m_pin[3] = new Pin( 180, QPoint(-8, 8*4), newId, 3, this );
     m_pin[3]->setLabelText( "Rst" );
     m_ePin[3] = m_pin[3];
     
     newId = id;
-    newId.append(QString("ePin4"));
+    newId.append(QString("-ePin4"));
     m_pin[4] = new Pin( 0, QPoint(4*8+8, 8*4), newId, 4, this );
     m_pin[4]->setLabelText( "CV" );
     m_ePin[4] = m_pin[4];
     newId.append("-eSource");
     m_cv = new eSource( newId.toStdString(), m_ePin[4] );
-    m_cv->setImp( high_imp );
+    m_cv->setImp( 10 );
     m_cv->setOut( true );
     
     newId = id;
-    newId.append(QString("ePin5"));
+    newId.append(QString("-ePin5"));
     m_pin[5] = new Pin( 0, QPoint(4*8+8, 8*3), newId, 5, this );
     m_pin[5]->setLabelText( "Thr" );
     m_ePin[5] = m_pin[5];
     
     newId = id;
-    newId.append(QString("ePin6"));
+    newId.append(QString("-ePin6"));
     m_pin[6] = new Pin( 0, QPoint(4*8+8, 8*2), newId, 6, this );
     m_pin[6]->setLabelText( "Dis" );
     m_ePin[6] = m_pin[6];
+    newId.append("-eSource");
     m_dis = new eSource( newId.toStdString(), m_ePin[6] );
     m_dis->setImp( high_imp );
     m_dis->setOut( false );
     
     newId = id;
-    newId.append(QString("ePin7"));
+    newId.append(QString("-ePin7"));
     m_pin[7] = new Pin( 0, QPoint(4*8+8, 8*1), newId, 7, this );
     m_pin[7]->setLabelText( "Vcc" );
-    m_pin[7]->setUnused( true );
     m_ePin[7] = m_pin[7];
     
 }

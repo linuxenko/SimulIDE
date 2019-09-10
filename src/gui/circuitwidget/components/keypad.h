@@ -53,7 +53,7 @@ class MAINMODULE_EXPORT KeyPad : public Component, public eElement
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
 
     public slots:
-        void remove();
+        virtual void remove();
 
     private:
         void setupButtons();

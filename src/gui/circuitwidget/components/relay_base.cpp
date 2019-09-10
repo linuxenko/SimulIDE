@@ -168,6 +168,9 @@ void RelayBase::remove()
 
 void RelayBase::SetupSwitches( int poles, int throws )
 {
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim ) Simulator::self()->pauseSim();
+
     m_area = QRectF( -13, -8-16*poles-4, 26, 8+16*poles+8+4 );
 
     for( uint i=0; i<m_switches.size(); i++ )
@@ -247,6 +250,9 @@ void RelayBase::SetupSwitches( int poles, int throws )
 
     foreach( Pin* pin, m_pin )
         pin->setFlag( QGraphicsItem::ItemStacksBehindParent, false ); // draw Pins on top
+
+    if( pauseSim ) Simulator::self()->resumeSim();
+    Circuit::self()->update();
 }
 
 double RelayBase::rCoil() const

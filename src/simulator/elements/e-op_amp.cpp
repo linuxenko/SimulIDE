@@ -30,7 +30,7 @@ eOpAmp::eOpAmp( std::string id )
     m_ePin.resize(5);
     m_gain = 1000;
     
-    //m_connected = false;
+    resetState();
 }
 eOpAmp::~eOpAmp()
 {
@@ -39,17 +39,19 @@ eOpAmp::~eOpAmp()
 
 void eOpAmp::initialize()
 {
+    if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToNoLinList(this);
+    if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToNoLinList(this);
+    if( m_ePin[2]->isConnected() ) m_ePin[2]->getEnode()->addToNoLinList(this);
+}
+
+void eOpAmp::resetState()
+{
     m_accuracy = Simulator::self()->NLaccuracy();
     
     m_lastOut = 0;
     m_lastIn  = 0;
     m_k = 1e-6/m_gain;
     m_converged = true;
-    
-    if( m_ePin[0]->isConnected() ) m_ePin[0]->getEnode()->addToNoLinList(this);
-    if( m_ePin[1]->isConnected() ) m_ePin[1]->getEnode()->addToNoLinList(this);
-    if( m_ePin[2]->isConnected() ) m_ePin[2]->getEnode()->addToNoLinList(this);
-
 }
 
 void eOpAmp::setVChanged() // Called when input pins nodes change volt

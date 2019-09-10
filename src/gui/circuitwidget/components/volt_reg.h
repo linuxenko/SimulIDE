@@ -38,6 +38,8 @@ class MAINMODULE_EXPORT VoltReg : public Component, public eVoltReg
         
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem *libraryItem();
+        
+        virtual void setVRef( double vref );
 
         virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
 };

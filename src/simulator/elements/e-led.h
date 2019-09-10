@@ -33,7 +33,7 @@ class MAINMODULE_EXPORT eLed : public eDiode
 
         void setVChanged();
 
-        void initialize();
+        virtual void resetState();
 
     protected:
         void updateBright();

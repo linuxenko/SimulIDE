@@ -19,6 +19,7 @@
 
 #include "volt_reg.h"
 #include "connector.h"
+#include "simulator.h"
 #include "pin.h"
 
 static const char* VoltReg_properties[] = {
@@ -78,6 +79,16 @@ VoltReg::VoltReg( QObject* parent, QString type, QString id )
 }
 VoltReg::~VoltReg()
 {
+}
+
+void VoltReg::setVRef( double vref )
+{
+    bool pauseSim = Simulator::self()->isRunning();
+    if( pauseSim )  Simulator::self()->pauseSim();
+    
+    eVoltReg::setVRef( vref );
+    
+    if( pauseSim ) Simulator::self()->runContinuous();
 }
 
 void VoltReg::paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget )

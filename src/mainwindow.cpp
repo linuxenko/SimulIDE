@@ -129,9 +129,8 @@ void MainWindow::createWidgets()
     m_sidepanel = new QTabWidget( this );
     m_sidepanel->setObjectName("sidepanel");
     m_sidepanel->setTabPosition( QTabWidget::West );
-    //QString fontSize = QString::number( int(12*m_fontScale) );
-    //qDebug()<<fontSize;
-    //m_sidepanel->setStyleSheet("QTabBar::tab { font-size:"+fontSize+"px; }");
+    QString fontSize = QString::number( int(11*m_fontScale) );
+    m_sidepanel->tabBar()->setStyleSheet("QTabBar { font-size:"+fontSize+"px; }");
     m_Centralsplitter->addWidget( m_sidepanel );
 
     m_components = new ComponentSelector( m_sidepanel );

@@ -32,6 +32,7 @@ class MAINMODULE_EXPORT eOpAmp : public eElement
         virtual ~eOpAmp();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
         virtual double gain();

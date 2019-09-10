@@ -152,7 +152,7 @@ void Probe::setVolt( double volt )
     
     m_valLabel->setPlainText( QString("%1 V").arg(double(dispVolt)/100) );
 
-    if( m_plotterLine > 0 ) PlotterWidget::self()->setData(m_plotterLine, m_voltIn*100 );
+    if( m_plotterLine > 0 ) PlotterWidget::self()->setData( m_plotterLine, m_voltIn*100 );
 
     update();       // Repaint
 }
@@ -184,14 +184,24 @@ int Probe::plotter()
 
 void Probe::setPlotter( int channel )
 {
-    m_plotterLine = channel;
     if( channel == 0 ) return;
-    PlotterWidget::self()->addChannel( channel );
-    PlotterWidget::self()->setData( m_plotterLine, int(m_voltIn*100) );
-    m_plotterColor = PlotterWidget::self()->getColor( m_plotterLine );
+    
+    if( PlotterWidget::self()->addChannel( channel ) )
+    {
+        slotPlotterRem(); 
+        m_plotterLine = channel;
+        PlotterWidget::self()->setData( m_plotterLine, int(m_voltIn*100) );
+        m_plotterColor = PlotterWidget::self()->getColor( m_plotterLine );
+        update();       // Repaint
+    }
 }
 
-void Probe::slotPlotterAdd()
+void Probe::slotPlotter1() { setPlotter( 1 ); }
+void Probe::slotPlotter2() { setPlotter( 2 ); }
+void Probe::slotPlotter3() { setPlotter( 3 ); }
+void Probe::slotPlotter4() { setPlotter( 4 ); }
+
+/*void Probe::slotPlotterAdd()
 {
     if( m_plotterLine != 0 ) return;            // Already have plotter
     
@@ -201,7 +211,7 @@ void Probe::slotPlotterAdd()
     PlotterWidget::self()->setData( m_plotterLine, int(m_voltIn*100) );
     m_plotterColor = PlotterWidget::self()->getColor( m_plotterLine );
     update();       // Repaint
-}
+}*/
 
 void Probe::slotPlotterRem()
 {
@@ -216,12 +226,22 @@ void Probe::slotPlotterRem()
 void Probe::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     event->accept();
-    QMenu *menu = new QMenu();
+    QMenu* menu  = new QMenu();
+    QMenu *pmenu = menu->addMenu(QIcon(":/fileopen.png"),tr("Plotter Channel"));
 
-    QAction *plotterAddAction = menu->addAction(QIcon(":/fileopen.png"),tr("Add to Plotter"));
-    connect(plotterAddAction, SIGNAL(triggered()), this, SLOT(slotPlotterAdd()));
+    QAction* plotter1Action = pmenu->addAction(QIcon(":/fileopen.png"),tr("Channel 1"));
+    connect(plotter1Action, SIGNAL(triggered()), this, SLOT(slotPlotter1()));
+    
+    QAction* plotter2Action = pmenu->addAction(QIcon(":/fileopen.png"),tr("Channel 2"));
+    connect(plotter2Action, SIGNAL(triggered()), this, SLOT(slotPlotter2()));
+    
+    QAction* plotter3Action = pmenu->addAction(QIcon(":/fileopen.png"),tr("Channel 3"));
+    connect(plotter3Action, SIGNAL(triggered()), this, SLOT(slotPlotter3()));
+    
+    QAction* plotter4Action = pmenu->addAction(QIcon(":/fileopen.png"),tr("Channel 4"));
+    connect(plotter4Action, SIGNAL(triggered()), this, SLOT(slotPlotter4()));
 
-    QAction *plotterRemAction = menu->addAction(QIcon(":/fileopen.png"),tr("Remove from Plotter"));
+    QAction* plotterRemAction = pmenu->addAction(QIcon(":/fileopen.png"),tr("Remove from Plotter"));
     connect(plotterRemAction, SIGNAL(triggered()), this, SLOT(slotPlotterRem()));
     
     menu->addSeparator();

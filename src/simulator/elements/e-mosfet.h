@@ -31,7 +31,8 @@ class MAINMODULE_EXPORT eMosfet : public eResistor
         eMosfet( std::string id );
         ~eMosfet();
 
-        void initialize();
+        virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
         virtual bool pChannel();

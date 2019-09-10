@@ -38,8 +38,8 @@ class MAINMODULE_EXPORT SwitchDip : public Component, public eElement
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem *libraryItem();
         
-        void initialize();
-        void updateStep();
+        virtual void initialize();
+        virtual void updateStep();
         
         int  size();
         void setSize( int size );

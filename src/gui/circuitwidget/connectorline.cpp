@@ -211,8 +211,11 @@ void ConnectorLine::setNextLine( ConnectorLine* nextLine )
 
 void ConnectorLine::remove() 
 { 
-    Circuit::self()->saveState();
-    m_pConnector->remove(); 
+    if( !isSelected() ) Circuit::self()->clearSelection();
+    setSelected( true );
+    Circuit::self()->removeItems();
+
+    //m_pConnector->remove(); 
 }
 
 void ConnectorLine::mousePressEvent( QGraphicsSceneMouseEvent* event )
@@ -230,7 +233,7 @@ void ConnectorLine::mousePressEvent( QGraphicsSceneMouseEvent* event )
             if     ( evPoint==p1() ) m_moveP1 = true;
             else if( evPoint==p2() ) m_moveP2 = true;
         }
-        else if( dragging )      // Move Line
+        else if( dragging )                                 // Move Line
         {
             event->accept();
 
@@ -238,7 +241,7 @@ void ConnectorLine::mousePressEvent( QGraphicsSceneMouseEvent* event )
             else if( dx() == 0 ) CircuitView::self()->viewport()->setCursor( Qt::SplitHCursor );
             else                 CircuitView::self()->viewport()->setCursor( Qt::SizeAllCursor );
         }
-        else                                    // Connecting a wire here
+        else                                   // Connecting a wire here
         {   
            if( Circuit::self()->is_constarted() )       
            {
@@ -331,7 +334,7 @@ void ConnectorLine::mousePressEvent( QGraphicsSceneMouseEvent* event )
            if( pauseSim ) Simulator::self()->runContinuous();
         }
     }
-    else event->ignore();
+    //else setSelected( true );
 }
 
 void ConnectorLine::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
@@ -340,13 +343,12 @@ void ConnectorLine::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
     
     QPoint delta = togrid( event->scenePos() ).toPoint() - togrid(event->lastScenePos()).toPoint();
    
-    if( event->modifiers() & Qt::ShiftModifier ) // Move Corner
+    if( event->modifiers() & Qt::ShiftModifier )          // Move Corner
     {
         //qDebug() << "ConnectorLine::mousePressEvent"<<event->scenePos()<<evPoint<<p1()<<p2();
         //qDebug() << "ConnectorLine::mousePressEvent corner"<<delta;
         if     ( m_moveP1 ) setP1( p1()+delta );
         else if( m_moveP2 ) setP2( p2()+delta );
-
     }
     else
     {
@@ -362,6 +364,7 @@ void ConnectorLine::mouseMoveEvent( QGraphicsSceneMouseEvent* event )
     }
     updatePos();
     updateLines();
+    Circuit::self()->update();
 }
 
 void ConnectorLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* event )
@@ -379,7 +382,7 @@ void ConnectorLine::contextMenuEvent( QGraphicsSceneContextMenuEvent* event )
        event->accept();
        QMenu menu;
 
-       QAction* removeAction = menu.addAction("Remove");
+       QAction* removeAction = menu.addAction( tr("Remove") );
        connect(removeAction, SIGNAL(triggered()), this, SLOT(remove()));
 
        menu.exec(event->screenPos());
@@ -438,8 +441,6 @@ void ConnectorLine::paint( QPainter* p, const QStyleOptionGraphicsItem* option, 
 
     //pen.setColor( Qt::darkGray);
     //p->setPen( pen );
-
-    //if( Simulator::self()->isAnimated() )
 
     QColor color;
     if( isSelected() ) color = QColor( Qt::darkGray );

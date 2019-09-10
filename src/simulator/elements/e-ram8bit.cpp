@@ -24,6 +24,7 @@
 eRam8bit::eRam8bit( std::string id )
         : eLogicDevice( id )
 {
+    resetState();
 }
 eRam8bit::~eRam8bit(){}
 
@@ -34,15 +35,20 @@ void eRam8bit::initialize()                 // Called at Simulation Start
         eNode* enode =  m_input[i]->getEpin()->getEnode();
         if( enode ) enode->addToChangedFast( this );
     }
+    eLogicDevice::initialize();
+}
+
+void eRam8bit::resetState()
+{
     for( int i=0; i<8; i++ ) m_dataPinState[i] = false;
     
     m_cs = false;
     m_oe = false;
     
-    eLogicDevice::initialize();
-    
     double imp = 1e28;
     for( int i=0; i<m_numOutputs; i++ ) m_output[i]->setImp( imp );
+    
+    eLogicDevice::resetState();
 }
 
 void eRam8bit::setVChanged()        // Some Pin Changed State, Manage it

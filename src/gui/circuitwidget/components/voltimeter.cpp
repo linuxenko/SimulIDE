@@ -36,7 +36,7 @@ LibraryItem* Voltimeter::libraryItem()
 }
 
 Voltimeter::Voltimeter( QObject* parent, QString type, QString id )
-    : Meter( parent, type, id )
+          : Meter( parent, type, id )
 {
     m_unit = "V";
     setRes( high_imp );

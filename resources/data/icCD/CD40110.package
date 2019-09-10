@@ -8,7 +8,7 @@
     <pin side="left" pos="3"  type="" id="F"  label="F" /><!-- packagePin3 -->
     <pin side="left" pos="4"  type="" id="!TE"  label="!TE" /><!-- packagePin4 -->
     <pin side="left" pos="5"  type="" id="RES" label="RES"/><!-- packagePin5 -->
-    <pin side="left" pos="6"  type="" id="LE"  label="LE" /><!-- packagePin6 -->
+    <pin side="left" pos="6"  type="" id="!LE"  label="!LE" /><!-- packagePin6 -->
     <pin side="left" pos="7"  type="" id="CLKD"label="CLKD" /><!-- packagePin7 -->
     
     <pin side="left" pos="8"  type="unused" id="Vss" label="Vss"/><!-- packagePin8 -->

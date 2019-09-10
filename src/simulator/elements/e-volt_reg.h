@@ -31,6 +31,7 @@ class MAINMODULE_EXPORT eVoltReg : public eResistor
         virtual ~eVoltReg();
 
         virtual void initialize();
+        virtual void resetState();
         virtual void setVChanged();
         
         virtual double vRef()              {return m_vRef;}

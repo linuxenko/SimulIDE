@@ -89,7 +89,7 @@ void EditorWindow::newFile()
 void EditorWindow::open()
 {
     const QString dir = m_lastDir;
-    QString fileName = QFileDialog::getOpenFileName( this, tr("Load File"), dir, tr("All files (*)"));
+    QString fileName = QFileDialog::getOpenFileName( this, tr("Load File"), dir, tr("All files (*);;Arduino (*.ino);;Asm (*.asm);;GcBasic (*.gcb)"));
     if( !fileName.isEmpty() ) loadFile( fileName );
 }
 
@@ -261,6 +261,9 @@ void EditorWindow::createWidgets()
     m_docWidget->setTabPosition( QTabWidget::North );
     m_docWidget->setTabsClosable ( true );
     m_docWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    double fontScale = MainWindow::self()->fontScale();
+    QString fontSize = QString::number( int(10*fontScale) );
+    m_docWidget->tabBar()->setStyleSheet("QTabBar { font-size:"+fontSize+"px; }");
     //m_docWidget->setMovable( true );
     baseWidgetLayout->addWidget( m_docWidget );
     
@@ -337,9 +340,10 @@ void EditorWindow::createActions()
     stepAct->setEnabled(false);
     connect( stepAct, SIGNAL(triggered()), this, SLOT(step()) );
 
-    stepOverAct = new QAction(QIcon(":/stepover.png"),tr("StepOver"), this);
+    stepOverAct = new QAction(QIcon(":/rotateCW.png"),tr("StepOver"), this);
     stepOverAct->setStatusTip(tr("Step Over"));
     stepOverAct->setEnabled(false);
+    stepOverAct->setVisible(false);
     connect( stepOverAct, SIGNAL(triggered()), this, SLOT(stepOver()) );
 
     pauseAct = new QAction(QIcon(":/pause.png"),tr("Pause"), this);
@@ -389,6 +393,11 @@ void EditorWindow::createActions()
     connect(debugAct, SIGNAL(triggered()), this, SLOT(debug()));
 }
 
+void EditorWindow::enableStepOver( bool en )
+{
+    stepOverAct->setVisible( en );
+}
+
 CodeEditor* EditorWindow::getCodeEditor()
 {
     CodeEditorWidget* actW = dynamic_cast<CodeEditorWidget*>(m_docWidget->currentWidget());
@@ -406,6 +415,7 @@ void EditorWindow::closeTab( int index )
         enableFileActs( false ); // disable file actions
         enableDebugActs( false );
     }
+    if( m_debuggerToolBar->isVisible() ) stop();
     
     CodeEditorWidget *actW = dynamic_cast<CodeEditorWidget*>( m_docWidget->widget(index));
     m_docWidget->removeTab( index );
@@ -433,42 +443,71 @@ void EditorWindow::debug()
 
         runAct->setEnabled( true );
         stepAct->setEnabled( true );
+        stepOverAct->setEnabled( true );
         resetAct->setEnabled( true );
         pauseAct->setEnabled( false );
     }
 }
 
-void EditorWindow::run()     
+void EditorWindow::run()
+{ 
+    setStepActs();
+    QTimer::singleShot( 10, getCodeEditor(), SLOT( run()) );
+}
+
+void EditorWindow::step()    
+{ 
+    setStepActs();
+    QTimer::singleShot( 10, getCodeEditor(), SLOT( step()) );
+    //getCodeEditor()->step( false ); 
+}
+
+void EditorWindow::stepOver()
+{
+    setStepActs();
+    QTimer::singleShot( 10, getCodeEditor(), SLOT( stepOver()) );
+    //getCodeEditor()->step( true ); 
+}
+
+void EditorWindow::setStepActs()
 { 
     runAct->setEnabled( false );
     stepAct->setEnabled( false );
+    stepOverAct->setEnabled( false );
     resetAct->setEnabled( false );
     pauseAct->setEnabled( true );
-    getCodeEditor()->run(); 
 }
 
-void EditorWindow::step()    { getCodeEditor()->step(); }
-void EditorWindow::stepOver(){ getCodeEditor()->stepOver(); }
 void EditorWindow::pause()   
-{ 
+{
     getCodeEditor()->pause(); 
     runAct->setEnabled( true );
     stepAct->setEnabled( true );
+    stepOverAct->setEnabled( true );
     resetAct->setEnabled( true );
     pauseAct->setEnabled( false );
 }
-void EditorWindow::reset()   { getCodeEditor()->reset(); }
+void EditorWindow::reset()   
+{ 
+    getCodeEditor()->reset(); 
+}
+
 void EditorWindow::stop()    
 { 
     getCodeEditor()->stopDebbuger(); 
     m_debuggerToolBar->setVisible( false );
     m_editorToolBar->setVisible( true);
 }
+
 void EditorWindow::compile() 
 { 
     getCodeEditor()->compile(); 
 }
-void EditorWindow::upload()  { getCodeEditor()->upload(); }
+
+void EditorWindow::upload()  
+{ 
+    getCodeEditor()->upload(); 
+}
 
 void EditorWindow::findReplaceDialog() 
 {
@@ -506,7 +545,7 @@ void EditorWindow::createToolBars()
     m_editorToolBar->addAction(debugAct);
     
     m_debuggerToolBar->addAction(stepAct);
-    //m_debuggerToolBar->addAction(stepOverAct);
+    m_debuggerToolBar->addAction(stepOverAct);
     m_debuggerToolBar->addAction(runAct);
     m_debuggerToolBar->addAction(pauseAct);
     m_debuggerToolBar->addAction(resetAct);

@@ -35,12 +35,10 @@ class MAINMODULE_EXPORT Clock : public ClockBase
 
         static Component* construct( QObject* parent, QString type, QString id );
         static LibraryItem *libraryItem();
-
-        virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
         
         virtual void simuClockStep();
-        
-        virtual void setFreq( int freq );
+
+        virtual void paint( QPainter *p, const QStyleOptionGraphicsItem *option, QWidget *widget );
 };
 
 #endif

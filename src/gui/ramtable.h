@@ -24,6 +24,7 @@
 #include "baseprocessor.h"
 
 class BaseProcessor;
+class BaseDebugger;
 
 class RamTable : public QTableWidget
 {
@@ -33,8 +34,10 @@ class RamTable : public QTableWidget
         ~RamTable();
         
         void setItemValue( int col, QString value );
-        void setItemValue( int col, int value );
+        void setItemValue( int col, int32_t value );
         void setItemValue( int col, float value );
+        
+        void setDebugger( BaseDebugger*  deb );
 
         //void setProcessor( BaseProcessor *processor );
 
@@ -44,14 +47,19 @@ class RamTable : public QTableWidget
         void clearTable();
         void loadVarSet();
         void saveVarSet();
+        void loadVariables();
 
     private slots:
         void addToWatch(QTableWidgetItem*);
+        void slotContextMenu(const QPoint&);
 
     private:
         BaseProcessor* m_processor;
+        BaseDebugger*  m_debugger;
 
         QHash<int, QString> watchList;
+        
+        bool m_loadingVars;
 
         int m_numRegs;
         int m_currentRow;

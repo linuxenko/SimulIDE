@@ -47,7 +47,7 @@ class MAINMODULE_EXPORT Probe : public Component, public eElement
         int plotter();
         void setPlotter( int channel );
 
-        void updateStep();
+        virtual void updateStep();
 
         virtual QPainterPath shape() const;
         virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget );
@@ -55,7 +55,11 @@ class MAINMODULE_EXPORT Probe : public Component, public eElement
     public slots:
         virtual void remove();
 
-        void slotPlotterAdd();
+        void slotPlotter1();
+        void slotPlotter2();
+        void slotPlotter3();
+        void slotPlotter4();
+        
         void slotPlotterRem();
 
     protected:

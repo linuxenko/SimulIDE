@@ -78,7 +78,7 @@ Oscope::Oscope( QObject* parent, QString type, QString id )
     m_proxy->setPos( QPoint( -110, -60) );
     //m_proxy->setFlag(QGraphicsItem::ItemNegativeZStacksBehindParent, true );
     
-    //Simulator::self()->addToUpdateList( this );
+    Simulator::self()->addToUpdateList( this );
 }
 
 Oscope::~Oscope() 

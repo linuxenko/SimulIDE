@@ -206,7 +206,7 @@ void LatchD::setTrigger( Trigger trigger )
         
         eLogicDevice::m_clockPin = 0l;
         eLogicDevice::m_inEnablePin = m_inEnSource;
-        qDebug() << eLogicDevice::m_inEnablePin;
+
         eLogicDevice::m_inEnable = false;
         eLogicDevice::m_clock = false;
     }

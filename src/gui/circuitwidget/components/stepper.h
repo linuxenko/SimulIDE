@@ -48,11 +48,9 @@ class MAINMODULE_EXPORT Stepper : public Component, public eElement
         
         void setUnit( QString un );
         
-        void initialize();
-
+        virtual void initialize();
         virtual void setVChanged();
-        
-        void updateStep();
+        virtual void updateStep();
         
         virtual void paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget );
         

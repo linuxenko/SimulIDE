@@ -27,21 +27,21 @@
     </itemset>
     
     <itemset category="Logic/IC CD" type="Subcircuit">
-    <item name="CD4018"  package="icCD/CD4018.package"  subcircuit="icCD/CD4018.subcircuit" ></item>
-    <item name="CD4026"  package="icCD/CD4026.package"  subcircuit="icCD/CD4026.subcircuit" ></item>
-    <item name="CD4033"  package="icCD/CD4033.package"  subcircuit="icCD/CD4033.subcircuit" ></item>
-    <item name="CD4510"  package="icCD/CD4510.package"  subcircuit="icCD/CD4510.subcircuit" ></item>
-    <item name="CD4511"  package="icCD/CD4511.package"  subcircuit="icCD/CD4511.subcircuit" ></item>
-    <item name="CD4516"  package="icCD/CD4516.package"  subcircuit="icCD/CD4516.subcircuit" ></item>
-    <item name="CD4555" package="icCD/CD4555.package" subcircuit="icCD/CD4555.subcircuit" /> 
-    <item name="CD4556" package="icCD/CD4556.package" subcircuit="icCD/CD4556.subcircuit" /> 
-    <item name="CD40110" package="icCD/CD40110.package" subcircuit="icCD/CD40110.subcircuit"></item>
-    <item name="CD40160" package="ic74/74HC160.package" subcircuit="ic74/74HC160.subcircuit"></item>
-    <item name="CD40161" package="ic74/74HC161.package" subcircuit="ic74/74HC161.subcircuit"></item>
-    <item name="CD40162" package="ic74/74HC162.package" subcircuit="ic74/74HC162.subcircuit"></item>
-    <item name="CD40163" package="ic74/74HC163.package" subcircuit="ic74/74HC163.subcircuit"></item>
-    <item name="CD40192" package="ic74/74HC192.package" subcircuit="ic74/74HC192.subcircuit"></item>
-    <item name="CD40193" package="ic74/74HC193.package" subcircuit="ic74/74HC193.subcircuit"></item>
+    <item name="CD4018"  package="icCD/CD4018"  subcircuit="icCD/CD4018" info="  Presettable Divide-By-N Counter" ></item>
+    <item name="CD4026"  package="icCD/CD4026"  subcircuit="icCD/CD4026" info="  Decade Counter/Divider" ></item>
+    <item name="CD4033"  package="icCD/CD4033"  subcircuit="icCD/CD4033" info="  Decade Counter/Divider" ></item>
+    <item name="CD4510"  package="icCD/CD4510"  subcircuit="icCD/CD4510" info="  Presettable Up/Down Counter" ></item>
+    <item name="CD4511"  package="icCD/CD4511"  subcircuit="icCD/CD4511" info="  BCD to 7 Segment Latch Decoder Driver" ></item>
+    <item name="CD4516"  package="icCD/CD4510"  subcircuit="icCD/CD4516" info="  Presettable Up/Down Counter" ></item>
+    <item name="CD4555"  package="icCD/CD4555"  subcircuit="icCD/CD4555" info="  Dual Binary to 1 of 4 Decoder/Demultiplexer" ></item>
+    <item name="CD4556"  package="icCD/CD4556"  subcircuit="icCD/CD4556" info="  Dual Binary to 1 of 4 Decoder/Demultiplexer" ></item>
+    <item name="CD40110" package="icCD/CD40110" subcircuit="icCD/CD40110" info="  Decade Up/Down Counter Latch Display Driver"></item>
+    <item name="CD40160" package="ic74/74HC160" subcircuit="ic74/74HC160" info="  Synchronous presettable 4-bit decade counter, asynchronous clear"></item>
+    <item name="CD40161" package="ic74/74HC160" subcircuit="ic74/74HC161" info="  Synchronous presettable 4-bit binary counter, asynchronous clear "></item>
+    <item name="CD40162" package="ic74/74HC160" subcircuit="ic74/74HC162" info="  Synchronous presettable 4-bit decade counter, synchronous clear "></item>
+    <item name="CD40163" package="ic74/74HC160" subcircuit="ic74/74HC163" info="  Synchronous presettable 4-bit binary counter, synchronous clear "></item>
+    <item name="CD40192" package="ic74/74HC192" subcircuit="ic74/74HC192" info="  Synchronous presettable up/down decade counter, clear "></item>
+    <item name="CD40193" package="ic74/74HC192" subcircuit="ic74/74HC193" info="  Synchronous presettable up/down 4-bit binary counter, clear"></item>
 
 
     </itemset>
