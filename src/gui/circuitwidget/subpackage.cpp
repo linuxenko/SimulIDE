@@ -643,7 +643,7 @@ QString SubPackage::pinEntry( Pin* pin, int pP, QString side )
     else if( pin->unused() ) type = "unused";
     
     return "    <pin side=\""+side+"\" pos=\""+pos+"\"  type=\""+type+"\" id=\""+id+"\"  label=\""+label+"\" /><!-- packagePin"+paPin+" -->\n";
-    pP++;
+    //pP++;
 }
 
 void SubPackage::savePackage( QString fileName )

@@ -201,31 +201,31 @@ void ComponentSelector::addItem( const QString &caption, const QString &_categor
     QStringList catPath = _category.split( "/" );
     bool isRootCat      = (catPath.size() == 1);
     QString category    = catPath.takeLast();
+    if( category.isEmpty() ) return;
 
     if( !m_categories.contains( category, Qt::CaseSensitive ))  // Create new Category
     {
-        bool c_hidden =  MainWindow::self()->settings()->value( category+"/hidden" ).toBool();
+        bool c_hidden = false;
         bool expanded = false;
-        if( isRootCat ) expanded = true;
-        if( MainWindow::self()->settings()->contains( category+"/collapsed" ) )
-            expanded = !MainWindow::self()->settings()->value( category+"/collapsed" ).toBool();
+        
+        if( isRootCat )                              // Is Main Category
+        {
+            catItem = new QTreeWidgetItem( this );
+            catItem->setIcon( 0, QIcon(":/null-0.png") );
+            catItem->setTextColor( 0, QColor( 110, 95, 50 )/*QColor(255, 230, 200)*/ );
+            catItem->setBackground( 0, QBrush(QColor(240, 235, 245)) );
+            expanded = true;
+        }
+        else catItem = new QTreeWidgetItem(0);
 
-        m_categories.append( category );
-        catItem = new QTreeWidgetItem(0);
         catItem->setFlags( QFlag(32) );
         QFont font = catItem->font(0);
         font.setPixelSize( 13*MainWindow::self()->fontScale() );
         font.setWeight(75);
-
-        if( isRootCat )                              // Is Main Category
-        {
-            catItem->setIcon( 0, QIcon(":/null-0.png") );
-            catItem->setTextColor( 0, QColor( 110, 95, 50 )/*QColor(255, 230, 200)*/ );
-            catItem->setBackground( 0, QBrush(QColor(240, 235, 245)) );
-        }
         catItem->setFont( 0, font );
         catItem->setText( 0, category );
         catItem->setChildIndicatorPolicy( QTreeWidgetItem::ShowIndicator );
+        m_categories.append( category );
         
         if( !catPath.isEmpty() )
         {
@@ -241,6 +241,12 @@ void ComponentSelector::addItem( const QString &caption, const QString &_categor
         }
         else if( name != "" ) addTopLevelItem( catItem );
         
+        if( MainWindow::self()->settings()->contains( category+"/hidden" ) )
+            c_hidden =  MainWindow::self()->settings()->value( category+"/hidden" ).toBool();
+
+        if( MainWindow::self()->settings()->contains( category+"/collapsed" ) )
+            expanded = !MainWindow::self()->settings()->value( category+"/collapsed" ).toBool();
+
         catItem->setExpanded( expanded );
         catItem->setHidden( c_hidden );
     }

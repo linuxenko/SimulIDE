@@ -65,6 +65,7 @@
 #include "line.h"
 #include "lm555.h"
 #include "logicinput.h"
+#include "memory.h"
 #include "mosfet.h"
 #include "mux.h"
 #include "mux_analog.h"
@@ -77,7 +78,6 @@
 #include "potentiometer.h"
 #include "push.h"
 #include "rail.h"
-#include "ram8bit.h"
 #include "rectangle.h"
 #include "relay-spst.h"
 #include "resistor.h"
@@ -93,7 +93,6 @@
 #include "switch.h"
 #include "switchdip.h"
 #include "textcomponent.h"
-//#include "toggleswitch.h"
 #include "voltimeter.h"
 #include "volt_reg.h"
 #include "voltsource.h"
@@ -109,7 +108,10 @@ ItemLibrary::ItemLibrary()
     loadItems();
     //loadPlugins();
 }
-ItemLibrary::~ItemLibrary(){}
+ItemLibrary::~ItemLibrary()
+{
+    foreach( LibraryItem* item, m_items ) delete item;
+}
 
 void ItemLibrary::loadItems()
 {
@@ -192,7 +194,7 @@ void ItemLibrary::loadItems()
     addItem( DAC::libraryItem() );
     addItem( Bus::libraryItem() );
     addItem( SevenSegmentBCD::libraryItem() );
-    addItem( Ram8bit::libraryItem() );
+    addItem( Memory::libraryItem() );
     addItem( I2CRam::libraryItem() );
     addItem( I2CToParallel::libraryItem() );
     addItem( Lm555::libraryItem() );
@@ -307,8 +309,8 @@ QString* LibraryItem::help()
     {
         QString locale   = "_"+QLocale::system().name().split("_").first();
         QString type = m_type;
-        QString dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/"+type.toLower()+locale+".txt" );
-        
+        QString dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/"+locale+"/"+type.toLower()+locale+".txt" );
+
         type= type.replace( " ", "" );
         
         if( dfPath == "" ) 

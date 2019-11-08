@@ -60,10 +60,19 @@ MainWindow::MainWindow()
         m_fontScale = dpiX/96.0;
     }
     //qDebug()<<dpiX;
+    loadCircHelp();
     createWidgets();
     readSettings();
     
     loadPlugins();
+
+    QString backPath = m_settings.value( "backupPath" ).toString();
+    if( !backPath.isEmpty() )
+    {
+        //qDebug() << "MainWindow::readSettings" << backPath;
+        if( QFile::exists( backPath ) )
+            CircuitWidget::self()->loadCirc( backPath );
+    }
 }
 MainWindow::~MainWindow(){ }
 
@@ -79,15 +88,20 @@ void MainWindow::closeEvent( QCloseEvent *event )
 
 void MainWindow::readSettings()
 {
-    restoreGeometry(                     m_settings.value("geometry" ).toByteArray());
-    restoreState(                        m_settings.value("windowState" ).toByteArray());
-    m_Centralsplitter->restoreState(     m_settings.value("Centralsplitter/geometry").toByteArray());
+    restoreGeometry(                     m_settings.value( "geometry" ).toByteArray());
+    restoreState(                        m_settings.value( "windowState" ).toByteArray());
+    m_Centralsplitter->restoreState(     m_settings.value( "Centralsplitter/geometry" ).toByteArray());
+
+    int autoBck = 15;
+    if( m_settings.contains( "autoBck" )) autoBck = m_settings.value( "autoBck" ).toInt();
+    Circuit::self()->setAutoBck( autoBck );
 }
 
 void MainWindow::writeSettings()
 {
+    m_settings.setValue( "autoBck",   m_autoBck );
     m_settings.setValue( "fontScale", m_fontScale );
-    m_settings.setValue( "geometry", saveGeometry() );
+    m_settings.setValue( "geometry",  saveGeometry() );
     m_settings.setValue( "windowState", saveState() );
     m_settings.setValue( "Centralsplitter/geometry", m_Centralsplitter->saveState() );
     
@@ -97,6 +111,16 @@ void MainWindow::writeSettings()
         m_settings.setValue( item->text(0)+"/collapsed", !item->isExpanded() );
 
     FileWidget::self()->writeSettings();
+}
+
+int MainWindow::autoBck()
+{
+    return m_autoBck;
+}
+
+void MainWindow::setAutoBck( int secs )
+{
+    m_autoBck = secs;
 }
 
 void MainWindow::setTitle( QString title )
@@ -168,6 +192,35 @@ void MainWindow::createWidgets()
     m_Centralsplitter->setSizes( sizes );
 
     this->showMaximized();
+}
+
+void MainWindow::loadCircHelp()
+{
+    QString locale   = "_"+QLocale::system().name().split("_").first();
+    QString dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/"+locale+"/circuit"+locale+".txt" );
+
+    if( dfPath == "" )
+        dfPath = SIMUAPI_AppPath::self()->availableDataFilePath( "help/circuit.txt" );
+
+    if( dfPath != "" )
+    {
+        QFile file( dfPath );
+
+        if( file.open(QFile::ReadOnly | QFile::Text) ) // Get Text from Help File
+        {
+            QTextStream s1( &file );
+
+            m_circHelp = "";
+            m_circHelp.append(s1.readAll());
+
+            file.close();
+        }
+    }
+}
+
+QString* MainWindow::circHelp()
+{
+    return &m_circHelp;
 }
 
 void MainWindow::loadPlugins()

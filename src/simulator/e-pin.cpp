@@ -21,6 +21,7 @@
 
 #include "e-pin.h"
 #include "e-node.h"
+#include "circuit.h"
 
 //#include <QDebug>
 
@@ -109,6 +110,10 @@ void ePin::setInverted( bool inverted ){ m_inverted = inverted; }
 
 std::string ePin::getId() { return m_id; }
 
-void ePin::setId( std::string id ) { m_id = id; }
+void ePin::setId( std::string id )
+{
+    Circuit::self()->updatePin( this, id );
+    m_id = id;
+}
 
 

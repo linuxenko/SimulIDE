@@ -144,6 +144,8 @@ void CircuitView::dragEnterEvent(QDragEnterEvent *event)
 
     QString type = event->mimeData()->html();
     QString id   = event->mimeData()->text(); 
+    
+    if( type.isEmpty() || id.isEmpty() ) return;
 
     id += "-"+m_circuit->newSceneId(); 
 

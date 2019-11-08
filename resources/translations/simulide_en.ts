@@ -537,6 +537,14 @@
     </message>
 </context>
 <context>
+    <name>B16AsmDebugger</name>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BJT</name>
     <message>
         <source>BJT</source>
@@ -1460,6 +1468,14 @@ Do you want to save your changes?
         <source>Logic/Memory</source>
         <translation></translation>
     </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>I2CToParallel</name>
@@ -1469,17 +1485,6 @@ Do you want to save your changes?
     </message>
     <message>
         <source>Logic/Converters</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>InBus</name>
-    <message>
-        <source>In Bus</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Logic/Other Logic</source>
         <translation></translation>
     </message>
 </context>
@@ -1719,16 +1724,63 @@ to DomDocument</source>
         <translation></translation>
     </message>
     <message>
-        <source>Hex Files (*.hex);;ELF Files (*.elf);;all files (*.*)</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>No File:</source>
         <translation></translation>
     </message>
     <message>
         <source>No File to reload </source>
         <translation></translation>
+    </message>
+    <message>
+        <source>Load EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hex Files (*.hex);;ELF Files (*.elf);;All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MemData</name>
+    <message>
+        <source>Load Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Memory</name>
+    <message>
+        <source>Ram/Rom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logic/Memory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1794,17 +1846,6 @@ to DomDocument</source>
     </message>
     <message>
         <source>Meters</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>OutBus</name>
-    <message>
-        <source>Out Bus</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Logic/Other Logic</source>
         <translation></translation>
     </message>
 </context>
@@ -1924,6 +1965,14 @@ to DomDocument</source>
     </message>
 </context>
 <context>
+    <name>PropertiesWidget</name>
+    <message>
+        <source>Here will be some help ..............................................
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Push</name>
     <message>
         <source>Push</source>
@@ -1957,17 +2006,6 @@ to DomDocument</source>
     </message>
 </context>
 <context>
-    <name>Ram8bit</name>
-    <message>
-        <source>8bit Ram</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Logic/Memory</source>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>RamTable</name>
     <message>
         <source>Reg.</source>
@@ -1975,10 +2013,6 @@ to DomDocument</source>
     </message>
     <message>
         <source>Dec</source>
-        <translation></translation>
-    </message>
-    <message>
-        <source>Binary</source>
         <translation></translation>
     </message>
     <message>
@@ -2008,6 +2042,14 @@ to DomDocument</source>
     </message>
     <message>
         <source>Load Variables</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -71,7 +71,7 @@ ePin* eElement::getEpin( int pin )
 
 ePin* eElement::getEpin( QString pinName )
 {
-    //qDebug() << "eElement::getEpin" << pinName;
+    qDebug() << "eElement::getEpin" << pinName;
     if     ( pinName == "lPin") return m_ePin[0];
     else if( pinName == "rPin") return m_ePin[1];
     else if( pinName.contains("ePin") )

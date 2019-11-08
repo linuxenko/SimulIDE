@@ -58,6 +58,7 @@ void PropertiesWidget::createWidgets()
 
 void PropertiesWidget::setHelpText( QString* text )
 {
+    if( !text ) return;
     m_help->clear();
     m_help->appendPlainText( *text );
 }

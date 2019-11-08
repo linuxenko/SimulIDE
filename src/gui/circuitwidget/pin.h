@@ -64,6 +64,8 @@ class MAINMODULE_EXPORT Pin : public QObject, public QGraphicsItem, public ePin
         void setLabelText( QString label );
         void setLabelPos();
         void setLabelColor( QColor color );
+        
+        void setVisible( bool visible );
 
         void moveBy( int dx, int dy );
 

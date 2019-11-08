@@ -33,6 +33,7 @@ CircuitWidget::CircuitWidget( QWidget *parent  )
              , m_plotter(this)
              , m_serial(this)
              , m_circToolBar(this)
+             , m_infoMenu(this)
 {
     m_pSelf = this;
 
@@ -127,13 +128,12 @@ void CircuitWidget::createToolBars()
     spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     spacerWidget->setVisible(true);
     m_circToolBar.addWidget(spacerWidget);
-    
-    infoMenu = new QMenu("I");
-    infoMenu->addAction( infoAct );
-    infoMenu->addAction( aboutAct );
-    infoMenu->addAction( aboutQtAct );
+
+    m_infoMenu.addAction( infoAct );
+    m_infoMenu.addAction( aboutAct );
+    m_infoMenu.addAction( aboutQtAct );
     QToolButton* toolButton = new QToolButton();
-    toolButton->setMenu( infoMenu );
+    toolButton->setMenu( &m_infoMenu );
     toolButton->setIcon( QIcon(":/help.png") );
     toolButton->setPopupMode( QToolButton::InstantPopup );
     m_circToolBar.addWidget( toolButton );
@@ -157,6 +157,7 @@ bool CircuitWidget::newCircuit()
         else if( ret == QMessageBox::Cancel ) return false;
     }
     clear();
+    Circuit::self()->setAutoBck( MainWindow::self()->autoBck() );
     m_curCirc = "";
 
     MainWindow::self()->setTitle( tr("New Circuit"));

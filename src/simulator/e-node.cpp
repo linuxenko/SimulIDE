@@ -200,10 +200,10 @@ QList<int> eNode::getConnections()
 
 void  eNode::setVolt( double v )
 {
-    //qDebug() << m_id << m_volt << v;
     if( m_volt != v )
     {
-        //qDebug() << m_id << "setVChanged";
+        //qDebug() << m_id << m_volt << v;
+        m_voltChanged = true;
         m_volt = v;
         
         foreach( eElement* el, m_changedFast ) 

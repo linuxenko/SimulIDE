@@ -43,7 +43,10 @@ eSource::eSource( std::string id, ePin* epin )
 
     Simulator::self()->remFromEnodeList( m_scrEnode, /*delete=*/ false );
 }
-eSource::~eSource(){ delete m_scrEnode; }
+eSource::~eSource()
+{
+    delete m_scrEnode;
+}
 
 /*void eSource::setEpin( ePin* epin )
 {
@@ -70,7 +73,7 @@ void eSource::stamp()
     stampOutput();
 }
 
-void eSource::stampOutput()                               // Stamp Output
+void eSource::stampOutput()
 {
     //qDebug() <<"eSource::stampOutput"<< m_out<<m_voltOut<<m_imp ;
     m_scrEnode->setVolt(m_voltOut);

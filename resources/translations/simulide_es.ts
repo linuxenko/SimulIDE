@@ -544,6 +544,15 @@
     </message>
 </context>
 <context>
+    <name>B16AsmDebugger</name>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished">No se pudo escribir el archivo %1:
+%2.</translation>
+    </message>
+</context>
+<context>
     <name>BJT</name>
     <message>
         <source>Active</source>
@@ -1513,6 +1522,14 @@ Quiere guardar los cambios?</translation>
         <source>Logic/Memory</source>
         <translation>Logica/Memoria</translation>
     </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>I2CToParallel</name>
@@ -1529,11 +1546,11 @@ Quiere guardar los cambios?</translation>
     <name>InBus</name>
     <message>
         <source>In Bus</source>
-        <translation>Bus Entrada</translation>
+        <translation type="vanished">Bus Entrada</translation>
     </message>
     <message>
         <source>Logic/Other Logic</source>
-        <translation>Logica/Otros (Logica)</translation>
+        <translation type="vanished">Logica/Otros (Logica)</translation>
     </message>
 </context>
 <context>
@@ -1780,7 +1797,7 @@ a DomDocument</translation>
     </message>
     <message>
         <source>Hex Files (*.hex);;ELF Files (*.elf);;all files (*.*)</source>
-        <translation>Hex (*.hex);;ELF (*.elf);;Todos (*.*)</translation>
+        <translation type="vanished">Hex (*.hex);;ELF (*.elf);;Todos (*.*)</translation>
     </message>
     <message>
         <source>No File:</source>
@@ -1789,6 +1806,58 @@ a DomDocument</translation>
     <message>
         <source>No File to reload </source>
         <translation>No hay Archivo que recargar</translation>
+    </message>
+    <message>
+        <source>Load EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hex Files (*.hex);;ELF Files (*.elf);;All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MemData</name>
+    <message>
+        <source>Load Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished">No se pudo escribir el archivo %1:
+%2.</translation>
+    </message>
+</context>
+<context>
+    <name>Memory</name>
+    <message>
+        <source>Ram/Rom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logic/Memory</source>
+        <translation type="unfinished">Logica/Memoria</translation>
+    </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1865,11 +1934,11 @@ a DomDocument</translation>
     <name>OutBus</name>
     <message>
         <source>Out Bus</source>
-        <translation>Bus Salida</translation>
+        <translation type="vanished">Bus Salida</translation>
     </message>
     <message>
         <source>Logic/Other Logic</source>
-        <translation>Logica/Otros (Logica)</translation>
+        <translation type="vanished">Logica/Otros (Logica)</translation>
     </message>
 </context>
 <context>
@@ -1993,6 +2062,14 @@ a DomDocument</translation>
     </message>
 </context>
 <context>
+    <name>PropertiesWidget</name>
+    <message>
+        <source>Here will be some help ..............................................
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Push</name>
     <message>
         <source>Push</source>
@@ -2029,18 +2106,18 @@ a DomDocument</translation>
     <name>Ram8bit</name>
     <message>
         <source>8bit Ram</source>
-        <translation>Ram 8 Bit</translation>
+        <translation type="vanished">Ram 8 Bit</translation>
     </message>
     <message>
         <source>Logic/Memory</source>
-        <translation>Logica/Memoria</translation>
+        <translation type="vanished">Logica/Memoria</translation>
     </message>
 </context>
 <context>
     <name>RamTable</name>
     <message>
         <source>Binary</source>
-        <translation>Binario</translation>
+        <translation type="vanished">Binario</translation>
     </message>
     <message>
         <source>Load VarSet</source>
@@ -2079,6 +2156,14 @@ a DomDocument</translation>
     <message>
         <source>Load Variables</source>
         <translation>Cargar Variables</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished">Valor</translation>
     </message>
 </context>
 <context>

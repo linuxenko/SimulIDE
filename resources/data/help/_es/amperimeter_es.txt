@@ -1,0 +1,11 @@
+Amperímetro:
+
+- Pin Rojo: Positivo.
+- Pin Negro: Negativo.
+- Pin Derecha: lectura como voltage
+
+- Se actualiza a 50 Hz.
+
+
+Mas Informacion:
+ http://simulide.blogspot.com/p/meters.html

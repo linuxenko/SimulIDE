@@ -50,6 +50,8 @@ class PicProcessor : public BaseProcessor
         int getRamValue( int address );
 
         void uartIn( uint32_t value );
+
+        QVector<int> eeprom();
         
         pic_processor* getCpu() { return m_pPicProcessor; }
 

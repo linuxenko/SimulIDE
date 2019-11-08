@@ -43,6 +43,7 @@ bool McuComponent::m_canCreate = true;
 
 McuComponent::McuComponent( QObject* parent, QString type, QString id )
             : Chip( parent, type, id )
+            , MemData()
 {
     Q_UNUSED( McuComponent_properties );
     
@@ -210,6 +211,14 @@ void McuComponent::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* me
 
     QAction* reloadAction = menu->addAction( QIcon(":/reload.png"),tr("Reload firmware") );
     connect( reloadAction, SIGNAL(triggered()), this, SLOT(slotReload()) );
+
+    QAction* loadDAction = menu->addAction( QIcon(":/load.png"),tr("Load EEPROM data") );
+    connect( loadDAction, SIGNAL(triggered()), this, SLOT(loadData()) );
+
+    QAction* saveDAction = menu->addAction(QIcon(":/save.png"), tr("Save EEPROM data") );
+    connect( saveDAction, SIGNAL(triggered()), this, SLOT(saveData()) );
+
+    menu->addSeparator();
     
     QAction* openTerminal = menu->addAction( QIcon(":/terminal.png"),tr("Open Serial Monitor.") );
     connect( openTerminal, SIGNAL(triggered()), this, SLOT(slotOpenTerm()) );
@@ -227,7 +236,6 @@ void McuComponent::contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* me
 
     Component::contextMenu( event, menu );
 }
-
 
 void McuComponent::slotOpenSerial()
 {
@@ -261,9 +269,9 @@ void McuComponent::slotLoad()
 {
     const QString dir = m_lastFirmDir;
     QString fileName = QFileDialog::getOpenFileName( 0l, tr("Load Firmware"), dir,
-                       tr("Hex Files (*.hex);;ELF Files (*.elf);;all files (*.*)"));
+                       tr("Hex Files (*.hex);;ELF Files (*.elf);;All files (*.*)"));
                        
-    if (fileName.isEmpty()) return; // User cancels loading
+    if( fileName.isEmpty() ) return; // User cancels loading
     
     load( fileName );
 }
@@ -334,6 +342,34 @@ void McuComponent::setSerMon( bool set )
 {
     if( set ) slotOpenTerm();
     else      slotCloseTerm();
+}
+
+void McuComponent::setEeprom( QVector<int> eep )
+{
+    m_processor->setEeprom( eep );
+}
+
+QVector<int> McuComponent::eeprom()
+{
+    QVector<int> eep = m_processor->eeprom();
+    return eep;
+}
+
+void McuComponent::loadData()
+{
+    QVector<int> data;
+
+    bool resize = false;
+    if( !m_processor->getLoadStatus() ) resize = true; // No eeprom initialized yet
+
+    MemData::loadData( &data, resize );
+    m_processor->setEeprom( data );
+}
+
+void McuComponent::saveData()
+{
+    QVector<int> data = m_processor->eeprom();
+    MemData::saveData( data );
 }
 
 void McuComponent::paint( QPainter* p, const QStyleOptionGraphicsItem* option, QWidget* widget )

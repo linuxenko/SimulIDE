@@ -287,6 +287,7 @@ EEPROM::EEPROM(Processor *pCpu)
     rom_size(0)
 {
 }
+
 EEPROM::~EEPROM()
 {
   pic_processor *pCpu = dynamic_cast<pic_processor *>(cpu);
@@ -307,17 +308,13 @@ EEPROM::~EEPROM()
 
 Register *EEPROM::get_register(uint address)
 {
-
-  if(address<rom_size)
-    return rom[address];
+  if(address<rom_size) return rom[address];
   return 0;
-
 }
 
 
 void EEPROM::start_write()
 {
-
   get_cycles().set_break(get_cycles().get() + EPROM_WRITE_TIME, this);
 
   wr_adr = eeadr.value.get();
@@ -330,30 +327,24 @@ void EEPROM::start_write()
 
 void EEPROM::write_is_complete()
 {
-
   assert(intcon != 0);
 
   eecon1.value.put((eecon1.value.get()  & (~eecon1.WR)) | eecon1.EEIF);
 
   intcon->peripheral_interrupt();
-
-
 }
 
 void EEPROM::start_program_memory_read()
 {
-
   cout << "ERROR: program memory flash should not be accessible\n";
 
   bp.halt();
-
 }
-
 
 void EEPROM::callback()
 {
-
-  switch(eecon2.get_eestate()) {
+  switch(eecon2.get_eestate())
+  {
   case EECON2::EEREAD:
     //cout << "eeread\n";
 
@@ -397,17 +388,15 @@ void EEPROM::callback()
 
 void EEPROM::reset(RESET_TYPE by)
 {
-
   switch(by)
-    {
+  {
     case POR_RESET:
       eecon1.value.put(0);          // eedata & eeadr are undefined at power up
       eecon2.unarm();
       break;
     default:
       break;
-    }
-
+  }
 }
 
 void EEPROM::initialize(uint new_rom_size)
@@ -466,52 +455,47 @@ void EEPROM::set_intcon(INTCON *ic)
 
 void EEPROM::dump()
 {
-  uint i, j, reg_num,v;
+    uint i, j, reg_num,v;
 
-  cout << "     " << hex;
+    cout << "     " << hex;
 
-  // Column labels
-  for (i = 0; i < 16; i++)
+    // Column labels
+    for (i = 0; i < 16; i++)
     cout << setw(2) << setfill('0') <<  i << ' ';
 
-  cout << '\n';
+    cout << '\n';
 
-  for (i = 0; i < rom_size/16; i++)
+    for (i = 0; i < rom_size/16; i++)
     {
       cout << setw(2) << setfill('0') <<  i << ":  ";
 
       for (j = 0; j < 16; j++)
-        {
+      {
           reg_num = i * 16 + j;
           if(reg_num < rom_size)
-            {
+          {
               v = rom[reg_num]->get_value();
               cout << setw(2) << setfill('0') <<  v << ' ';
-            }
+          }
           else
             cout << "-- ";
-        }
+      }
       cout << "   ";
 
       for (j = 0; j < 16; j++)
-        {
+      {
           reg_num = i * 16 + j;
+
           if(reg_num < rom_size)
-            {
+          {
               v = rom[reg_num]->get_value();
-              if( (v >= ' ') && (v <= 'z'))
-                cout.put(v);
-              else
-                cout.put('.');
-            }
-        }
-
+              if( (v >= ' ') && (v <= 'z')) cout.put(v);
+              else                          cout.put('.');
+          }
+      }
       cout << '\n';
-
     }
 }
-
-
 
 
 //------------------------------------------------------------------------

@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "shape.h"
+#include "circuit.h"
 
 static const char* Shape_properties[] = {
     QT_TRANSLATE_NOOP("App::Property","H size"),
@@ -53,7 +54,7 @@ void Shape::setHSize( int size )
 {
     m_hSize = size;
     m_area = QRectF( -m_hSize/2, -m_vSize/2, m_hSize, m_vSize );
-    update();
+    Circuit::self()->update();
 }
 
 int Shape::vSize()
@@ -65,7 +66,7 @@ void Shape::setVSize( int size )
 {
     m_vSize = size;
     m_area = QRectF( -m_hSize/2, -m_vSize/2, m_hSize, m_vSize );
-    update();
+    Circuit::self()->update();
 }
 
 int Shape::border() 

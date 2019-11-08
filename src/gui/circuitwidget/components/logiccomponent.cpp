@@ -205,8 +205,10 @@ void LogicComponent::deleteOutputs( int outputs )
     for( int i=m_numOutPins-1; i>m_numOutPins-outputs-1; i-- )
     {
         if( m_outPin[i]->isConnected() ) m_outPin[i]->connector()->remove();
+        //else                             m_outPin[i]->reset();
+
         if( m_outPin[i]->scene() ) Circuit::self()->removeItem( m_outPin[i] );
-        m_outPin[i]->reset();
+
         delete m_outPin[i];
     }
     m_numOutPins -= outputs;

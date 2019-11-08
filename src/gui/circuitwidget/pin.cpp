@@ -37,11 +37,9 @@ Pin::Pin( int angle, const QPoint &pos, QString id, int index, Component* parent
     my_connector = 0l;
     m_conPin     = 0l;
     m_enode      = 0l;
-    m_angle      = angle;
-   // m_id         = id;
     
+    m_angle      = angle;
     m_color = Qt::black;
-
     m_area = QRect(-4, -4, 12, 8);
 
     setObjectName( id );
@@ -70,15 +68,17 @@ Pin::~Pin()
 
 void Pin::reset()
 {
-    //qDebug() << "Pin::reset "<< m_id << m_numConections;
-    setConnector( 0l );
+    //qDebug() << "Pin::reset "<<my_connector->objectName();
+    if( my_connector ) setConnector( 0l );
     m_connected = false;
     
-    //qDebug() << "ePin::reset new:" << m_numConections;
-    m_component->inStateChanged( 1 );          // Used by node to remove
-    
-    if( m_isBus ) m_component->inStateChanged( 3 ); // Used by Bus to remove
-    
+    //if( !Circuit::self()->deleting() )
+    {
+        //qDebug() << "ePin::reset new:" << m_numConections;
+        m_component->inStateChanged( 1 );          // Used by node to remove
+
+        if( m_isBus ) m_component->inStateChanged( 3 ); // Used by Bus to remove
+    }
     ePin::reset(); 
 }
 
@@ -97,7 +97,6 @@ void Pin::findConnectedPins()     // Called by node,  for connected pins
         
     if( m_conPin ) 
         m_conPin->findNodePins(); // Call pin at other side of Connector
-
 }
 
 void Pin::findNodePins()     // Called by connector closing or other pin
@@ -285,6 +284,12 @@ void Pin::setIsBus( bool bus )
 bool Pin::isBus()
 {
     return m_isBus;
+}
+
+void Pin::setVisible( bool visible )
+{
+    m_label.setVisible( visible );
+    QGraphicsItem::setVisible( visible );
 }
 
 void Pin::paint( QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget )

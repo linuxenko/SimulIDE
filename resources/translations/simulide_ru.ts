@@ -545,6 +545,15 @@
     </message>
 </context>
 <context>
+    <name>B16AsmDebugger</name>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished">Не удаётся записать файл %1:
+%2.</translation>
+    </message>
+</context>
+<context>
     <name>BJT</name>
     <message>
         <source>BJT</source>
@@ -1516,6 +1525,14 @@ Do you want to save your changes?
         <source>Logic/Memory</source>
         <translation>Логика/память</translation>
     </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>I2CToParallel</name>
@@ -1532,11 +1549,11 @@ Do you want to save your changes?
     <name>InBus</name>
     <message>
         <source>In Bus</source>
-        <translation>Входная шина</translation>
+        <translation type="vanished">Входная шина</translation>
     </message>
     <message>
         <source>Logic/Other Logic</source>
-        <translation>Логика/Другое (Логика)</translation>
+        <translation type="vanished">Логика/Другое (Логика)</translation>
     </message>
 </context>
 <context>
@@ -1783,7 +1800,7 @@ to DomDocument</source>
     </message>
     <message>
         <source>Hex Files (*.hex);;ELF Files (*.elf);;all files (*.*)</source>
-        <translation>Файлы HEX (*.hex);;Файлы ELF (*.elf);;Все файлы (*.*)</translation>
+        <translation type="vanished">Файлы HEX (*.hex);;Файлы ELF (*.elf);;Все файлы (*.*)</translation>
     </message>
     <message>
         <source>No File:</source>
@@ -1792,6 +1809,58 @@ to DomDocument</source>
     <message>
         <source>No File to reload </source>
         <translation>Нет файла для перезагрузки </translation>
+    </message>
+    <message>
+        <source>Load EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save EEPROM data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hex Files (*.hex);;ELF Files (*.elf);;All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MemData</name>
+    <message>
+        <source>Load Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All files (*.*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot write file %1:
+%2.</source>
+        <translation type="unfinished">Не удаётся записать файл %1:
+%2.</translation>
+    </message>
+</context>
+<context>
+    <name>Memory</name>
+    <message>
+        <source>Ram/Rom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logic/Memory</source>
+        <translation type="unfinished">Логика/память</translation>
+    </message>
+    <message>
+        <source>Load data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save data</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1864,11 +1933,11 @@ to DomDocument</source>
     <name>OutBus</name>
     <message>
         <source>Out Bus</source>
-        <translation>Выходная шина</translation>
+        <translation type="vanished">Выходная шина</translation>
     </message>
     <message>
         <source>Logic/Other Logic</source>
-        <translation>Логика/Другое (Логика)</translation>
+        <translation type="vanished">Логика/Другое (Логика)</translation>
     </message>
 </context>
 <context>
@@ -1992,6 +2061,14 @@ to DomDocument</source>
     </message>
 </context>
 <context>
+    <name>PropertiesWidget</name>
+    <message>
+        <source>Here will be some help ..............................................
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Push</name>
     <message>
         <source>Push</source>
@@ -2028,11 +2105,11 @@ to DomDocument</source>
     <name>Ram8bit</name>
     <message>
         <source>8bit Ram</source>
-        <translation>Память 8-бит</translation>
+        <translation type="vanished">Память 8-бит</translation>
     </message>
     <message>
         <source>Logic/Memory</source>
-        <translation>Логика/память</translation>
+        <translation type="vanished">Логика/память</translation>
     </message>
 </context>
 <context>
@@ -2047,7 +2124,7 @@ to DomDocument</source>
     </message>
     <message>
         <source>Binary</source>
-        <translation>Бинарный</translation>
+        <translation type="vanished">Бинарный</translation>
     </message>
     <message>
         <source>Load VarSet</source>
@@ -2078,6 +2155,14 @@ to DomDocument</source>
     <message>
         <source>Load Variables</source>
         <translation type="unfinished">Загрузить переменные</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished">Значение</translation>
     </message>
 </context>
 <context>

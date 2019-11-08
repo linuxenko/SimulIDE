@@ -87,8 +87,12 @@ int PicAsmDebugger::compile()
         {
             if( !(line.toUpper().contains( "ERROR" )) ) continue;
             QStringList words = line.split(":");
-            error = words.at(1).toInt();
-            qDebug() <<line;
+            if( words.size() > 1)
+            {
+                error = words.at(1).toInt();
+                qDebug() <<line;
+            }
+            else error = -1;
             break;
         }
     }

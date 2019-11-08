@@ -41,6 +41,7 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
     Q_PROPERTY( bool Show_ScrollBars  READ showScroll WRITE setShowScroll DESIGNABLE true USER true )
     Q_PROPERTY( bool Animate          READ animate    WRITE setAnimate    DESIGNABLE true USER true )
     Q_PROPERTY( double Font_Scale     READ fontScale  WRITE setFontScale  DESIGNABLE true USER true )
+    Q_PROPERTY( int  Auto_Backup_Secs READ autoBck    WRITE setAutoBck    DESIGNABLE true USER true )
 
     public:
         Circuit( qreal x, qreal y, qreal width, qreal height, QGraphicsView*  parent );
@@ -48,11 +49,11 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
 
  static Circuit* self() { return m_pSelf; }
         
-        int   reactStep();
-        void  setReactStep( int steps );
+        int  reactStep();
+        void setReactStep( int steps );
 
-        int   noLinStep();
-        void  setNoLinStep( int steps );
+        int  noLinStep();
+        void setNoLinStep( int steps );
         
         int  circSpeed();
         void setCircSpeed( int rate );
@@ -71,12 +72,17 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         
         double fontScale();
         void   setFontScale( double scale );
+
+        int autoBck();
+        void setAutoBck( int secs );
         
         void removeItems();
         void removeComp( Component* comp );
         void remove();
+        bool deleting();
         void compRemoved( bool removed );
         void saveState();
+        void setChanged();
 
         void drawBackground( QPainter* painter, const QRectF &rect );
 
@@ -91,6 +97,7 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
 
         void newconnector( Pin*  startpin );
         void closeconnector( Pin* endpin );
+        void updateConnectors();
         Connector* getNewConnector() { return new_connector; }
 
         QList<Component*>* compList();
@@ -103,6 +110,7 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         QPointF deltaMove();
         
         void addPin( Pin* pin, QString pinId );
+        void updatePin( ePin* epin, std::string newId );
         void removePin( QString pinId );
 
         const QString getFileName() const { return m_filePath; }
@@ -113,8 +121,9 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         void paste( QPointF eventpoint );
         void undo();
         void redo();
-        void importCirc(  QPointF eventpoint  );
+        void importCirc( QPointF eventpoint );
         void bom();
+        void saveChanges();
 
     protected:
         void mousePressEvent( QGraphicsSceneMouseEvent* event );
@@ -130,6 +139,7 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         void circuitToDom();
         void listToDom( QDomDocument* doc, QList<Component*>* complist );
         void objectToDom( QDomDocument* doc, QObject* object );
+        bool saveDom( QString &fileName, QDomDocument* doc );
 
         QString getCompId( QString name );
 
@@ -137,13 +147,15 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
  
         QDomDocument m_domDoc;
         QDomDocument m_copyDoc;
-        QString      m_filePath;
+
+        QString m_filePath;
+        QString m_backupPath;
 
         QRect          m_scenerect;
         QGraphicsView* m_graphicView;
         Connector*     new_connector;
 
-        int  m_seqNumber;
+        int m_seqNumber;
         int m_error;
         
         bool m_con_started;
@@ -152,6 +164,8 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         bool m_showScroll;
         bool m_compRemoved;
         bool m_animate;
+        bool m_changed;
+        bool m_deleting;
 
         QPointF m_eventpoint;
         QPointF m_deltaMove;
@@ -165,6 +179,8 @@ class MAINMODULE_EXPORT Circuit : public QGraphicsScene
         QList<QDomDocument*> m_redoStack;
 
         Simulator simulator;
+
+        QTimer m_bckpTimer;
 };
 
 #endif

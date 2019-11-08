@@ -38,6 +38,8 @@ Chip::Chip( QObject* parent, QString type, QString id )
     
     m_lsColor = QColor( 255, 255, 255 );
     m_icColor = QColor( 50, 50, 70 );
+    
+    setLabelPos( m_area.x(), m_area.y()-20, 0);
 }
 Chip::~Chip() {}
 
@@ -105,7 +107,7 @@ void Chip::initChip()
 
     m_area = QRect( 0, 0, 8*m_width, 8*m_height );
     //setTransformOriginPoint( togrid( boundingRect().center()) );
-    setLabelPos( m_area.x(), m_area.y()-20, 0);
+    
     setShowId( true );
 
     QDomNode node = root.firstChild();
