@@ -45,13 +45,8 @@ Component::Component( QObject* parent, QString type, QString id )
 {
     Q_UNUSED( Component_properties );
     //setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    if( ( type != "Connector" )&&( type != "Node" ) )
-    {
-        LibraryItem* li= ItemLibrary::self()->libraryItem( type );
-        if( li ) m_help = li->help();
-    }
-    else m_help = new QString( "..." );
-    
+
+    m_help = 0l;
     m_value    = 0;
     m_unitMult = 1;
     m_Hflip  = 1;
@@ -63,7 +58,13 @@ Component::Component( QObject* parent, QString type, QString id )
     m_showId = false;
     m_moving = false;
     m_printable = false;
-    m_BackGround = "";    
+    m_BackGround = "";
+
+    if( ( type != "Connector" )&&( type != "Node" ) )
+    {
+        LibraryItem* li= ItemLibrary::self()->libraryItem( type );
+        if( li ) m_help = li->help();
+    }
     
     QFont f;
     f.setPixelSize(10);
@@ -82,6 +83,7 @@ Component::Component( QObject* parent, QString type, QString id )
     setShowVal( false );
     
     setObjectName( id );
+    setIdLabel( id );
     setId(id);
 
     setCursor( Qt::OpenHandCursor );
@@ -434,6 +436,9 @@ void Component::setShowVal( bool show )
     m_valLabel->setVisible( show );
     m_showVal = show; 
 }
+
+QString Component::idLabel() { return m_idLabel->toPlainText(); }
+void Component::setIdLabel( QString id ) { m_idLabel->setPlainText( id ); }
 
 QString Component::itemID()         { return  m_id; }
 void Component::setId( QString id ) {  m_id = id; m_idLabel->setPlainText( m_id ); }

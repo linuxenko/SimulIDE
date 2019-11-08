@@ -28,7 +28,8 @@
 #include "pic-processor.h"
 #include "uart.h"
 #include "pir.h"
-
+#include "eeprom.h"
+#include "hexutils.h"
 
 PicProcessor::PicProcessor( QObject* parent ) 
             : BaseProcessor( parent )
@@ -78,6 +79,7 @@ bool PicProcessor::loadFirmware( QString fileN )
             return false;
         }
     }
+
     /*Cycle_Counter_breakpoint_list* l1 = &(get_cycles().active);
 
     while(l1->next)            // Clear CycleCounter breakpoint list
@@ -100,6 +102,17 @@ bool PicProcessor::loadFirmware( QString fileN )
                                , tr("Could not Load: \"%1\"").arg(m_symbolFile) );
         return false;
     }
+    // Load EEPROM
+    int rom_size = m_pPicProcessor->eeprom->get_rom_size();
+    int eep_size = m_eeprom.size();
+
+    if( eep_size < rom_size ) rom_size = eep_size;
+
+    for( int i=0; i<rom_size; i++ )
+    {
+        m_pPicProcessor->eeprom->rom[i]->put_value( m_eeprom[i] );
+    }
+
     //m_pPicProcessor->set_frequency( (double)McuComponent::self()->freq()*1e6 );
     qDebug() <<"\nProcessor Ready:\n    Device    ="<<m_pPicProcessor->name().c_str();
     qDebug() << "    Freq. MHz =" <<  McuComponent::self()->freq();
@@ -184,6 +197,38 @@ void PicProcessor::uartIn( uint32_t value ) // Receive one byte on Uart
         m_rcsta->queueData( value );
         //qDebug() << "PicProcessor::uartIn: " << value<<m_pPicProcessor->rma[26].get_value();
     }
+}
+
+QVector<int> PicProcessor::eeprom()
+{
+    //qDebug() <<"ROM size" << rom_size;
+
+    //m_hexLoader.writeihex8( m_pPicProcessor->eeprom->rom, rom_size, eepFile, 0xF00000 );
+
+    /*QString qrFile = "/home/user/eep.hex";
+    QByteArray rFile = qrFile.toLocal8Bit();
+    FILE* eepFile  = fopen( rFile.constData(), "r" );
+    //int loa = m_hexLoader.readihex16( m_pPicProcessor, eepFile );
+    int loa = m_hexLoader.readihex8( m_pPicProcessor->eeprom->rom, rom_size, eepFile, 0 );
+    if( loa == IntelHexProgramFileType::SUCCESS ) qDebug() << "eeprom loaded";
+    fclose( eepFile );
+
+    m_eeprom.resize( rom_size );*/
+
+    if( m_pPicProcessor )
+    {
+        int rom_size = m_pPicProcessor->eeprom->get_rom_size();
+        m_eeprom.resize( rom_size );
+
+        for( int i=0; i<rom_size; i++ )
+        {
+            m_eeprom[i] = m_pPicProcessor->eeprom->rom[i]->get_value();
+        }
+     }
+    //qDebug() << m_eeprom;
+
+    //m_pPicProcessor->eeprom->dump();
+    return m_eeprom;
 }
 
 #include "moc_picprocessor.cpp"

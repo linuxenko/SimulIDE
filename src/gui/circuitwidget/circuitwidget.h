@@ -90,7 +90,7 @@ class MAINMODULE_EXPORT CircuitWidget : public QWidget
         QAction* aboutAct;
         QAction* aboutQtAct;
         
-        QMenu* infoMenu;
+        QMenu m_infoMenu;
         
         QString m_curCirc;
         QString m_lastCircDir;

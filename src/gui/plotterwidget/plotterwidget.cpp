@@ -107,7 +107,7 @@ void PlotterWidget::remChannel( int channel )
     m_numchan--;                                // Decrease used channel
     m_channel[channel] = false;               // Set channel to not busy
     m_chanLabel[channel]->setEnabled( false );  // Disable channel label
-    //m_data[channel] = 0;                                   // reset data
+    //m_data[channel] = 0;                                 // reset data
     m_chanLabel[channel]->setText( "--.-- V" );
     m_rArea->setData( channel, 0 );
     
@@ -127,6 +127,7 @@ QColor PlotterWidget::getColor( int channel )
 void PlotterWidget::step()
 {
     if( m_numchan == 0 ) return; // No data to plot
+    //qDebug() << "PlotterWidget::step" << m_numchan;
 
     if( ++m_counter >= m_ticksPs )
     {
@@ -234,7 +235,7 @@ void PlotterWidget::minChanged( double value )
 
 void  PlotterWidget::xScaleChanged( int scale )
 {
-    if( scale == m_xScale ) return;
+    //if( scale == m_xScale ) return;
     
     if( scale == 3 )
     {

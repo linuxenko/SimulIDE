@@ -63,7 +63,7 @@ Simulator::~Simulator()
 
 inline void Simulator::solveMatrix()
 {
-    foreach( eNode* node,  m_eChangedNodeList ) node->stampMatrix();
+    foreach( eNode* node, m_eChangedNodeList ) node->stampMatrix();
     m_eChangedNodeList.clear();
 
     if( !m_matrix.solveMatrix() )                // Try to solve matrix,
@@ -106,6 +106,19 @@ void Simulator::timerEvent( QTimerEvent* e )  //update at m_timerTick rate (50 m
     
     // Run Circuit in parallel thread
     m_CircuitFuture = QtConcurrent::run( this, &Simulator::runCircuit ); // Run Circuit in a parallel thread
+}
+
+void Simulator::runGraphicStep()
+{
+    //qDebug() <<"Simulator::runGraphicStep";
+    CircuitView::self()->setCircTime( m_step);
+
+    foreach( eElement* el, m_updateList ) el->updateStep();
+    TerminalWidget::self()->step();
+    PlotterWidget::self()->updateStep();
+
+    if( Circuit::self()->animate() ) Circuit::self()->updateConnectors();
+    foreach( eNode* enode, m_eNodeList ) enode->setVoltChanged( false );
 }
 
 void Simulator::runCircuit()
@@ -151,17 +164,19 @@ void Simulator::runCircuitStep()
     {
         m_noLinCounter = 0;
         int counter = 0;
+        int limit = (m_noLinAcc-2)*100;
+
         while( !m_nonLinear.isEmpty() ) // Run untill all converged
         {
             foreach( eElement* el, m_nonLinear ) el->setVChanged();
             m_nonLinear.clear();
 
-            if( !m_eChangedNodeList.isEmpty() ) 
-            { 
+            if( !m_eChangedNodeList.isEmpty() )
+            {
                 solveMatrix();
                 //if( !m_isrunning ) return;
             }
-            if( ++counter > 200 ) break; // Limit the number of loops
+            if( ++counter > limit ) break; // Limit the number of loops
         }
         //if( counter > 0 ) qDebug() << "\nSimulator::runCircuit  Non-Linear Solved in steps:"<<counter;
     }
@@ -170,18 +185,6 @@ void Simulator::runCircuitStep()
         solveMatrix();
         if( !m_isrunning ) return;
     }
-}
-
-void Simulator::runGraphicStep()
-{
-    //qDebug() <<"Simulator::runGraphicStep";
-    CircuitView::self()->setCircTime( m_step);
-    
-    foreach( eElement* el, m_updateList ) el->updateStep();
-    TerminalWidget::self()->step();
-    PlotterWidget::self()->updateStep();
-    
-    if( Circuit::self()->animate() ) Circuit::self()->update();
 }
  
 void Simulator::runExtraStep()
@@ -254,10 +257,11 @@ void Simulator::startSim()
     std::cout << "\nCircuit Matrix looks good" <<  std::endl;
     if( !m_paused )
     {
-        m_lastStep    = 0;
-        m_lastRefTime = 0;
+        m_lastStep     = 0;
+        m_lastRefTime  = 0;
         m_reacCounter  = 0;
         m_noLinCounter = 0;
+        m_updtCounter  = 0;
     }
     m_isrunning = true;
     m_paused = false;
@@ -465,9 +469,11 @@ void Simulator::addToEnodeList( eNode* nod )
 
 void Simulator::remFromEnodeList( eNode* nod, bool del )
 {
-    if( m_eNodeList.contains(nod) ) m_eNodeList.removeOne( nod );
-
-    if( del ){ delete nod; }
+    if( m_eNodeList.contains(nod) )
+    {
+        m_eNodeList.removeOne( nod );
+        if( del ) delete nod;
+    }
 }
 
 void Simulator::addToChangedNodeList( eNode* nod )

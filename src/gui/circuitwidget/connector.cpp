@@ -64,7 +64,11 @@ Connector::~Connector() { }
 
 void Connector::remNullLines()      // Remove lines with leght = 0 or aligned
 {
-    if( m_conLineList.length() < 2 ) return;
+    if( m_conLineList.length() < 2 ) 
+    {
+        refreshPointList();
+        return;
+    }
 
     foreach( ConnectorLine* line, m_conLineList )
     {
@@ -150,6 +154,7 @@ void Connector::addConLine( ConnectorLine* line, int index )
         m_conLineList.at( index+1 )->sSetP1( line->p2() );
     }
     line->setIsBus( m_isBus );
+    if( Circuit::self()->is_constarted() ) line->setCursor( Qt::ArrowCursor );
 }
 
 ConnectorLine* Connector::addConLine( int x1, int y1, int x2, int y2, int index )
@@ -187,7 +192,11 @@ void Connector::disconnectLines( int index1, int index2 )
 
 void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
 {
-    if( Circuit::self()->pasting() ) return;
+    if( Circuit::self()->pasting() ) 
+    {
+        remNullLines();
+        return;
+    }
 
     bool diagonal = false;
     int length = m_conLineList.length();
@@ -211,7 +220,11 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
         }
         else m_actLine = 0;
         
-        if( diagonal ) return;
+        if( diagonal ) 
+        {
+            remNullLines();
+            return;
+        }
     }
     else
     {
@@ -240,6 +253,7 @@ void Connector::updateConRoute( Pin* pin, QPointF thisPoint )
 
                 if( line->isSelected() ) newLine->setSelected( true );
             }
+            remNullLines();
             return;
         }
     }
@@ -426,9 +440,12 @@ void Connector::closeCon( Pin* endpin, bool connect  )
 
     m_startPin->setConPin( m_endPin );
     m_endPin->setConPin( m_startPin );
+    
+    updateConRoute( m_endPin, m_endPin->scenePos() );
 
     remNullLines();
     //refreshPointList();
+    foreach( ConnectorLine* line, m_conLineList ) line->setCursor( Qt::CrossCursor );
 
     if( pauseSim ) Simulator::self()->runContinuous();
 }
@@ -473,7 +490,11 @@ void Connector::splitCon( int index, Pin* pin1, Pin* pin2 )
 
 void Connector::updateLines()
 {
-    foreach( ConnectorLine*  line, m_conLineList ) line->update();
+    eNode* enode = startPin()->getEnode();
+    if( enode && enode->voltchanged() )
+    {
+        foreach( ConnectorLine*  line, m_conLineList ) line->update();
+    }
 }
 
 QStringList Connector::pointList()             { refreshPointList(); return m_pointList; }

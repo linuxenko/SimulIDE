@@ -309,4 +309,10 @@ void BaseProcessor::uartIn( uint32_t value ) // Receive one byte on Uart
     }
 }
 
+void BaseProcessor::setEeprom( QVector<int> eep )
+{
+    m_eeprom = eep;
+    //qDebug() << "BaseProcessor::setEeprom" <<eep.size()<< eep;
+}
+
 #include "moc_baseprocessor.cpp"

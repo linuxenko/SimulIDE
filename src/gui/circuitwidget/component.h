@@ -26,6 +26,7 @@
 
 #include "QPropertyEditorWidget.h"
 
+Q_DECLARE_METATYPE( QList<int> )
 
 class Pin;
 class Label;
@@ -36,7 +37,7 @@ class MAINMODULE_EXPORT Component : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
     Q_PROPERTY( QString  itemtype  READ itemType  USER true )
-    Q_PROPERTY( QString  id        READ itemID    WRITE setId      DESIGNABLE true USER true )
+    Q_PROPERTY( QString  id        READ idLabel   WRITE setIdLabel DESIGNABLE true USER true )
     Q_PROPERTY( bool     Show_id   READ showId    WRITE setShowId  DESIGNABLE true USER true )
     Q_PROPERTY( qreal    rotation  READ rotation  WRITE setRotation )
     Q_PROPERTY( int      x         READ x         WRITE setX )
@@ -58,6 +59,9 @@ class MAINMODULE_EXPORT Component : public QObject, public QGraphicsItem
 
         enum { Type = UserType + 1 };
         int type() const { return Type; }
+        
+        QString idLabel();
+        void setIdLabel( QString id );
 
         QString itemID();
         void setId( QString id );

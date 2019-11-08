@@ -19,10 +19,10 @@
  
 
 win32 {
-    VERSION     = "0.3.12.11"
+    VERSION     = "0.3.12.13"
 }
 unix {
-    VERSION     = "0.3.12-SR1"
+    VERSION     = "0.3.12-SR3"
 }
 
 TEMPLATE = app
@@ -39,7 +39,15 @@ SOURCES += ../src/*.cpp \
     ../src/gui/*.cpp \
     ../src/gui/circuitwidget/*.cpp \
     ../src/gui/circuitwidget/components/*.cpp \
+    ../src/gui/circuitwidget/components/active/*.cpp \
+    ../src/gui/circuitwidget/components/logic/*.cpp \
     ../src/gui/circuitwidget/components/mcu/*.cpp \
+    ../src/gui/circuitwidget/components/meters/*.cpp \
+    ../src/gui/circuitwidget/components/other/*.cpp \
+    ../src/gui/circuitwidget/components/outputs/*.cpp \
+    ../src/gui/circuitwidget/components/passive/*.cpp \
+    ../src/gui/circuitwidget/components/sources/*.cpp \
+    ../src/gui/circuitwidget/components/switches/*.cpp \
     ../src/gui/oscopewidget/*.cpp \
     ../src/gui/plotterwidget/*.cpp \
     ../src/gui/terminalwidget/*.cpp \
@@ -51,6 +59,10 @@ SOURCES += ../src/*.cpp \
     ../src/gui/serialporwidget/*.cpp \
     ../src/simulator/*.cpp \
     ../src/simulator/elements/*.cpp \
+    ../src/simulator/elements/active/*.cpp \
+    ../src/simulator/elements/logic/*.cpp \
+    ../src/simulator/elements/outputs/*.cpp \
+    ../src/simulator/elements/passive/*.cpp \
     ../src/simulator/elements/processors/*.cpp \
     ../src/simavr/sim/*.c \
     ../src/simavr/cores/*.c \
@@ -63,7 +75,15 @@ HEADERS += ../src/*.h \
     ../src/gui/*.h \
     ../src/gui/circuitwidget/*.h \
     ../src/gui/circuitwidget/components/*.h \
+    ../src/gui/circuitwidget/components/active/*.h \
+    ../src/gui/circuitwidget/components/logic/*.h \
     ../src/gui/circuitwidget/components/mcu/*.h \
+    ../src/gui/circuitwidget/components/meters/*.h \
+    ../src/gui/circuitwidget/components/other/*.h \
+    ../src/gui/circuitwidget/components/outputs/*.h \
+    ../src/gui/circuitwidget/components/passive/*.h \
+    ../src/gui/circuitwidget/components/sources/*.h \
+    ../src/gui/circuitwidget/components/switches/*.h \
     ../src/gui/oscopewidget/*.h \
     ../src/gui/plotterwidget/*.h \
     ../src/gui/terminalwidget/*.h \
@@ -75,6 +95,10 @@ HEADERS += ../src/*.h \
     ../src/gui/serialporwidget/*.h \
     ../src/simulator/*.h \
     ../src/simulator/elements/*.h \
+    ../src/simulator/elements/active/*.h \
+    ../src/simulator/elements/logic/*.h \
+    ../src/simulator/elements/outputs/*.h \
+    ../src/simulator/elements/passive/*.h \
     ../src/simulator/elements/processors/*.h \
     ../src/simavr/sim/*.h \
     ../src/simavr/sim/avr/*.h  \
@@ -89,7 +113,15 @@ INCLUDEPATH += ../src \
     ../src/gui \
     ../src/gui/circuitwidget \
     ../src/gui/circuitwidget/components \
+    ../src/gui/circuitwidget/components/active \
+    ../src/gui/circuitwidget/components/logic \
     ../src/gui/circuitwidget/components/mcu \
+    ../src/gui/circuitwidget/components/meters \
+    ../src/gui/circuitwidget/components/other \
+    ../src/gui/circuitwidget/components/outputs \
+    ../src/gui/circuitwidget/components/passive \
+    ../src/gui/circuitwidget/components/sources \
+    ../src/gui/circuitwidget/components/switches \
     ../src/gui/oscopewidget \
     ../src/gui/plotterwidget \
     ../src/gui/terminalwidget \
@@ -101,6 +133,10 @@ INCLUDEPATH += ../src \
     ../src/gui/serialporwidget \
     ../src/simulator \
     ../src/simulator/elements \
+    ../src/simulator/elements/active \
+    ../src/simulator/elements/logic \
+    ../src/simulator/elements/outputs \
+    ../src/simulator/elements/passive \
     ../src/simulator/elements/processors \
     ../src/simavr \
     ../src/simavr/sim \
@@ -120,16 +156,16 @@ TRANSLATIONS +=  \
 RESOURCES = ../src/application.qrc
 
 
-QMAKE_CXXFLAGS_DEBUG -= -O
-QMAKE_CXXFLAGS_DEBUG -= -O1
-QMAKE_CXXFLAGS_DEBUG -= -O2
-QMAKE_CXXFLAGS_DEBUG -= -O3
-QMAKE_CXXFLAGS_DEBUG += -O3
-QMAKE_CXXFLAGS_RELEASE -= -O
-QMAKE_CXXFLAGS_RELEASE -= -O1
-QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE -= -O3
-QMAKE_CXXFLAGS_RELEASE += -O3
+#QMAKE_CXXFLAGS_DEBUG -= -O
+#QMAKE_CXXFLAGS_DEBUG -= -O1
+#QMAKE_CXXFLAGS_DEBUG -= -O2
+#QMAKE_CXXFLAGS_DEBUG -= -O3
+#QMAKE_CXXFLAGS_DEBUG += -O3
+#QMAKE_CXXFLAGS_RELEASE -= -O
+#QMAKE_CXXFLAGS_RELEASE -= -O1
+#QMAKE_CXXFLAGS_RELEASE -= -O2
+#QMAKE_CXXFLAGS_RELEASE -= -O3
+#QMAKE_CXXFLAGS_RELEASE += -O3
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 

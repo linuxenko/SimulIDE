@@ -85,14 +85,22 @@ Arduino::~Arduino()
 void Arduino::remove()
 {
     m_pb5Pin->setEnode( 0l );
-    m_boardLed->getEpin(0)->setEnode( 0l );
+    ePin* ledPin0 = m_boardLed->getEpin(0);
+    ledPin0->setEnode( 0l );
+    delete ledPin0;
+
+    ePin* ledPin1 = m_boardLed->getEpin(1);
+    ledPin1->setEnode( 0l );
+    delete ledPin1;
+
+    delete m_groundpin;
+    delete m_ground;
+
     McuComponent::remove();
 
     Simulator::self()->remFromEnodeList( m_groundEnode, true );
     Simulator::self()->remFromUpdateList( m_boardLed );
     Circuit::self()->compList()->removeOne( m_boardLed );
-
-    delete m_ground;
 }
 
 void Arduino::initialize()

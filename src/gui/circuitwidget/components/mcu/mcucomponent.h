@@ -23,13 +23,16 @@
 #include <QtWidgets>
 
 #include "chip.h"
+#include "memdata.h"
+
 
 class BaseProcessor;
 class McuComponentPin;
 
-class MAINMODULE_EXPORT McuComponent : public Chip
+class MAINMODULE_EXPORT McuComponent : public Chip, public MemData
 {
     Q_OBJECT
+    Q_PROPERTY( QVector<int> eeprom  READ eeprom  WRITE setEeprom )
     Q_PROPERTY( QString  Program     READ program WRITE setProgram DESIGNABLE true  USER true )
     Q_PROPERTY( double   Mhz         READ freq    WRITE setFreq    DESIGNABLE true  USER true )
     Q_PROPERTY( bool     Ser_Port    READ serPort WRITE setSerPort )
@@ -56,6 +59,9 @@ class MAINMODULE_EXPORT McuComponent : public Chip
         
         bool serMon();
         void setSerMon( bool set );
+
+        void setEeprom(QVector<int> eep );
+        QVector<int> eeprom();
         
         QList<McuComponentPin*> getPinList() { return m_pinList; }
 
@@ -72,6 +78,8 @@ class MAINMODULE_EXPORT McuComponent : public Chip
         void slotCloseTerm();
         void slotOpenSerial();
         void slotCloseSerial();
+        void loadData();
+        void saveData();
         
         void contextMenu( QGraphicsSceneContextMenuEvent* event, QMenu* menu );
         

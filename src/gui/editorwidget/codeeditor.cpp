@@ -26,6 +26,7 @@
 #include "codeeditor.h"
 #include "gcbdebugger.h"
 #include "inodebugger.h"
+#include "b16asmdebugger.h"
 #include "avrasmdebugger.h"
 #include "picasmdebugger.h"
 #include "mcucomponent.h"
@@ -209,6 +210,10 @@ void CodeEditor::setFile( const QString& filePath )
         QString path = sintaxPath + "makef.sintax";
         m_hlighter->readSintaxFile( path );
     }
+    else if( m_file.endsWith(".b16") )
+    {
+        m_debugger = new B16AsmDebugger( this, m_outPane, filePath );
+    }
 }
 
 int CodeEditor::getSintaxCoincidences( QString& fileName, QStringList& instructions )
@@ -223,6 +228,8 @@ int CodeEditor::getSintaxCoincidences( QString& fileName, QStringList& instructi
         if( line.startsWith("#")) continue;
         if( line.startsWith(";")) continue;
         if( line.startsWith(".")) continue;
+        line =line.toLower();
+        
         foreach( QString instruction, instructions )
         {
             if( line.contains( QRegExp( "\\b"+instruction+"\\b" ) ))
@@ -892,7 +899,7 @@ void CodeEditor::indentSelection( bool unIndent )
     for (int i = 0; i < lines; i++)
     {
         QString line = list[i];
-        
+
         if( unIndent ) 
         {
             int n = m_tab.size();
@@ -901,6 +908,7 @@ void CodeEditor::indentSelection( bool unIndent )
             
             while( n1 > 0 )
             {
+                if( line.size() <= n2 ) break;
                 QString car = line.at(n2);
                 
                 if( car == " " ) 

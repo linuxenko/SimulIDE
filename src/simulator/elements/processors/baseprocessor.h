@@ -70,6 +70,9 @@ class MAINMODULE_EXPORT BaseProcessor : public QObject
         virtual QStringList getRegList() { return m_regList; }
         
         virtual RamTable* getRamTable() { return m_ramTable; }
+
+        virtual QVector<int> eeprom()=0;
+        virtual void setEeprom( QVector<int> eep );
         
         virtual void setRegisters();
     
@@ -93,6 +96,8 @@ class MAINMODULE_EXPORT BaseProcessor : public QObject
         QHash<QString, int> m_regsTable;     // int max 32 bits
         QHash<QString, float> m_floatTable;  // float 32 bits
         QHash<QString, QString> m_typeTable;
+
+        QVector<int> m_eeprom;
 
         bool m_resetStatus;
         bool m_loadStatus;

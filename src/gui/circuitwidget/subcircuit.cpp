@@ -88,7 +88,14 @@ SubCircuit::SubCircuit( QObject* parent, QString type, QString id )
 
     QString compName = m_id.split("-").first(); // for example: "atmega328-1" to: "atmega328"
     QString dataFile = ComponentSelector::self()->getXmlFile( compName );
-    
+
+    if( dataFile == "" )
+    {
+        if     ( compName.startsWith( "74XX") ) compName.replace( "XX", "HC" );
+        else if( compName.startsWith( "74HC") ) compName.replace( "HC", "XX" );
+
+        dataFile = ComponentSelector::self()->getXmlFile( compName );
+    }
     if( dataFile == "" )
     {
           MessageBoxNB( "SubCircuit::initChip", "                               \n"+
@@ -737,7 +744,7 @@ void SubCircuit::clear()
     m_internal_eNode.clear();
     foreach( eElement* el, m_elementList )
     {
-        qDebug() << "deleting" << QString::fromStdString( el->getId() );
+        //qDebug() << "deleting" << QString::fromStdString( el->getId() );
         delete el;
     }
     m_elementList.clear();

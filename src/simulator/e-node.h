@@ -55,6 +55,8 @@ class MAINMODULE_EXPORT eNode
 
         double getVolt();
         void  setVolt( double volt );
+        bool  voltchanged() { return m_voltChanged; }
+        void setVoltChanged( bool changed ){ m_voltChanged = changed; }
         
         void solveSingle();
         
@@ -109,6 +111,7 @@ class MAINMODULE_EXPORT eNode
         bool m_fastUpdated;
         bool m_currChanged;
         bool m_admitChanged;
+        bool m_voltChanged;
         bool m_changed;
         bool m_single;
         bool m_switched;

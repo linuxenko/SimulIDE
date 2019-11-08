@@ -64,7 +64,7 @@ void ePN::setVChanged()
 
     double deltaV = m_threshold;
 
-    if( m_voltPN < m_threshold ) 
+    if( (m_threshold-m_voltPN) > 1e-6 )//if( m_voltPN < m_threshold )
     {
         eResistor::setAdmit( 0 );
         m_ePin[0]->stampCurrent( 0 );
@@ -73,10 +73,9 @@ void ePN::setVChanged()
         return;
     }
     if( m_admit != 1/m_resist ) eResistor::setAdmit( 1/m_resist );
-
-    //qDebug() <<"ePN::setVChanged,  deltaR: "<< deltaR << "  deltaV" << deltaV << "m_voltPN" << m_voltPN ;
-
     if( fabs(deltaV-m_deltaV) < m_accuracy/10 ) return;
+
+    //qDebug() <<"ePN::setVChanged,  deltaV" << deltaV << "m_voltPN" << m_voltPN ;
 
     m_deltaV = deltaV;
 

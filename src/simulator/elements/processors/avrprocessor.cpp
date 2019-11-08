@@ -27,6 +27,7 @@
 #include "sim_hex.h"
 #include "sim_core.h"
 #include "avr_uart.h"
+#include "avr_eeprom.h"
 
 //AvrProcessor* AvrProcessor::m_pSelf = 0l;
 
@@ -184,6 +185,31 @@ bool AvrProcessor::loadFirmware( QString fileN )
     }
     if( f.flashbase ) m_avrProcessor->pc = f.flashbase;
 
+    // Load EEPROM
+    int rom_size = m_avrProcessor->e2end+1;
+    int eep_size = m_eeprom.size();
+
+    //qDebug() << "eeprom size at Load:" << rom_size << eep_size;
+
+    if( eep_size < rom_size ) rom_size = eep_size;
+
+    if( rom_size )
+    {
+        uint8_t rep[rom_size];
+
+        for( int i=0; i<rom_size; i++ )
+        {
+            uint8_t val = m_eeprom[i];
+            rep[i] = val;
+            //qDebug() << i << val;
+        }
+        avr_eeprom_desc_t ee;
+        ee.offset = 0;
+        ee.size = rom_size;
+        ee.ee = &rep[0];
+        avr_ioctl( m_avrProcessor, AVR_IOCTL_EEPROM_SET, &ee );
+    }
+
     m_avrProcessor->frequency = 16000000;
     m_avrProcessor->cycle = 0;
     m_symbolFile = fileN;
@@ -196,6 +222,7 @@ bool AvrProcessor::loadFirmware( QString fileN )
 void AvrProcessor::reset()
 {
     if( !m_loadStatus ) return;
+    //qDebug() << "AvrProcessor::reset("<< eeprom();
     
     for( int i=0; i<m_avrProcessor->ramend; i++ ) m_avrProcessor->data[i] = 0;
 
@@ -266,6 +293,30 @@ void AvrProcessor::uartIn( uint32_t value ) // Receive one byte on Uart
         avr_raise_irq( m_uartInIrq, value );
         //qDebug() << "AvrProcessor::uartIn: " << value;
     }
+}
+
+QVector<int> AvrProcessor::eeprom()
+{
+    if( m_avrProcessor )
+    {
+        int rom_size = m_avrProcessor->e2end + 1;
+        m_eeprom.resize( rom_size );
+
+        avr_eeprom_desc_t ee;
+        ee.ee = 0;
+        ee.offset = 0;
+        ee.size = rom_size;
+        int ok = avr_ioctl( m_avrProcessor, AVR_IOCTL_EEPROM_GET, &ee );
+        //qDebug() << "avr epprom read ok =" ;//<< ok ;//<< m_eeprom;
+        if( ok )
+        {
+            //qDebug() << "avr epprom Reading...";
+            uint8_t* src = ee.ee;
+
+            for( int i=0; i<rom_size; i++ ) m_eeprom[i] = src[i];
+        }
+    }
+    return m_eeprom;
 }
 
 #include "moc_avrprocessor.cpp"
